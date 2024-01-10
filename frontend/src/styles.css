@@ -1,1 +1,120 @@
-/* You can add global styles to this file, and also import other style files */
+/* 
+background - #232523
+green - #04f104
+shadow - #415041
+line - #202020
+
+*/
+
+.header 
+{
+    font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
+    font-size: 2em;
+    color: white;
+    font-weight: 100;
+    letter-spacing: 0.5em;
+}
+
+/* HOME */
+
+#home-body
+{
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    /* background-color: #1a1a1a; */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+    font-weight: 300;
+}
+  
+#home-container
+{
+    text-align: center;
+}
+  
+#home-heading
+{
+    font-family: 'Your Font', Arial, sans-serif;
+    font-size: 2em;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    letter-spacing: 0.1em;
+    opacity: 0;
+    animation: fadeInUp 1.5s forwards;
+    color: white;
+}
+  
+@keyframes fadeInUp
+{
+    from
+    {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+  
+    to
+    {
+      opacity: 1;
+      transform: translateY(0);
+    }
+}
+
+#home-icon
+{
+    transition: transform 0.1s ease-in-out;
+}
+
+#home-icon:hover
+{
+    transform: scale(1.05);
+}
+
+#home-body
+{
+    position: relative;
+}
+
+.overlay 
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(173, 255, 173, 0.200);
+    z-index: 0;
+}
+
+/* NAVIGATION */
+
+#auth-button
+{
+    background-color: #272727;
+    color: #ffffff;
+    border: 1px solid #2c972c;
+    border-radius: 0px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; 
+    font-size: 14px;
+}
+
+#auth-button:hover
+{
+    background-color: #2c972c;
+    color: #ffffff;
+}
+
+#nav-bar
+{
+    padding-right: 5%;
+    padding-left: 5%;
+    background-color: rgba(0, 0, 0, 0.377); /* Adjust the color and opacity as needed */
+}
+
