@@ -4,19 +4,24 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { Navigation, RouterModule } from '@angular/router';
 import { WebService } from './web.service';
-import { NavComponent } from './nav.component';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthModule } from '@auth0/auth0-angular';
 import { SharedService } from './shared.service';
 import { AuthGuard } from '@auth0/auth0-angular';
-import { AuthComponent } from './auth.component';
-import { HomeComponent } from './home.component';
+import { HomeComponent } from './home/home.component';
+import { ProfileComponent } from './profile/profile.component';
+import { AuthComponent } from './auth/auth.component';
+import { NavComponent } from './nav/nav.component';
 
 var routes : any = [
   {
     path: '',
     component: HomeComponent
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent
   },
   // {
   //   path: 'games/:id',
@@ -33,7 +38,8 @@ var routes : any = [
     AppComponent,
     AuthComponent, 
     HomeComponent,
-    NavComponent, 
+    NavComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,7 +50,7 @@ var routes : any = [
     ReactiveFormsModule,
     AuthModule.forRoot({
       domain: 'dev-lj7ac84a7apx1w1e.us.auth0.com',
-      clientId: 'V1vpytxkkPCX6I2Aebhi0jGowtyH8rf8',
+      clientId: 'KC86pIWNkm7RJOVZRsxnATVWRZRwd8lk',
       authorizationParams: {
         redirect_uri: 'http://localhost:4200/'
       }
