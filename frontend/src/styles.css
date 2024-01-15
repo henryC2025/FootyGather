@@ -6,6 +6,7 @@ line - #202020
 
 */
 
+/* GENERAL */
 .header 
 {
     font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
@@ -15,23 +16,39 @@ line - #202020
     letter-spacing: 0.5em;
 }
 
-/* HOME */
+button
+{
+    z-index: 999;
+}
+  
+#page-content
+{
+    height: 50%;
+    width: 50%;
+    align-items: center;
+    justify-content: center;
+}
 
-#home-body
+#page-body
 {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    /* background-color: #1a1a1a; */
     color: #f5f5f5;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100vh;
-    overflow: hidden;
+    overflow: auto;
     font-weight: 300;
+    background-image: url('assets/footy_pitch.jpg');
+    background-size: cover;
+    background-position: center center;
+    position: relative;
 }
-  
+
+/* HOME */
+
 #home-container
 {
     text-align: center;
@@ -40,7 +57,10 @@ line - #202020
     border: 1px solid #2c972c;
     border-radius: 5px;
     padding: 15px 16px;
-    width: 50%;
+    width: 100%;
+    /* ADD SCROLLING */
+    /* overflow: auto;
+    max-height: 300px; */
 }
   
 #home-heading
@@ -72,20 +92,17 @@ line - #202020
     }
 }
 
-#home-body
-{
-    position: relative;
-}
-
 .overlay 
 {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(173, 255, 173, 0.200);
     z-index: 0;
+    pointer-events: none;
+    overflow: auto;
 }
 
 /* NAVIGATION */
@@ -121,21 +138,23 @@ line - #202020
 {
     padding-right: 5%;
     padding-left: 5%;
-    background-color: rgba(0, 0, 0, 0.377); /* Adjust the color and opacity as needed */
+    background-color: rgba(0, 0, 0, 0.377);
 }
 
-#nav-links {
+#nav-links
+{
     /* d5dad6 */
-    color: #f5f5f5; /* Link text color */
-    font-weight: bold; /* Make the text bold */
-    text-decoration: none; /* Remove default underline */
-    transition: color 0.3s ease; /* Smooth transition on hover */
-  }
+    color: #f5f5f5;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
   
-  #nav-links:hover {
+#nav-links:hover
+{
     /* 1d8023 */
     /* 1a7a22 */
     /* #5abd5a */
-    color: #5abd5a; /* Change color on hover */
-  }
+    color: #5abd5a;
+}
   

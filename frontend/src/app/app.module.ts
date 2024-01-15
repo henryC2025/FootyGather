@@ -13,6 +13,9 @@ import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AuthComponent } from './auth/auth.component';
 import { NavComponent } from './nav/nav.component';
+import { ContactComponent } from './contact/contact.component';
+import { VenuesComponent } from './venues/venues.component';
+import { CommunitiesComponent } from './communities/communities.component';
 
 var routes : any = [
   {
@@ -20,8 +23,18 @@ var routes : any = [
     component: HomeComponent
   },
   {
+    path: 'communities',
+    component: CommunitiesComponent
+  },{
+    path: 'venues',
+    component: VenuesComponent
+  },
+  {
     path: 'profile',
     component: ProfileComponent
+  },{
+    path: 'contact',
+    component: ContactComponent
   },
   // {
   //   path: 'games/:id',
@@ -40,6 +53,9 @@ var routes : any = [
     HomeComponent,
     NavComponent,
     ProfileComponent,
+    ContactComponent,
+    VenuesComponent,
+    CommunitiesComponent,
   ],
   imports: [
     BrowserModule,

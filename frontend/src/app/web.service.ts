@@ -30,4 +30,14 @@ export class WebService
 
         return this.http.post('http://localhost:5000/api/v1.0/auth', postData);
     }
+
+    testConnection()
+    {
+        return this.http.get('http://localhost:5000/api/v1.0/test');
+    }
+
+    userCheck(id : any)
+    {
+
+    }
 }
