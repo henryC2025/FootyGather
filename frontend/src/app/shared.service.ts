@@ -8,21 +8,80 @@ import { Observable, Subject } from "rxjs";
 export class SharedService
 {
 
-    private userID : any;
+    private isAuthCalled = false;
+    private user : any;
+    private oauthID : any;
+    private isAuthenticated : any;
 
     constructor(private http : HttpClient,
                 public authService : AuthService,
                 public webService : WebService) {} 
     
-    // authUserCompleted: Subject<void> = new Subject<void>();
+    setAuthCalled(value : boolean)
+    {
+        this.isAuthCalled = value;
+    }
 
-    // authUser() : Observable<any>
-    // {
-    //     return this.authService.isAuthenticated$;
-    // }
+    getAuthCalled()
+    {
+        return this.isAuthCalled;
+    }
 
-    // setUserId(id: string)
-    // {
-    //     this.userID = id;
-    // }
+    resetAuthCalled()
+    {
+        this.isAuthCalled = false;
+    }
+
+    authUser()
+    {
+      this.authService.isAuthenticated$.subscribe((isAuthenticated: boolean) =>
+      {
+        this.isAuthenticated = isAuthenticated;
+
+        if(this.isAuthenticated)
+        {
+          this.authService.user$.subscribe(user =>
+          {
+            this.user = user;
+
+            console.log(this.user.sub)
+
+            const userData =
+            {
+                oauth_id: this.user?.sub,
+            };
+
+            if(!this.getAuthCalled())
+            {
+              this.webService.authUser(userData).subscribe(
+              {
+                  next: (response) =>
+                  {
+                    console.log(response)
+
+                    this.setAuthCalled(true);
+                    // IF USER IS NEW
+                    // CALL REDIRECT HERE TO PAGE ASKING FOR MORE INFORMATION
+
+                    // IF USER EXISTS ALREADY
+                    // CONTINUE TO NAVIGATE TO HOME PAGE
+                  },
+                  error: (error) =>
+                  {
+                    console.error('Error sending user information:', error);
+                  },
+              });
+            }
+            else
+            {
+              console.log("Auth already called!")
+            }
+          });
+        }
+        else
+        {
+          console.log("Not authenticated")
+        }
+      });
+    }
 }

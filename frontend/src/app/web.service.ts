@@ -17,10 +17,13 @@ export class WebService
 
     constructor(private http: HttpClient) {}
 
-    // authUser(data : any)
-    // {
-    //     return this.http.post('http://localhost:5000/api/v1.0/auth', postData);
-    // }
+    authUser(data : any)
+    {
+        // let postData = new FormData();
+        // postData.append("oauth_id", data.oauth_id);
+        return this.http.post('http://localhost:5000/api/v1.0/auth_user', data);
+    }
+
     addNewUser(data : any)
     {
         let postData = new FormData();

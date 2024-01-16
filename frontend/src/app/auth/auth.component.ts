@@ -33,5 +33,6 @@ export class AuthComponent
   logout(): void
   {
     this.authService.logout();
+    this.sharedService.resetAuthCalled();
   }
 }
