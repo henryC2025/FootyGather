@@ -25,7 +25,7 @@ def hello_world():
 # @app.route('/api/v1.0/user', methods=['GET'])
 # def authUser():
 # Route to check if user is in the database
-@app.route('/api/v1.0/auth_user', methods=['POST'])
+@app.route('/api/v1.0/user', methods=['POST'])
 def auth_user():
     try:
         data = request.get_json()
@@ -36,25 +36,29 @@ def auth_user():
 
         if user:
             # User exists, send a code to carry on
-            return jsonify({'message': 'User exists', 'code': 'carry_on'}), 200
+            return jsonify({'message': 'User exists', 'code': 'USER_EXISTS'}), 200
         else:
             # User doesn't exist, send a code to ask for more details
-            return jsonify({'message': 'User not found in the database', 'code': 'ask_for_details'}), 200
+            return jsonify({'message': 'User not found in the database', 'code': 'ASK_FOR_DETAILS'}), 200
     except Exception as e:
         print(e)
         return jsonify({'error': 'Internal Server Error'}), 500
 
 # ADD USER DETAILS TO USER
-# @app.route('/api/v1.0/user/<string:id>', methods=['POST'])
 # Route to add user details
-@app.route('/api/v1.0/user/<string:id>', methods=['POST'])
-def add_user_details(id):
+@app.route('/api/v1.0/user/information', methods=['POST'])
+def add_user_details():
     try:
         # Get additional details from the request payload
-        additional_details = request.get_json()
+        oauth_id = request.form.get('oauth_id')
 
-        # Update the user document with additional details
-        result = mongo.db.users.update_one({'_id': ObjectId(id)}, {'$set': additional_details})
+        new_user = {
+            "_id": ObjectId(),
+            "oauth_id": oauth_id
+        }
+
+        # Add the user to the MongoDB collection
+        result = users.insert_one(new_user)
 
         if result.modified_count > 0:
             return jsonify({'message': 'User details added successfully'}), 200

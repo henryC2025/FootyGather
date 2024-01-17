@@ -16,6 +16,7 @@ import { NavComponent } from './nav/nav.component';
 import { ContactComponent } from './contact/contact.component';
 import { VenuesComponent } from './venues/venues.component';
 import { CommunitiesComponent } from './communities/communities.component';
+import { UserRegistrationComponent } from './user-registration/user-registration.component';
 
 var routes : any = [
   {
@@ -25,25 +26,23 @@ var routes : any = [
   {
     path: 'communities',
     component: CommunitiesComponent
-  },{
+  },
+  {
     path: 'venues',
     component: VenuesComponent
   },
   {
     path: 'profile',
     component: ProfileComponent
-  },{
+  },
+  {
     path: 'contact',
     component: ContactComponent
   },
-  // {
-  //   path: 'games/:id',
-  //   component: GameComponent
-  // },
-  // {
-  //   path: 'profile',
-  //   component: ProfileComponent
-  // }
+  {
+    path: 'user-registration',
+    component: UserRegistrationComponent
+  },
 ]
 
 @NgModule({
@@ -56,6 +55,7 @@ var routes : any = [
     ContactComponent,
     VenuesComponent,
     CommunitiesComponent,
+    UserRegistrationComponent,
   ],
   imports: [
     BrowserModule,

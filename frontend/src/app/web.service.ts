@@ -21,17 +21,17 @@ export class WebService
     {
         // let postData = new FormData();
         // postData.append("oauth_id", data.oauth_id);
-        return this.http.post('http://localhost:5000/api/v1.0/auth_user', data);
+        return this.http.post('http://localhost:5000/api/v1.0/user', data);
     }
 
-    addNewUser(data : any)
+    addNewUserInformation(data : any)
     {
         let postData = new FormData();
         postData.append("oauth_id", data.oauth_id);
         postData.append("username", data.username);
         postData.append("email", data.email);
 
-        return this.http.post('http://localhost:5000/api/v1.0/auth', postData);
+        return this.http.post('http://localhost:5000/api/v1.0/user/information', postData);
     }
 
     testConnection()

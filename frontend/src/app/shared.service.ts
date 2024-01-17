@@ -2,7 +2,9 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AuthService } from "@auth0/auth0-angular";
 import { WebService } from "./web.service";
-import { Observable, Subject } from "rxjs";
+import { Router } from "@angular/router";
+import { switchMap } from 'rxjs/operators';
+import { EMPTY } from 'rxjs';
 
 @Injectable()
 export class SharedService
@@ -15,7 +17,8 @@ export class SharedService
 
     constructor(private http : HttpClient,
                 public authService : AuthService,
-                public webService : WebService) {} 
+                public webService : WebService,
+                public router : Router) {}
     
     setAuthCalled(value : boolean)
     {
@@ -32,56 +35,74 @@ export class SharedService
         this.isAuthCalled = false;
     }
 
+    addAdditionalDetails()
+    {
+
+    }
+
+    // SWITCH MAP USED TO MAKE SUBSCRIPTIONS CLEANER
+    // ALLOW OBSERVERABLES TO EMIT ANOTHER OBSERVABLE
     authUser()
     {
-      this.authService.isAuthenticated$.subscribe((isAuthenticated: boolean) =>
-      {
-        this.isAuthenticated = isAuthenticated;
+        this.authService.isAuthenticated$.pipe(
 
-        if(this.isAuthenticated)
-        {
-          this.authService.user$.subscribe(user =>
+          switchMap((isAuthenticated: boolean) =>
           {
-            this.user = user;
+            this.isAuthenticated = isAuthenticated;
 
-            console.log(this.user.sub)
-
-            const userData =
+            if (this.isAuthenticated)
             {
-                oauth_id: this.user?.sub,
-            };
-
-            if(!this.getAuthCalled())
-            {
-              this.webService.authUser(userData).subscribe(
-              {
-                  next: (response) =>
-                  {
-                    console.log(response)
-
-                    this.setAuthCalled(true);
-                    // IF USER IS NEW
-                    // CALL REDIRECT HERE TO PAGE ASKING FOR MORE INFORMATION
-
-                    // IF USER EXISTS ALREADY
-                    // CONTINUE TO NAVIGATE TO HOME PAGE
-                  },
-                  error: (error) =>
-                  {
-                    console.error('Error sending user information:', error);
-                  },
-              });
+              return this.authService.user$;
             }
             else
             {
-              console.log("Auth already called!")
+              console.log("Not authenticated");
+              return EMPTY; // Return an empty observable if not authenticated
             }
-          });
-        }
-        else
-        {
-          console.log("Not authenticated")
-        }
-      });
+          }),
+          switchMap((user) =>
+          {
+            this.user = user;
+            console.log(this.user?.sub);
+
+            const userData =
+            {
+              oauth_id: this.user?.sub,
+            };
+
+            if (!this.getAuthCalled())
+            {
+              return this.webService.authUser(userData);
+            }
+            else
+            {
+              console.log("Auth already called!");
+              return EMPTY; // Return an empty observable if auth is already called
+            }
+          })
+        ).subscribe({
+          next: (response: any) =>
+          {
+            console.log(response.code);
+
+            if (response.code === "ASK_FOR_DETAILS")
+            {
+              window.alert("More Details Needed!");
+              this.router.navigate(['/user-registration']);
+              // ONLY UPON SUCESSFULL REGISTRATION
+              // SET AUTHCALLED TO TRUE
+            }
+            else
+            {
+              // TO DO: CARRY ON
+              this.setAuthCalled(true);
+              console.log("AUTH IS SET TO TRUE - INSIDE ELSE BLOCK");
+            }
+          },
+          error: (error) =>
+          {
+            console.error('Error sending user information:', error);
+          },
+        });
     }
 }
