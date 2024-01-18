@@ -11,17 +11,17 @@ import { WebService } from '../web.service';
 
 export class ProfileComponent {
 
-  constructor(public authService : AuthService,
-              public webService : WebService,
-              public sharedService : SharedService) {}
-  
-  user : any;
+    constructor(public authService : AuthService,
+                public webService : WebService,
+                public sharedService : SharedService) {}
 
-  ngOnInit()
-  {
-    this.authService.user$.subscribe(user => {
-      this.user = user;
-    });
-  }
-  
+    user : any;
+
+    ngOnInit()
+    {
+        this.authService.user$.subscribe(user =>
+        {
+            this.user = user;
+        });
+    }
 }

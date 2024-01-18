@@ -19,22 +19,24 @@ export class HomeComponent
 
     ngOnInit()
     {
-      this.sharedService.authUser();
-      // // DIRECT TO A PAGE
-      // this.router.navigate(['/profile']);
+        this.sharedService.authUser();
+        // // DIRECT TO A PAGE
+        // this.router.navigate(['/profile']);
     }
 
     testConnection()
     {
-      this.webService.testConnection().subscribe(
-        (response) => {
-          // The observable emitted a value (data)
-          console.log('Data received:', response);
-        },
-        (error) => {
-          // Handle error if there is any
-          console.error('Error fetching data:', error);
-        }
-      );
+        this.webService.testConnection().subscribe(
+            (response) =>
+            {
+                // The observable emitted a value (data)
+                console.log('Data received:', response);
+            },
+            (error) =>
+            {
+                // Handle error if there is any
+                console.error('Error fetching data:', error);
+            }
+        );
     }
 }

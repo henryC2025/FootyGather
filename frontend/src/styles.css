@@ -16,11 +16,6 @@ line - #202020
     letter-spacing: 0.5em;
 }
 
-button
-{
-    z-index: 999;
-}
-  
 #page-content
 {
     height: 50%;
@@ -47,9 +42,7 @@ button
     position: relative;
 }
 
-/* HOME */
-
-#home-container
+#content-container
 {
     text-align: center;
     background-color: #272727a4;
@@ -57,11 +50,28 @@ button
     border: 1px solid #2c972c;
     border-radius: 5px;
     padding: 15px 16px;
-    width: 100%;
-    /* ADD SCROLLING */
-    /* overflow: auto;
-    max-height: 300px; */
+    width: auto;
 }
+
+#fg-button
+{
+    background-color: #272727;
+    color: #f5f5f5;
+    border: 1px solid #2c972c;
+    border-radius: 5px !important;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; 
+    font-size: 14px;
+    z-index: 999;
+}
+
+#fg-button:hover
+{
+    background-color: #5abd5a;
+}
+
+/* HOME */
   
 #home-heading
 {
@@ -117,23 +127,6 @@ button
     transform: scale(1.05);
 }
 
-#auth-button
-{
-    background-color: #272727;
-    color: #f5f5f5;
-    border: 1px solid #2c972c;
-    border-radius: 5px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease; 
-    font-size: 14px;
-}
-
-#auth-button:hover
-{
-    background-color: #5abd5a;
-}
-
 #nav-bar
 {
     padding-right: 5%;
@@ -158,3 +151,75 @@ button
     color: #5abd5a;
 }
   
+/* Add your styling here */
+
+#user-details-oauth
+{
+    font-family: 'Your Font', Arial, sans-serif;
+    /* font-size: 2em; */
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    letter-spacing: 0.1em;
+    opacity: 0;
+    animation: fadeInUp 1.5s forwards;
+    color: #f5f5f5;
+    font-size: 90%;
+}
+
+.user-details-container
+{
+    max-width: auto;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+  
+.details-form
+{
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form-group
+{
+  margin-bottom: 20px;
+}
+
+.form-label
+{
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+textarea, input[type="text"], select
+{
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.checkbox-group
+{
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label
+{
+  margin-left: 8px;
+  font-weight: normal;
+}
+
+/* MEDIA */
+@media screen and (max-width: 768px)
+{
+    #page-content
+    {
+        height: 50%;
+        width: auto;
+    }
+}

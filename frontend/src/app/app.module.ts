@@ -16,7 +16,7 @@ import { NavComponent } from './nav/nav.component';
 import { ContactComponent } from './contact/contact.component';
 import { VenuesComponent } from './venues/venues.component';
 import { CommunitiesComponent } from './communities/communities.component';
-import { UserRegistrationComponent } from './user-registration/user-registration.component';
+import { UserDetailsComponent } from './user-details/user-details.component';
 
 var routes : any = [
   {
@@ -40,8 +40,8 @@ var routes : any = [
     component: ContactComponent
   },
   {
-    path: 'user-registration',
-    component: UserRegistrationComponent
+    path: 'user-details',
+    component: UserDetailsComponent
   },
 ]
 
@@ -55,7 +55,7 @@ var routes : any = [
     ContactComponent,
     VenuesComponent,
     CommunitiesComponent,
-    UserRegistrationComponent,
+    UserDetailsComponent,
   ],
   imports: [
     BrowserModule,

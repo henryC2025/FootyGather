@@ -45,64 +45,64 @@ export class SharedService
     authUser()
     {
         this.authService.isAuthenticated$.pipe(
+            switchMap((isAuthenticated: boolean) =>
+            {
+                this.isAuthenticated = isAuthenticated;
 
-          switchMap((isAuthenticated: boolean) =>
-          {
-            this.isAuthenticated = isAuthenticated;
+                if (this.isAuthenticated)
+                {
+                    return this.authService.user$;
+                }
+                else
+                {
+                    console.log("Not authenticated");
+                    return EMPTY; // Return an empty observable if not authenticated
+                }
+            }),
+            switchMap((user) =>
+            {
+                this.user = user;
+                console.log(this.user?.sub);
 
-            if (this.isAuthenticated)
-            {
-              return this.authService.user$;
-            }
-            else
-            {
-              console.log("Not authenticated");
-              return EMPTY; // Return an empty observable if not authenticated
-            }
-          }),
-          switchMap((user) =>
-          {
-            this.user = user;
-            console.log(this.user?.sub);
+                const userData =
+                {
+                    oauth_id: this.user?.sub,
+                };
 
-            const userData =
+                if (!this.getAuthCalled())
+                {
+                    return this.webService.authUser(userData);
+                }
+                else
+                {
+                    console.log("Auth already called!");
+                    return EMPTY; // Return an empty observable if auth is already called
+                }
+            })
+        ).subscribe(
+        {
+            next: (response: any) =>
             {
-              oauth_id: this.user?.sub,
-            };
+                console.log(response.code);
 
-            if (!this.getAuthCalled())
+                if (response.code === "ASK_FOR_DETAILS")
+                {
+                    // window.alert("More Details Needed!");
+                    this.router.navigate(['/user-details']);
+                    // ONLY UPON SUCESSFULL REGISTRATION
+                    // SET AUTHCALLED TO TRUE
+                }
+                else
+                {
+                    // TO DO: CARRY ON
+                    this.setAuthCalled(true);
+                    console.log("AUTH IS SET TO TRUE - INSIDE ELSE BLOCK");
+                }
+            },
+            error: (error) =>
             {
-              return this.webService.authUser(userData);
-            }
-            else
-            {
-              console.log("Auth already called!");
-              return EMPTY; // Return an empty observable if auth is already called
-            }
-          })
-        ).subscribe({
-          next: (response: any) =>
-          {
-            console.log(response.code);
-
-            if (response.code === "ASK_FOR_DETAILS")
-            {
-              window.alert("More Details Needed!");
-              this.router.navigate(['/user-registration']);
-              // ONLY UPON SUCESSFULL REGISTRATION
-              // SET AUTHCALLED TO TRUE
-            }
-            else
-            {
-              // TO DO: CARRY ON
-              this.setAuthCalled(true);
-              console.log("AUTH IS SET TO TRUE - INSIDE ELSE BLOCK");
-            }
-          },
-          error: (error) =>
-          {
-            console.error('Error sending user information:', error);
-          },
+                console.error('Error sending user information:', error);
+            },
         });
     }
 }
