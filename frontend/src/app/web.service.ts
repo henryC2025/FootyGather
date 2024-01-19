@@ -4,6 +4,7 @@ import { Injectable } from "@angular/core";
 @Injectable()
 export class WebService 
 {
+    GOOGLE_API = "AIzaSyB8nrqDiRpBa4gUm_IuElatFUUyK0tTx7Q";
     venue_list : any;
     community_list : any;
     game_list : any;
@@ -42,5 +43,11 @@ export class WebService
     userCheck(id : any)
     {
 
+    }
+
+    googlePlaces(input : any)
+    {
+        return this.http.get(
+            `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${this.GOOGLE_API}`)
     }
 }

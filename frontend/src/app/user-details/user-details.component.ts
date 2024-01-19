@@ -1,17 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { WebService } from '../web.service';
 import { SharedService } from '../shared.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgxGpAutocompleteDirective } from "@angular-magic/ngx-gp-autocomplete";
 
 @Component({
   selector: 'app-user-details',
   templateUrl: './user-details.component.html',
   styleUrl: './user-details.component.css'
 })
-export class UserDetailsComponent {
 
+export class UserDetailsComponent {
+    @ViewChild('ngxPlaces') placesRef!: NgxGpAutocompleteDirective;
     detailsForm: FormGroup;
     user : any;
 
@@ -30,7 +32,17 @@ export class UserDetailsComponent {
                         subscribeToNotifications: [false],
                     });
                 }
-                
+
+
+    public handleAddressChange(place: google.maps.places.PlaceResult)
+    {
+        console.log(place)
+        if (place)
+        {
+            this.detailsForm.get('location')?.setValue(place.formatted_address);
+        }
+    }
+
     ngOnInit()
     {
         this.authService.user$.subscribe(user =>
@@ -48,12 +60,13 @@ export class UserDetailsComponent {
         });
     }
 
-
     onSubmit()
     {
         console.log("Details Added!")
         const subscribeToNotificationsValue = this.detailsForm?.get('subscribeToNotifications')?.value;
+        const location = this.detailsForm?.get('location')?.value;
         console.log(subscribeToNotificationsValue);
+        console.log(location)
     }
 
 }

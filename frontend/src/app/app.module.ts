@@ -17,6 +17,8 @@ import { ContactComponent } from './contact/contact.component';
 import { VenuesComponent } from './venues/venues.component';
 import { CommunitiesComponent } from './communities/communities.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
+import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete'; 
+import { Loader } from '@googlemaps/js-api-loader';
 
 var routes : any = [
   {
@@ -64,6 +66,7 @@ var routes : any = [
     HttpClientModule,
     RouterModule.forRoot(routes),
     ReactiveFormsModule,
+    NgxGpAutocompleteModule,
     AuthModule.forRoot({
       domain: 'dev-lj7ac84a7apx1w1e.us.auth0.com',
       clientId: 'KC86pIWNkm7RJOVZRsxnATVWRZRwd8lk',
@@ -72,7 +75,13 @@ var routes : any = [
       }
     })
   ],
-  providers: [WebService, SharedService, AuthGuard],
+  providers: [WebService, SharedService, AuthGuard, {
+    provide: Loader,
+    useValue: new Loader({
+      apiKey: 'AIzaSyB8nrqDiRpBa4gUm_IuElatFUUyK0tTx7Q',
+      libraries: ['places']
+    })
+  },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
