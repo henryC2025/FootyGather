@@ -5,6 +5,8 @@ import { WebService } from "./web.service";
 import { Router } from "@angular/router";
 import { switchMap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { NotifierComponent } from "./notifier/notifier.component";
 
 @Injectable()
 export class SharedService
@@ -16,9 +18,27 @@ export class SharedService
     private isAuthenticated : any;
 
     constructor(private http : HttpClient,
+                private snackBar : MatSnackBar,
                 public authService : AuthService,
                 public webService : WebService,
                 public router : Router) {}
+
+    showNotification(displayMessage : string, buttonText : string, messageType: 'success' | 'error' )
+    {
+        this.snackBar.openFromComponent(NotifierComponent, 
+        {
+            data:
+            {
+                message: displayMessage,
+                buttonText : buttonText,
+                messageType : messageType
+            },
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            panelClass: messageType,
+        })
+    }
     
     setAuthCalled(value : boolean)
     {

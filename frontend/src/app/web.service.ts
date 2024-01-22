@@ -27,6 +27,22 @@ export class WebService
 
     addNewUserInformation(data : any)
     {
+        // USER
+        // - ObjectID - HAVE
+        // - OAuthID - HAVE
+        // - UserName - HAVE
+        // - Email - HAVE
+        // - Location - HAVE
+        // - Balance - START AT 0
+        // - OrganizerRating (GameID, AvgRating) - START AT NULL
+        // - ProfileImage (Use Azure Blob)
+        // - Description - HAVE
+        // - Games joined - START AT 0 
+        // - Games attended - START AT 0
+        // - CreateAt - USE DATE FORMAT
+        // - IsSubscribed - HAVE
+
+        // ## IF NO PROFILE PICTURE PROVIDED USE A DEFAULT IMAGE
         let postData = new FormData();
         postData.append("oauth_id", data.oauth_id);
         postData.append("username", data.username);
@@ -43,11 +59,5 @@ export class WebService
     userCheck(id : any)
     {
 
-    }
-
-    googlePlaces(input : any)
-    {
-        return this.http.get(
-            `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${this.GOOGLE_API}`)
     }
 }

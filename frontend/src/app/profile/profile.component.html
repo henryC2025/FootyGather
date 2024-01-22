@@ -1,10 +1,16 @@
 <div class="container" id="content-container">
   <h1 id="home-heading">Profile</h1>
 
-  <ng-container *ngIf="authService.isAuthenticated$ | async;">
-    <h2>{{user?.sub}}</h2>
-    <h2>{{user?.email}}</h2>
-    <h2>{{user?.nickname}}</h2>
+  <ng-container *ngIf="authService.isAuthenticated$ | async; else notAuthenticated">
+    <!-- Display user information when authenticated -->
+    <h2>{{ user?.sub }}</h2>
+    <h2>{{ user?.email }}</h2>
+    <h2>{{ user?.nickname }}</h2>
   </ng-container>
-  
+
+  <!-- Display a message and sign-in link when not authenticated -->
+  <ng-template #notAuthenticated>
+    <p>Please sign in or register to view your profile.</p>
+    <app-auth></app-auth>
+  </ng-template>
 </div>

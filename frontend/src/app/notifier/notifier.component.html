@@ -1,0 +1,8 @@
+<div class="notifier-messageType">
+    <span>{{ data.messageType.toUpperCase() }}</span>
+    <mat-icon class="close-icon" (click)="snackBarRef.dismiss()">close</mat-icon>
+</div>
+
+<div class="notifier-message">
+    {{ data.message }}
+</div>

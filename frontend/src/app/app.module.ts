@@ -11,14 +11,18 @@ import { SharedService } from './shared.service';
 import { AuthGuard } from '@auth0/auth0-angular';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
-import { AuthComponent } from './auth/auth.component';
-import { NavComponent } from './nav/nav.component';
+import { AuthComponent } from './authentication/auth.component';
+import { NavComponent } from './navigation/nav.component';
 import { ContactComponent } from './contact/contact.component';
 import { VenuesComponent } from './venues/venues.component';
 import { CommunitiesComponent } from './communities/communities.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete'; 
 import { Loader } from '@googlemaps/js-api-loader';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NotifierComponent } from './notifier/notifier.component';
+import { MatIconModule } from '@angular/material/icon';
 
 var routes : any = [
   {
@@ -58,6 +62,7 @@ var routes : any = [
     VenuesComponent,
     CommunitiesComponent,
     UserDetailsComponent,
+    NotifierComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,13 +72,16 @@ var routes : any = [
     RouterModule.forRoot(routes),
     ReactiveFormsModule,
     NgxGpAutocompleteModule,
+    MatSnackBarModule,
+    MatIconModule,
     AuthModule.forRoot({
       domain: 'dev-lj7ac84a7apx1w1e.us.auth0.com',
       clientId: 'KC86pIWNkm7RJOVZRsxnATVWRZRwd8lk',
       authorizationParams: {
         redirect_uri: 'http://localhost:4200/'
       }
-    })
+    }),
+    BrowserAnimationsModule
   ],
   providers: [WebService, SharedService, AuthGuard, {
     provide: Loader,

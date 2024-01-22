@@ -1,21 +1,25 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { WebService } from '../web.service';
 import { SharedService } from '../shared.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NgxGpAutocompleteDirective } from "@angular-magic/ngx-gp-autocomplete";
+import { MatSnackBarConfig } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-user-details',
   templateUrl: './user-details.component.html',
-  styleUrl: './user-details.component.css'
+  styleUrls: ['./user-details.component.css']
 })
 
 export class UserDetailsComponent {
-    @ViewChild('ngxPlaces') placesRef!: NgxGpAutocompleteDirective;
+    @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement> | undefined;
+
     detailsForm: FormGroup;
     user : any;
+    selectedFile: File | null = null;
+    imagePreview: string | ArrayBuffer | null = null;
+
 
     constructor(public authService : AuthService,
                 public webService : WebService,
@@ -25,10 +29,12 @@ export class UserDetailsComponent {
                 {
                     this.detailsForm = this.fb.group(
                     {
-                        // Add more fields for football-related details
                         location: ['', Validators.required],
-                        description: [''],
-                        experience: [''],
+                        description: ['', Validators.required],
+                        firstName: ['', Validators.required],
+                        lastName: ['', Validators.required],
+                        experience: ['', Validators.required],
+                        profilePicture: [null],
                         subscribeToNotifications: [false],
                     });
                 }
@@ -60,13 +66,123 @@ export class UserDetailsComponent {
         });
     }
 
+    onFileSelected(event: any)
+    {
+        const file = event.target.files[0] as File;
+    
+        if (file) {
+            // Check if the file type is an image
+            if (file.type.startsWith('image/'))
+            {
+                this.selectedFile = file;
+    
+                const reader = new FileReader();
+                reader.onload = () =>
+                {
+                    this.imagePreview = reader.result;
+                };
+    
+                reader.readAsDataURL(file);
+            } else
+            {
+                // Handle the case when the selected file is not an image
+                console.error('Selected file is not an image.');
+                this.sharedService.showNotification("Please select an image.", "Close", "error");
+                this.clearImage();
+            }
+        }
+        else
+        {
+            this.selectedFile = null;
+            this.imagePreview = null;
+        }
+    }
+    
+    clearImage()
+    {
+        this.selectedFile = null;
+        this.imagePreview = '';
+        this.detailsForm.patchValue(
+        {
+            profilePicture: null,
+        });
+      
+        if (this.fileInput)
+        {
+            this.fileInput.nativeElement.value = '';
+        }
+    }
+      
+
     onSubmit()
     {
-        console.log("Details Added!")
-        const subscribeToNotificationsValue = this.detailsForm?.get('subscribeToNotifications')?.value;
-        const location = this.detailsForm?.get('location')?.value;
-        console.log(subscribeToNotificationsValue);
-        console.log(location)
+        // Check overall form validity
+        if (this.detailsForm.valid)
+        {
+            const locationValue = this.detailsForm?.get('location')?.value;
+            const descriptionValue = this.detailsForm?.get('description')?.value;
+            const firstNameValue = this.detailsForm?.get('firstName')?.value;
+            const lastNameValue = this.detailsForm?.get('lastName')?.value;
+            const experienceValue = this.detailsForm?.get('experience')?.value;
+            const subscribeToNotificationsValue = this.detailsForm?.get('subscribeToNotifications')?.value;
+            const profilePictureValue = this.detailsForm?.get('profilePicture')?.value || 'assets/logo.png';
+        
+            console.log('Form submitted with the following values:');
+            console.log('Location:', locationValue);
+            console.log('Description:', descriptionValue);
+            console.log('First Name:', firstNameValue);
+            console.log('Last Name:', lastNameValue);
+            console.log('Experience:', experienceValue);
+            console.log('Subscribe to Notifications:', subscribeToNotificationsValue);
+            console.log('Profile Picture:', profilePictureValue);
+            this.sharedService.showNotification("Details added, Thank you for Joining :)", "Close", "success");
+            //   HANDLE SUBMIT DETAILS HERE, AND ALSO STORE THE IMAGE
+        }
+        else
+        {
+            if (this.detailsForm.get('firstName')?.hasError('required'))
+            {
+                this.sharedService.showNotification("Please enter your first name.", "Close", "error");
+            }
+
+            if (this.detailsForm.get('lastName')?.hasError('required'))
+            {
+                this.sharedService.showNotification("Please enter your last name.", "Close", "error");
+            }
+
+            if (this.detailsForm.get('location')?.hasError('required'))
+            {
+                this.sharedService.showNotification("Please enter the area you are located.", "Close", "error");
+            }
+        
+            if (this.detailsForm.get('description')?.hasError('required'))
+            {
+                this.sharedService.showNotification("Please introduce yourself in the description.", "Close", "error");
+            }
+        
+        }
     }
+
+    // onSubmit()
+    // {
+    //     console.log("Details Added!")
+    //     const subscribeToNotificationsValue = this.detailsForm?.get('subscribeToNotifications')?.value;
+    //     const location = this.detailsForm?.get('location')?.value;
+    //     const experience = this.detailsForm?.get('experience')?.value;
+    //     const firstName = this.detailsForm?.get('firstName')?.value;
+    //     const lastName = this.detailsForm?.get('lastName')?.value;
+
+
+
+    //     console.log(subscribeToNotificationsValue);
+    //     console.log(location)
+    //     console.log(firstName)
+    //     console.log(lastName)
+    //     console.log(experience)
+    //     console.log(this.selectedFile)
+
+    //     // CALL AZURE API TO STORE IMAGE AND ASSIGN LINK TO IMAGE IN MONGODB
+    //     // CALL WEBSERVICE TO ADD DETAILS
+    // }
 
 }
