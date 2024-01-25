@@ -15,8 +15,19 @@ export class WebService
     // private comment_id : any;
     // private comment_text : any;
     // private query : any;
+    private cpiURL = 'https://prod-09.centralus.logic.azure.com:443/workflows/14df396b4875481e844146328068033a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=nhXrxC9BMddEpgDKzGLg2RhkcdB2bhtih1M7vEHJaRc' 
 
     constructor(private http: HttpClient) {}
+
+    uploadProfileImage(data : any)
+    {
+        let postData = new FormData();
+        postData.append("oauthID", data.oauthID);
+        postData.append("userName", data.userName);
+        postData.append("uploadFile", data.uploadFile);
+
+        return this.http.post(this.cpiURL, postData);
+    }
 
     authUser(data : any)
     {
@@ -25,29 +36,23 @@ export class WebService
         return this.http.post('http://localhost:5000/api/v1.0/user', data);
     }
 
-    addNewUserInformation(data : any)
+    addNewUserDetails(data : any)
     {
-        // USER
-        // - ObjectID - HAVE
-        // - OAuthID - HAVE
-        // - UserName - HAVE
-        // - Email - HAVE
-        // - Location - HAVE
-        // - Balance - START AT 0
-        // - OrganizerRating (GameID, AvgRating) - START AT NULL
-        // - ProfileImage (Use Azure Blob)
-        // - Description - HAVE
-        // - Games joined - START AT 0 
-        // - Games attended - START AT 0
-        // - CreateAt - USE DATE FORMAT
-        // - IsSubscribed - HAVE
-
-        // ## IF NO PROFILE PICTURE PROVIDED USE A DEFAULT IMAGE
         let postData = new FormData();
-        postData.append("oauth_id", data.oauth_id);
-        postData.append("username", data.username);
-        postData.append("email", data.email);
-
+        postData.append("oauth_id", data.oauthID);
+        postData.append("user_name", data.userName);
+        postData.append("first_name", data.firstName);
+        postData.append("last_name", data.lastName);
+        postData.append("description", data.description);
+        postData.append("location", data.location);
+        postData.append("experience", data.experience);
+        postData.append("sub_notifications", data.subNotifications);
+        postData.append("profile_image", data.profileImage);
+        postData.append("games_joined", '0');
+        postData.append("games_attended", '0');
+        postData.append("balance", '0');
+        postData.append("is_admin", 'false');
+         
         return this.http.post('http://localhost:5000/api/v1.0/user/information', postData);
     }
 

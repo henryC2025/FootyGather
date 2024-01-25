@@ -13,6 +13,7 @@ export class SharedService
 {
 
     private isAuthCalled = false;
+    private userFormCompleted = false;
     private user : any;
     private oauthID : any;
     private isAuthenticated : any;
@@ -23,21 +24,30 @@ export class SharedService
                 public webService : WebService,
                 public router : Router) {}
 
-    showNotification(displayMessage : string, buttonText : string, messageType: 'success' | 'error' )
+    showNotification(displayMessage : string, messageType: 'success' | 'error' )
     {
         this.snackBar.openFromComponent(NotifierComponent, 
         {
             data:
             {
                 message: displayMessage,
-                buttonText : buttonText,
                 messageType : messageType
             },
-            duration: 5000,
+            duration: 3000,
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
             panelClass: messageType,
         })
+    }
+
+    setUserFormCompleted(value : boolean)
+    {
+        this.userFormCompleted = value;
+    }
+
+    isUserFormCompleted()
+    {
+        return this.userFormCompleted;
     }
     
     setAuthCalled(value : boolean)
@@ -55,13 +65,6 @@ export class SharedService
         this.isAuthCalled = false;
     }
 
-    addAdditionalDetails()
-    {
-
-    }
-
-    // SWITCH MAP USED TO MAKE SUBSCRIPTIONS CLEANER
-    // ALLOW OBSERVERABLES TO EMIT ANOTHER OBSERVABLE
     authUser()
     {
         this.authService.isAuthenticated$.pipe(

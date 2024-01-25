@@ -4,7 +4,7 @@ import { WebService } from '../web.service';
 import { SharedService } from '../shared.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBarConfig } from '@angular/material/snack-bar';
+import { catchError, map, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-user-details',
@@ -19,6 +19,7 @@ export class UserDetailsComponent {
     user : any;
     selectedFile: File | null = null;
     imagePreview: string | ArrayBuffer | null = null;
+    profileImageLink : any;
 
 
     constructor(public authService : AuthService,
@@ -55,39 +56,34 @@ export class UserDetailsComponent {
         {
             this.user = user;
         });
-
-        this.authService.isAuthenticated$.subscribe(response =>
-        {
-            if(response === false)
-            {
-                window.alert("Please sign in to access this page")
-                this.router.navigate(['/']);
-            }
-        });
     }
 
     onFileSelected(event: any)
     {
         const file = event.target.files[0] as File;
     
-        if (file) {
-            // Check if the file type is an image
+        if (file)
+        {
             if (file.type.startsWith('image/'))
             {
                 this.selectedFile = file;
-    
+                
+                this.detailsForm.patchValue(
+                {
+                    profilePicture: file,
+                });
                 const reader = new FileReader();
                 reader.onload = () =>
                 {
                     this.imagePreview = reader.result;
                 };
-    
+
                 reader.readAsDataURL(file);
-            } else
+            }
+            else
             {
-                // Handle the case when the selected file is not an image
                 console.error('Selected file is not an image.');
-                this.sharedService.showNotification("Please select an image.", "Close", "error");
+                this.sharedService.showNotification("Please select an image.", "error");
                 this.clearImage();
             }
         }
@@ -112,77 +108,141 @@ export class UserDetailsComponent {
             this.fileInput.nativeElement.value = '';
         }
     }
-      
+
+    uploadImage()
+    {
+        const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net'
+
+        return this.authService.user$.pipe(
+            map(user =>
+                {
+                const oauthID = user?.sub;
+                const userName = user?.nickname;
+                const selectedFile = this.selectedFile;
+    
+                const formData =
+                {
+                    oauthID: oauthID,
+                    userName: userName,
+                    uploadFile: selectedFile
+                };
+    
+                return formData;
+            }),
+            switchMap(formData =>
+                this.webService.uploadProfileImage(formData).pipe(
+                    map((response: any) => blobStorage + response.filePath),
+                    catchError(error =>
+                    {
+                        console.error('Form submission failed', error);
+                        this.sharedService.showNotification("An error occurred uploading profile image", "error");
+                        throw error; // Propagate the error
+                    })
+                )
+            )
+        );
+    }
 
     onSubmit()
     {
-        // Check overall form validity
         if (this.detailsForm.valid)
         {
-            const locationValue = this.detailsForm?.get('location')?.value;
-            const descriptionValue = this.detailsForm?.get('description')?.value;
-            const firstNameValue = this.detailsForm?.get('firstName')?.value;
-            const lastNameValue = this.detailsForm?.get('lastName')?.value;
-            const experienceValue = this.detailsForm?.get('experience')?.value;
-            const subscribeToNotificationsValue = this.detailsForm?.get('subscribeToNotifications')?.value;
-            const profilePictureValue = this.detailsForm?.get('profilePicture')?.value || 'assets/logo.png';
-        
-            console.log('Form submitted with the following values:');
-            console.log('Location:', locationValue);
-            console.log('Description:', descriptionValue);
-            console.log('First Name:', firstNameValue);
-            console.log('Last Name:', lastNameValue);
-            console.log('Experience:', experienceValue);
-            console.log('Subscribe to Notifications:', subscribeToNotificationsValue);
-            console.log('Profile Picture:', profilePictureValue);
-            this.sharedService.showNotification("Details added, Thank you for Joining :)", "Close", "success");
-            //   HANDLE SUBMIT DETAILS HERE, AND ALSO STORE THE IMAGE
+            if (this.selectedFile)
+            {
+                this.uploadImage().subscribe(
+                {
+                    next: (imageLink: string) =>
+                    {
+                        this.profileImageLink = imageLink;
+                        console.log('Profile image link:', imageLink);
+                        this.submitUserDetails();
+                    },
+                    error: (error: any) =>
+                    {
+                        console.error('Error uploading profile image:', error);
+                        // Handle error if needed
+                        this.sharedService.showNotification("Error uploading profile image", "error");
+                    },
+                    complete: () =>
+                    {
+                        console.log('Profile image upload completed.');
+                    },
+                });
+            }
+            else
+            {
+                this.profileImageLink = 'assets/logo.png';
+                this.submitUserDetails();
+            }
         }
         else
         {
-            if (this.detailsForm.get('firstName')?.hasError('required'))
-            {
-                this.sharedService.showNotification("Please enter your first name.", "Close", "error");
-            }
-
-            if (this.detailsForm.get('lastName')?.hasError('required'))
-            {
-                this.sharedService.showNotification("Please enter your last name.", "Close", "error");
-            }
-
-            if (this.detailsForm.get('location')?.hasError('required'))
-            {
-                this.sharedService.showNotification("Please enter the area you are located.", "Close", "error");
-            }
-        
-            if (this.detailsForm.get('description')?.hasError('required'))
-            {
-                this.sharedService.showNotification("Please introduce yourself in the description.", "Close", "error");
-            }
-        
+            // Handle form validation errors
+            this.handleFormValidationErrors();
         }
     }
 
-    // onSubmit()
-    // {
-    //     console.log("Details Added!")
-    //     const subscribeToNotificationsValue = this.detailsForm?.get('subscribeToNotifications')?.value;
-    //     const location = this.detailsForm?.get('location')?.value;
-    //     const experience = this.detailsForm?.get('experience')?.value;
-    //     const firstName = this.detailsForm?.get('firstName')?.value;
-    //     const lastName = this.detailsForm?.get('lastName')?.value;
+    private submitUserDetails()
+    {
+        const formData =
+        {
+            userName: this.user.nickname,
+            oauthID: this.user.sub,
+            firstName: this.detailsForm.get('firstName')?.value,
+            lastName: this.detailsForm.get('lastName')?.value,
+            description: this.detailsForm.get('description')?.value,
+            location: this.detailsForm.get('location')?.value,
+            experience: this.detailsForm.get('experience')?.value,
+            subNotifications: this.detailsForm.get('subscribeToNotifications')?.value,
+            profileImage: this.profileImageLink,
+        };
 
+        this.webService.addNewUserDetails(formData).subscribe(
+        {
+            next: (response) =>
+            {
+                // Handle success if needed
+                console.log("User Details added: " + response)
+                this.sharedService.showNotification("Details added, Thank you for Joining :)", "success");
+            },
+            error: (error: any) =>
+            {
+                console.error('Error submitting user details:', error);
+                // Handle error if needed
+                this.sharedService.showNotification("Error submitting user details", "error");
+            },
+            complete: () =>
+            {
+                console.log('User details submission completed.');
+                // ADD TO BELOW AFTER SUCCESSFUL SUBMISSION
+                this.sharedService.setUserFormCompleted(true);
+                console.log("Submit button: " + this.sharedService.isUserFormCompleted())
+                this.sharedService.setAuthCalled(true);
+                this.router.navigate(['/']);
+            },
+        });
+    }
 
-
-    //     console.log(subscribeToNotificationsValue);
-    //     console.log(location)
-    //     console.log(firstName)
-    //     console.log(lastName)
-    //     console.log(experience)
-    //     console.log(this.selectedFile)
-
-    //     // CALL AZURE API TO STORE IMAGE AND ASSIGN LINK TO IMAGE IN MONGODB
-    //     // CALL WEBSERVICE TO ADD DETAILS
-    // }
-
+    private handleFormValidationErrors()
+    {
+        if (this.detailsForm.get('firstName')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please enter your first name.", "error");
+        }
+    
+        if (this.detailsForm.get('lastName')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please enter your last name.", "error");
+        }
+    
+        if (this.detailsForm.get('location')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please enter the area you are located.", "error");
+        }
+    
+        if (this.detailsForm.get('description')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please introduce yourself in the description.", "error");
+        }
+    }
 }
