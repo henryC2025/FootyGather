@@ -8,8 +8,10 @@ export class WebService
     venue_list : any;
     community_list : any;
     game_list : any;
+    private venue_id : any;
     private game_id : any;
     private user_id : any;
+    private query : any;
     // private game_id : any;
     // private user_id : any;
     // private comment_id : any;
@@ -52,8 +54,13 @@ export class WebService
         postData.append("games_attended", '0');
         postData.append("balance", '0');
         postData.append("is_admin", 'false');
-         
+
         return this.http.post('http://localhost:5000/api/v1.0/user/information', postData);
+    }
+
+    getUserDetails(data : any)
+    {
+        return this.http.post('http://localhost:5000/api/v1.0/user/details', data);
     }
 
     testConnection()
@@ -64,5 +71,36 @@ export class WebService
     userCheck(id : any)
     {
 
+    }
+
+    searchGame(query : any)
+    {
+        this.query = query
+
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/venues/search?query=' + query
+        );
+    }
+
+    getCountOfVenues()
+    {
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/venues/count'
+        );
+    }
+
+    getVenues(page : number)
+    {
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/venues?pn=' + page
+        );
+    }
+
+    getVenueByID(id : any)
+    {
+        this.venue_id = id;
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/venues/' + id
+        );
     }
 }

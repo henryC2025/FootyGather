@@ -23,6 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NotifierComponent } from './notifier/notifier.component';
 import { MatIconModule } from '@angular/material/icon';
+import { VenueComponent } from './venue/venue.component';
 
 var routes : any = [
   {
@@ -37,6 +38,11 @@ var routes : any = [
   },
   {
     path: 'venues',
+    component: VenuesComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'venues/:id',
     component: VenuesComponent,
     canActivate: [AuthGuard]
   },
@@ -68,6 +74,7 @@ var routes : any = [
     CommunitiesComponent,
     UserDetailsComponent,
     NotifierComponent,
+    VenueComponent,
   ],
   imports: [
     BrowserModule,

@@ -273,6 +273,13 @@ textarea, input[type="text"], select, input[type="file"]
     transform: scale(1.2);
 }
 
+/* VENUES */
+
+#venue-details, #venue-name
+{
+    color: #272727;
+}
+
 /* MEDIA */
 @media screen and (max-width: 768px)
 {

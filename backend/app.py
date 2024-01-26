@@ -13,6 +13,7 @@ client = MongoClient('mongodb://127.0.0.1:27017')
 db = client['footyGatherDB']  
 # collection = db['video_games']  
 users = db['users']
+venues = db['venues']
 # blacklist = db['blacklist']
 
 @app.route('/')
@@ -34,13 +35,13 @@ def auth_user():
 
         if user:
             # User exists, send a code to carry on
-            return jsonify({'message': 'User exists', 'code': 'USER_EXISTS'}), 200
+            return make_response(jsonify({'message': 'User exists', 'code': 'USER_EXISTS'}), 200)
         else:
             # User doesn't exist, send a code to ask for more details
-            return jsonify({'message': 'User not found in the database', 'code': 'DETAILS_REQUIRED'}), 200
+            return make_response(jsonify({'message': 'User not found in the database', 'code': 'DETAILS_REQUIRED'}), 200)
     except Exception as e:
         print(e)
-        return jsonify({'error': 'Internal Server Error'}), 500
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 # ADD USER DETAILS TO USER
 # Route to add user details
@@ -87,12 +88,27 @@ def add_user_details():
         result = users.insert_one(new_user)
 
         if result.inserted_id:
-            return jsonify({'message': 'User details added successfully'}), 201
+            return make_response(jsonify({'message': 'User details added successfully'}), 201)
         else:
-            return jsonify({'error': 'User not found'}), 404
+            return make_response(jsonify({'error': 'User not found'}), 404)
     except Exception as e:
         print(e)
-        return jsonify({'error': 'Internal Server Error'}), 500
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+@app.route('/api/v1.0/user/details', methods=['POST'])
+def get_user_details():
+    try:
+        data = request.get_json()
+        oauth_id = data.get('oauth_id')
+        user = users.find_one({"oauth_id": oauth_id})
+        if user:
+            user['_id'] = str(user['_id'])
+            return make_response(jsonify(user), 200)
+        else:
+            return make_response(jsonify({'error': 'User not found'}), 404)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 @app.route('/api/v1.0/users', methods=['GET'])
 def get_all_users():
@@ -101,15 +117,87 @@ def get_all_users():
         user_list = []
 
         for user in all_users:
-            # Convert ObjectId to str for JSON serialization
             user['_id'] = str(user['_id'])
             user_list.append(user)
 
-        return jsonify(user_list), 200
+        return make_response(jsonify(user_list), 200)
 
     except Exception as e:
         print(e)
-        return jsonify({'error': 'Internal Server Error'}), 500
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Search venues by name
+@app.route('/api/v1.0/venues/search', methods=['GET'])
+def search_venues():
+    try:
+        query = request.args.get('query', '')
+
+        regex_pattern = f'.*{query}.*'
+        query_filter = {'name': {'$regex': regex_pattern, '$options': 'i'}}
+
+        matching_venues = venues.find(query_filter)
+
+        matching_venues_list = []
+        for venue in matching_venues:
+            venue['_id'] = str(venue['_id']) 
+            for comment in venue.get('comments', []):
+                comment['_id'] = str(comment['_id'])
+            matching_venues_list.append(venue)
+
+        return make_response(jsonify(matching_venues_list), 200)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Get all venues
+@app.route('/api/v1.0/venues', methods=['GET'])
+def get_all_venues():
+    try:
+        page_num, page_size = 1, 12
+        if request.args.get('pn'): 
+            page_num = int(request.args.get('pn'))
+        if request.args.get('ps'):
+            page_size = int(request.args.get('ps'))
+        page_start = (page_size * (page_num - 1))
+
+        venues_list = []
+
+        for venue in db.venues.find().skip(page_start).limit(page_size):
+            venue['_id'] = str(venue['_id'])
+            for comment in venue.get('comments', []):
+                comment['_id'] = str(comment['_id'])
+            venues_list.append(venue)
+
+        return make_response(jsonify(venues_list), 200)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Get a venue by id
+@app.route('/api/v1.0/venues/<string:id>', methods=['GET'])
+def get_game_by_id(id):
+    try:
+        venue = db.venues.find_one({'_id': ObjectId(id)})
+
+        if venue:
+            venue['_id'] = str(venue['_id'])
+            return make_response(jsonify([venue]), 200)
+        else:
+            return make_response(jsonify({'message': 'Game not found'}), 404)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Get count of venues
+@app.route('/api/v1.0/venues/count', methods=['GET'])
+def get_count_of_venues():
+    try:
+        count_of_venues = db.venues.distinct("_id")
+
+        return f"{len(count_of_venues)}"
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 @app.route('/api/v1.0/test', methods=['GET'])
 def testConnection():

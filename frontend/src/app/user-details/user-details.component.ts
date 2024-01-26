@@ -40,6 +40,15 @@ export class UserDetailsComponent {
                     });
                 }
 
+    ngOnInit()
+    {
+        this.authService.user$.subscribe(user =>
+        {
+            this.user = user;
+        });
+
+        console.log("AM I CALLED" + this.sharedService.getAuthCalled())
+    }
 
     public handleAddressChange(place: google.maps.places.PlaceResult)
     {
@@ -50,13 +59,6 @@ export class UserDetailsComponent {
         }
     }
 
-    ngOnInit()
-    {
-        this.authService.user$.subscribe(user =>
-        {
-            this.user = user;
-        });
-    }
 
     onFileSelected(event: any)
     {

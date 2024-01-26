@@ -1,1 +1,79 @@
-<p>venues works!</p>
+<div class="container" id="content-container">
+    <div class="row">
+
+        <div class="input-group mb-3" id="search-button">
+            <input type="text" class="form-control" placeholder="Search for venues" [(ngModel)]="search_query" (input)="search()">
+        </div>
+
+            <div class="input-group mb-3" id="admin-add-venue">
+                <button *ngIf="isAdmin">Admin Button</button>
+            </div>
+
+            <!-- Display search results -->
+            <div *ngFor= "let venue of (search_query ? search_results : venue_list | async)" class="col-md-4 mb-4">
+                <!-- <button *ngIf="isAdmin" (click)="onButtonClick()">Admin Button</button> -->
+
+                <!-- Background colour and link to single venue -->
+                <div class="card text-white custom-bg-color mb-3" 
+                    style="cursor: pointer;"  id="venue-card"
+                    [routerLink]="['/venues', venue._id]">
+            
+                <!-- Header for card -->
+                <div class="card-header">
+
+                    <div id="venue-name" class="truncate-text">
+                      {{venue.name}}
+                    </div>
+
+                </div>  
+
+                <!-- Large Image -->
+                <div class="image-container">
+                    <img [src]="venue.cover_image" class="img-thumbnail rounded-0" alt="{{venue.name}}">
+                </div>
+                
+                <!-- Footer for card -->
+                <div class="card-footer" id="card-footer">
+                    <div class="col-md-10" id="venue-details">
+                        <p>Games Played: {{venue.games_played}}</p>
+                    </div>
+    
+                    <!-- Second Column: User Review -->
+                    <div class="col-md-10" id="venue-details">
+                        <p>Location: {{venue.location}}</p>
+                    </div>
+                </div> <!-- End of footer -->
+                </div> <!-- End of card -->
+            </div> <!-- End of ng -->
+    </div> <!-- End of row -->
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation" *ngIf="!search_query">
+        <ul class="pagination">
+
+            <li class="page-item">
+                <button class="page-link" (click)="firstPage()">First</button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" (click)="previousPage()" [disabled]="page === 1">{{"\<"}}</button>
+            </li>
+            
+            <ng-container *ngFor="let pageNum of [page - 2, page - 1, page, page + 1, page + 2]">
+                <li class="page-item" *ngIf="pageNum > 0 && pageNum <= total_pages" [class.active]="pageNum === page">
+                    <button class="page-link" (click)="goToPage(pageNum)">{{pageNum}}</button>
+                </li>
+            </ng-container>                  
+
+            <li class="page-item">
+                <button class="page-link" (click)="nextPage()">{{"\>"}}</button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" (click)="lastPage()">Last</button>
+            </li>
+        </ul>
+    </nav>
+    <!-- End of Pagination -->
+
+</div> <!-- End of container -->
