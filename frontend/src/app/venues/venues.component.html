@@ -6,7 +6,7 @@
         </div>
 
             <div class="input-group mb-3" id="admin-add-venue">
-                <button *ngIf="isAdmin">Admin Button</button>
+                <button *ngIf="isAdmin" (click)="this.sharedService.showVenuesDialog()">Admin Button</button>
             </div>
 
             <!-- Display search results -->
@@ -25,7 +25,7 @@
                       {{venue.name}}
                     </div>
 
-                </div>  
+                </div>
 
                 <!-- Large Image -->
                 <div class="image-container">
@@ -40,7 +40,7 @@
     
                     <!-- Second Column: User Review -->
                     <div class="col-md-10" id="venue-details">
-                        <p>Location: {{venue.location}}</p>
+                        <p>Location: {{venue.address}}</p>
                     </div>
                 </div> <!-- End of footer -->
                 </div> <!-- End of card -->

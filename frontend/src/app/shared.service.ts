@@ -7,6 +7,8 @@ import { switchMap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { NotifierComponent } from "./notifier/notifier.component";
+import { VenuesDialogComponent } from './venues-dialog/venues-dialog.component';
+import { MatDialog } from "@angular/material/dialog";
 
 @Injectable()
 export class SharedService
@@ -20,9 +22,23 @@ export class SharedService
 
     constructor(private http : HttpClient,
                 private snackBar : MatSnackBar,
+                private dialog : MatDialog,
                 public authService : AuthService,
                 public webService : WebService,
                 public router : Router) {}
+
+    showVenuesDialog()
+    {
+        const dialogRef = this.dialog.open(VenuesDialogComponent,
+        {
+            width: '400px',
+        });
+
+        dialogRef.afterClosed().subscribe((result : any) =>
+        {
+            console.log('The dialog was closed');
+        });
+    }
 
     showNotification(displayMessage : string, messageType: 'success' | 'error' )
     {
