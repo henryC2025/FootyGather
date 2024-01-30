@@ -11,6 +11,7 @@ export class WebService
     private venue_id : any;
     private game_id : any;
     private user_id : any;
+    private oauth_id : any;
     private query : any;
     // private game_id : any;
     // private user_id : any;
@@ -102,5 +103,62 @@ export class WebService
         return this.http.get(
             'http://localhost:5000/api/v1.0/venues/' + id
         );
+    }
+
+    addLike(venue_id : any, oauth_id : any)
+    {
+        this.venue_id = venue_id;
+        let postData = new FormData();
+        postData.append("oauth_id", oauth_id);
+
+        return this.http.post(
+            'http://localhost:5000/api/v1.0/venues/' + this.venue_id + '/likes_dislikes/likes', postData
+        );
+    }
+
+    addDislike(venue_id : any, oauth_id : any)
+    {
+        this.venue_id = venue_id;
+        let postData = new FormData();
+        postData.append("oauth_id", oauth_id);
+
+        return this.http.post(
+            'http://localhost:5000/api/v1.0/venues/' + this.venue_id + '/likes_dislikes/dislikes', postData
+        );
+    }
+
+    getLikesDislikesFromVenue(venue_id : any)
+    {
+        this.venue_id = venue_id;
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/venues/' + this.venue_id + '/likes_dislikes'
+        )
+    }
+
+    getLikesDislikesFromUser(oauth_id : any)
+    {
+        this.oauth_id = oauth_id;
+
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/users/' + this.oauth_id + '/likes_dislikes'
+        )
+    }
+
+    removeUserLikeFromGame(venue_id : any, oauth_id : any)
+    {
+        this.venue_id = venue_id;
+        this.oauth_id = oauth_id;
+
+        return this.http.delete(
+            'http://localhost:5000/api/v1.0/venues/' + this.venue_id + '/likes_dislikes/likes?user_id=' + this.oauth_id)
+    }
+
+    removeUserDislikeFromGame(venue_id : any, oauth_id : any)
+    {
+        this.venue_id = venue_id;
+        this.oauth_id = oauth_id;
+
+        return this.http.delete(
+            'http://localhost:5000/api/v1.0/venues/' + this.venue_id + '/likes_dislikes/dislikes?oauth_id=' + this.oauth_id)
     }
 }

@@ -1,1 +1,90 @@
-<p>venue works!</p>
+<div class="container" id="content-container">
+
+    <div *ngFor = "let venue of venue_list | async">
+
+        <div class="venue-container">
+
+            <!-- Background colour and link to single venue -->
+            <div class="card text-white custom-bg-color mb-3"
+            style="cursor: pointer;"
+            [routerLink]="['/venues', venue._id]">
+
+            <!-- Header for card -->
+            <div class="card-header">
+                <div id="venue-name">
+                {{venue.name}} - {{venue.location}}
+                </div>
+            </div>
+
+            <!-- Large Image -->
+            <div class="image-container">
+                <img [src]="venue.cover_image" class="img-thumbnail rounded-0 custom-image-size" alt="{{venue.name}}">
+                    <div class="text">
+                        <!-- Your text content here -->
+                        <p id="venue-rating">{{venue.location}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body for card -->
+            <div class="card-body" id="card-body">
+
+                <div class="row" id="venue-details">
+
+                    <div class="col-md-12">
+                        <h3>Venue Details</h3>
+                        <hr>
+                    </div>
+                
+                    <div class="col-md-8" id="venue-summary">
+                        <h4>Description</h4>
+                        <p>{{venue.description}}</p>
+                    </div>
+
+                    <div class="col-md-8" id="venue-summary">
+                        <h4>Website / Links</h4>
+                        <p>{{venue.website_link}}</p>
+                    </div>
+
+                    <div class="col-md-8" id="venue-summary">
+                        <h4>Address</h4>
+                        <p>{{venue.address}}</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h4>Games Played</h4>
+                        <p id="venue-details">{{venue.games_played}}</p>
+                    </div>
+
+                </div>
+            
+            </div>
+        </div>
+    </div>
+
+    <!-- Like and dislike contianer -->
+
+    <ng-template #loggedOutLikeDislike>
+        <h2 id="logout-comment">Log in to like or dislike a venue</h2>
+    </ng-template>
+
+    <ng-container *ngIf="authService.isAuthenticated$ | async; else loggedOutLikeDislike">
+    </ng-container>
+
+    <div *ngFor = "let venue of venue_list | async">
+    <div class="like-dislike-container">
+        <button class="like-button" (click)="addLike(oauth_id)">
+          <i id="thumbs-up" class="fas fa-thumbs-up fa-2x"></i>
+        </button>
+        <span class="like-dislike-count">{{ like_count }}</span>
+
+        <div class="divider"></div>
+
+       <button class="dislike-button" (click)="addDislike(oauth_id)">
+          <i id="thumbs-down" class="fas fa-thumbs-down fa-2x"></i>
+        </button>
+        <span class="like-dislike-count">{{ dislike_count }}</span>
+    </div>
+    </div>
+
+</div>

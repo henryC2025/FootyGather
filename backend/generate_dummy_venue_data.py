@@ -26,7 +26,6 @@ def generate_sample_venue():
     return {
         '_id': ObjectId(),
         'name': 'Sample Venue',
-        'location': 'City A, Northern Ireland',
         'address': '123 Main Street, City A, United Kingdom',
         'description': 'A fantastic venue for sports and events.',
         'games_played': 15,
@@ -41,6 +40,10 @@ def generate_sample_venue():
                 'created_at': datetime.datetime.utcnow()
             } for i in range(1, 6)
         ],
+        'likes_dislikes': {
+            'user_likes': ['user1', 'user2'],  # Example initial likes
+            'user_dislikes': ['user3', 'user4']  # Example initial dislikes
+        },
         'created_at': datetime.datetime.utcnow()
     }
 

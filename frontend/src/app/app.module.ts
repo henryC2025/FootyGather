@@ -45,7 +45,7 @@ var routes : any = [
   },
   {
     path: 'venues/:id',
-    component: VenuesComponent,
+    component: VenueComponent,
     canActivate: [AuthGuard]
   },
   {

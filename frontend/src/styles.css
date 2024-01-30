@@ -280,6 +280,54 @@ textarea, input[type="text"], select, input[type="file"]
     color: #272727;
 }
 
+.page-item.active .page-link 
+{
+    background-color: #2c972c;
+    border-color: #2c972c;
+    color: #ffffff !important;
+}
+
+.page-link 
+{
+    color: black !important;
+}
+
+.page-link:hover 
+{
+    color: #333333; 
+}
+
+.page-item.disabled .page-link 
+{
+    color: #6c757d; 
+    pointer-events: none; 
+}
+
+/* VENUE */
+
+.venue-container
+{
+    background-color: #272727;
+}
+
+#venue-name
+{
+    color: #272727;
+    font-size: 20px;
+}
+
+#venue-details
+{
+    color: #f5f5f5;
+}
+
+#venue-summary
+{
+
+}
+
+
+
 /* MEDIA */
 @media screen and (max-width: 768px)
 {
