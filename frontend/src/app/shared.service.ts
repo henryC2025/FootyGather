@@ -19,6 +19,7 @@ export class SharedService
     private user : any;
     private oauthID : any;
     private isAuthenticated : any;
+    venueData: any;
 
     constructor(private http : HttpClient,
                 private snackBar : MatSnackBar,
@@ -32,6 +33,8 @@ export class SharedService
         const dialogRef = this.dialog.open(VenuesDialogComponent,
         {
             width: '400px',
+            data: this.venueData,
+            hasBackdrop: true,
         });
 
         dialogRef.afterClosed().subscribe((result : any) =>

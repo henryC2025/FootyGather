@@ -5,6 +5,7 @@
 */
 
 /* GENERAL */
+
 .header 
 {
     font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
@@ -115,6 +116,18 @@
 
 /* NAVIGATION */
 
+app-nav
+{
+    z-index: 1;
+    background-color: #333;
+    color: white;
+}
+
+.fixed-top
+{
+    z-index: 1 !important;
+}
+
 #logo
 {
     transition: transform 0.5s ease-in-out;
@@ -150,7 +163,6 @@
 #user-details-oauth
 {
     font-family: 'Your Font', Arial, sans-serif;
-    /* font-size: 2em; */
     font-weight: 800 !important;
     text-transform: uppercase;
     margin-bottom: 20px;
@@ -318,7 +330,7 @@ textarea, input[type="text"], select, input[type="file"]
 
 #venue-details
 {
-    color: #f5f5f5;
+    color: #272727;
 }
 
 #venue-summary
@@ -326,7 +338,36 @@ textarea, input[type="text"], select, input[type="file"]
 
 }
 
+/* VENUES DIALOG */
 
+#venue-dialog-img
+{
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#admin-add-venue
+{
+    position: relative;
+    z-index: 2;
+}
+
+.styled-form
+{
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    overflow-y: auto;
+}
+
+.full-width
+{
+    width: 100%;
+    margin-top: 15px;
+}
 
 /* MEDIA */
 @media screen and (max-width: 768px)
@@ -338,11 +379,13 @@ textarea, input[type="text"], select, input[type="file"]
     }
 }
 
-::-webkit-scrollbar {
+::-webkit-scrollbar
+{
     width: 10px;
-  }
+}
   
-  ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb
+{
     background-color: #2c972c; /* Color of the thumb */
     border-radius: 6px; /* Rounded corners of the thumb */
-  }
+}

@@ -59,8 +59,7 @@ export class UserDetailsComponent {
         }
     }
 
-
-    onFileSelected(event: any)
+    public onFileSelected(event: any)
     {
         const file = event.target.files[0] as File;
     
@@ -96,7 +95,7 @@ export class UserDetailsComponent {
         }
     }
     
-    clearImage()
+    public clearImage()
     {
         this.selectedFile = null;
         this.imagePreview = '';
@@ -111,9 +110,9 @@ export class UserDetailsComponent {
         }
     }
 
-    uploadImage()
+    private uploadImage()
     {
-        const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net'
+        const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net';
 
         return this.authService.user$.pipe(
             map(user =>
@@ -145,7 +144,7 @@ export class UserDetailsComponent {
         );
     }
 
-    onSubmit()
+    public onSubmit()
     {
         if (this.detailsForm.valid)
         {

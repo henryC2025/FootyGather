@@ -24,6 +24,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NotifierComponent } from './notifier/notifier.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { VenueComponent } from './venue/venue.component';
 import { VenuesDialogComponent } from './venues-dialog/venues-dialog.component';
 
@@ -90,6 +91,7 @@ var routes : any = [
     MatSnackBarModule,
     MatIconModule,
     MatDialogModule,
+    MatFormFieldModule,
     AuthModule.forRoot({
       domain: 'dev-lj7ac84a7apx1w1e.us.auth0.com',
       clientId: 'KC86pIWNkm7RJOVZRsxnATVWRZRwd8lk',

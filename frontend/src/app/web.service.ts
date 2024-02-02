@@ -19,6 +19,7 @@ export class WebService
     // private comment_text : any;
     // private query : any;
     private cpiURL = 'https://prod-09.centralus.logic.azure.com:443/workflows/14df396b4875481e844146328068033a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=nhXrxC9BMddEpgDKzGLg2RhkcdB2bhtih1M7vEHJaRc' 
+    private cviURL = 'https://prod-09.centralus.logic.azure.com:443/workflows/22df00e54dad4c02be499f2b8ace1ec6/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=c9KFMZrMoGsCimGKKKMalT1TcBVyUhdy9RT_wrY7j8E'
 
     constructor(private http: HttpClient) {}
 
@@ -32,10 +33,16 @@ export class WebService
         return this.http.post(this.cpiURL, postData);
     }
 
+    uploadVenueImage(data : any)
+    {
+        let postData = new FormData();
+        postData.append("uploadFile", data.uploadFile);
+
+        return this.http.post(this.cviURL, postData);
+    }
+
     authUser(data : any)
     {
-        // let postData = new FormData();
-        // postData.append("oauth_id", data.oauth_id);
         return this.http.post('http://localhost:5000/api/v1.0/user', data);
     }
 
