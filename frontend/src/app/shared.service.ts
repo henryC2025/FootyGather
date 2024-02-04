@@ -43,7 +43,7 @@ export class SharedService
         });
     }
 
-    showNotification(displayMessage : string, messageType: 'success' | 'error' )
+    showNotification(displayMessage : string, messageType : 'success' | 'error' )
     {
         this.snackBar.openFromComponent(NotifierComponent, 
         {
@@ -91,7 +91,7 @@ export class SharedService
             {
                 this.isAuthenticated = isAuthenticated;
 
-                if (this.isAuthenticated)
+                if(this.isAuthenticated)
                 {
                     return this.authService.user$;
                 }
@@ -111,7 +111,7 @@ export class SharedService
                     oauth_id: this.user?.sub,
                 };
 
-                if (!this.getAuthCalled())
+                if(!this.getAuthCalled())
                 {
                     return this.webService.authUser(userData);
                 }
@@ -127,7 +127,7 @@ export class SharedService
             {
                 console.log(response.code);
 
-                if (response.code === "ASK_FOR_DETAILS")
+                if(response.code === "ASK_FOR_DETAILS")
                 {
                     // window.alert("More Details Needed!");
                     this.router.navigate(['/user-details']);

@@ -78,7 +78,7 @@ export class VenuesComponent
 
     firstPage()
     {
-        if (this.page > 1)
+        if(this.page > 1)
         {
             this.page = 1;
             sessionStorage['page'] = this.page;
@@ -88,7 +88,7 @@ export class VenuesComponent
 
     lastPage()
     {
-        if (this.page < this.total_pages)
+        if(this.page < this.total_pages)
         {
             this.page = this.total_pages;
             sessionStorage['page'] = this.page;

@@ -22,7 +22,7 @@ export class AuthGuard {
       return this.authService.isAuthenticated$.pipe(
           switchMap((isAuthenticated: boolean) =>
           {
-              if (!isAuthenticated)
+              if(!isAuthenticated)
               {
                   return of(true);
               }
@@ -55,11 +55,11 @@ export class AuthGuard {
   // HANDLE THE RESPONSE CODE FROM API
   private handleAuthUserResponse(response: any): boolean | UrlTree
   {
-      if (response.code === "DETAILS_REQUIRED")
+      if(response.code === "DETAILS_REQUIRED")
       {
           const formCompleted = this.sharedService.isUserFormCompleted();
 
-          if (!formCompleted)
+          if(!formCompleted)
           {
               this.sharedService.showNotification("Please complete the user details form.", "error");
               return this.router.createUrlTree(['/user-details']);

@@ -29,17 +29,8 @@ def generate_sample_venue():
         'address': '123 Main Street, City A, United Kingdom',
         'description': 'A fantastic venue for sports and events.',
         'games_played': 15,
-        'website_link': 'https://www.samplevenue.com',
-        'cover_image': 'https://via.placeholder.com/800x600',
-        'other_images': ['https://via.placeholder.com/800x600', 'https://via.placeholder.com/800x600'],
-        'comments': [
-            {
-                '_id': ObjectId(),
-                'username': f'user{i}',
-                'comment_text': f'Comment {i} for Sample Venue.',
-                'created_at': datetime.datetime.utcnow()
-            } for i in range(1, 6)
-        ],
+        'contact_info': 'https://www.samplevenue.com',
+        'image': ['https://via.placeholder.com/800x600', '000TEST000'],
         'likes_dislikes': {
             'user_likes': ['user1', 'user2'],  # Example initial likes
             'user_dislikes': ['user3', 'user4']  # Example initial dislikes

@@ -10,38 +10,34 @@
             </div>
 
             <!-- Display search results -->
-            <div *ngFor= "let venue of (search_query ? search_results : venue_list | async)" class="col-md-4 mb-4">
-                <!-- <button *ngIf="isAdmin" (click)="onButtonClick()">Admin Button</button> -->
+            <div *ngFor= "let venue of (search_query ? search_results : venue_list | async)" class="col-md-6 mb-4">
 
                 <!-- Background colour and link to single venue -->
-                <div class="card text-white custom-bg-color mb-3" 
-                    style="cursor: pointer;"  id="venue-card"
-                    [routerLink]="['/venues', venue._id]">
+                <div class="card text-white custom-bg-color mb-3 venue-card"
+                    style="cursor: pointer;" [routerLink]="['/venues', venue._id]">
             
                 <!-- Header for card -->
                 <div class="card-header">
-
                     <div id="venue-name" class="truncate-text">
                       {{venue.name}}
                     </div>
-
                 </div>
 
                 <!-- Large Image -->
                 <div class="image-container">
-                    <img [src]="venue.cover_image" class="img-thumbnail rounded-0" alt="{{venue.name}}">
+                    <img [src]="venue.image[0]" class="img-thumbnail rounded-0 venues-image" alt="{{venue.name}}">
                 </div>
-                
+
                 <!-- Footer for card -->
                 <div class="card-footer" id="card-footer">
-                    <div class="col-md-10" id="venue-details">
-                        <p>Games Played: {{venue.games_played}}</p>
-                    </div>
-    
-                    <!-- Second Column: User Review -->
-                    <div class="col-md-10" id="venue-details">
+                    <div class="col-md-12" id="venue-details">
                         <p>Location: {{venue.address}}</p>
                     </div>
+
+                    <div class="col-md-12" id="venue-details">
+                        <p>Games Played: {{venue.games_played}}</p>
+                    </div>
+                    
                 </div> <!-- End of footer -->
                 </div> <!-- End of card -->
             </div> <!-- End of ng -->

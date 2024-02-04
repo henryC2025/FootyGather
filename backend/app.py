@@ -142,6 +142,49 @@ def search_venues():
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
+
+
+
+# Add new venue
+@app.route('/api/v1.0/venues/information', methods=['POST'])
+def add_venue_details():
+    try:
+        data = request.get_json()
+
+        venue_name = data.get('venue_name')
+        venue_address = data.get('venue_address')
+        venue_description = data.get('venue_description')
+        venue_image = data.get('venue_image')
+        venue_contact = data.get('venue_contact')
+
+        new_venue = {
+            "_id": ObjectId(),
+            "name": venue_name,
+            "address": venue_address,
+            "description": venue_description,
+            "image": venue_image,
+            "contact_info": venue_contact,
+            "games_played": 0,
+            "likes_dislikes": {
+                "user_likes": [],
+                "user_dislikes": []
+            },
+            "created_at": datetime.datetime.utcnow()
+        }
+
+        # Insert data into MongoDB
+        result = venues.insert_one(new_venue)
+
+        # Handle result and return response
+        if result.inserted_id:
+            return make_response(jsonify({'message': 'Venue details added successfully'}), 200)
+        else:
+            return make_response(jsonify({'error': 'Failed to add venue details'}), 500)
+
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
+
 # Get all venues
 @app.route('/api/v1.0/venues', methods=['GET'])
 def get_all_venues():
@@ -168,7 +211,7 @@ def get_all_venues():
 
 # Get a venue by id
 @app.route('/api/v1.0/venues/<string:id>', methods=['GET'])
-def get_game_by_id(id):
+def get_venue_by_id(id):
     try:
         venue = venues.find_one({'_id': ObjectId(id)})
 
@@ -178,7 +221,7 @@ def get_game_by_id(id):
                 comment['_id'] = str(comment['_id'])
             return make_response(jsonify([venue]), 200)
         else:
-            return make_response(jsonify({'message': 'Game not found'}), 404)
+            return make_response(jsonify({'message': 'Venue not found'}), 404)
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)

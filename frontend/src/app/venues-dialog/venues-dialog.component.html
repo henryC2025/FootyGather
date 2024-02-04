@@ -1,9 +1,13 @@
 <div>
-  <h2 mat-dialog-title>Add New Venue</h2>
+  <div id="venue-dialog-header">
+    <h2 mat-dialog-title>Add New Venue</h2>
+    <mat-icon id="dialog-close" class="close-icon" (click)="onClose()">close</mat-icon>
+  </div>
+
   <form [formGroup]="venueForm" class="styled-form">
 
-    <div class="form-group">
-      <input type="text" id="venueName" formControlName="venueName" placeholder="What is the venue name?"/>
+      <div class="form-group">
+        <input type="text" id="venueName" formControlName="venueName" placeholder="What is the venue name?"/>
       </div>
 
       <div class="form-group">
@@ -18,17 +22,16 @@
         <textarea id="venueDescription" formControlName="venueDescription" placeholder="Add a description"></textarea>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="preview-img">
         <label for="profilePicture" class="form-label">Add a Venue Picture</label>
         <input type="file" #fileInput id="profilePicture" accept="image/*" (change)="onFileSelected($event)">
         <img *ngIf="selectedFile" id="venue-dialog-img" [src]="imagePreview" alt="Selected Image">
 
-        <br>
         <button id="fg-button" type="button" *ngIf="selectedFile" (click)="clearImage()">Clear Image</button>
       </div>
 
-      <button id="fg-button" (click)="onClose()">Close</button>
-      <!-- <button id="fg-button" (click)="addVenue()" [mat-dialog-close]="venueForm.value" cdkFocusInitial>Add Venue</button> -->
+      <hr>
+
       <button id="fg-button" (click)="onSubmit()">Add Venue</button>
     </form>
 </div>

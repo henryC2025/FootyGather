@@ -5,6 +5,7 @@ import { WebService } from '../web.service';
 import { SharedService } from '../shared.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-venues-dialog',
@@ -16,7 +17,7 @@ export class VenuesDialogComponent {
     venueForm: FormGroup;
     selectedFile: File | null = null;
     imagePreview: string | ArrayBuffer | null = null;
-    venueImageLink : any;
+    venueImage : any;
 
     constructor(public authService : AuthService,
                 public webService : WebService,
@@ -31,7 +32,7 @@ export class VenuesDialogComponent {
                         venueName: ['', Validators.required],
                         venueAddress: ['', Validators.required],
                         venueDescription: ['', Validators.required],
-                        venueImage: [null],
+                        venueImage: [null, Validators.required],
                         venueContact: ['', Validators.required],
                     });
                 }
@@ -42,7 +43,7 @@ export class VenuesDialogComponent {
 
     public handleAddressChange(place: google.maps.places.PlaceResult)
     {
-        if (place)
+        if(place)
         {
             this.venueForm.get('venueAddress')?.setValue(place.formatted_address);
         }
@@ -52,9 +53,9 @@ export class VenuesDialogComponent {
     {
         const file = event.target.files[0] as File;
 
-        if (file)
+        if(file)
         {
-            if (file.type.startsWith('image/'))
+            if(file.type.startsWith('image/'))
             {
                 this.selectedFile = file;
 
@@ -93,7 +94,7 @@ export class VenuesDialogComponent {
             venueImage: null,
         });
 
-        if (this.fileInput)
+        if(this.fileInput)
         {
             this.fileInput.nativeElement.value = '';
         }
@@ -101,47 +102,114 @@ export class VenuesDialogComponent {
 
     private uploadImage()
     {
-        const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net';
-
         const formData =
         {
             uploadFile: this.selectedFile
         };
 
-        this.webService.uploadVenueImage(formData).subscribe(
-        {
-            next: (response : any) =>
+        return this.webService.uploadVenueImage(formData).pipe(
+            map((response: any) =>
             {
-                console.log(response);
-                console.log(response.filePath);
-            },
-            error: (error: any) =>
-            {
-                console.log("Error!");
-            },
-        });
+                return response;
+            })
+        );
     }
 
     onSubmit()
     {
+        const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net';
 
+        if(this.venueForm.valid)
+        {
+            if(this.selectedFile)
+            {
+                this.uploadImage().subscribe(
+                {
+                    next : (response : any) =>
+                    {
+                        this.venueImage = [blobStorage + response.filePath, response.id];
+                        this.submitVenueDetails();
+                    },
+                    error : (error) =>
+                    {
+                        this.sharedService.showNotification("Error uploading profile image", "error");
+                    },
+                    complete: () =>
+                    {
+                        console.log('Profile image upload completed.');
+                    }
+                })
+            }
+            else
+            {
+                this.sharedService.showNotification("Please add an image", "error");
+            }
+        }
+        else
+        {
+            this.handleFormValidationErrors();
+        }
     }
 
     public submitVenueDetails()
     {
         const formData =
         {
-          venueName : this.venueForm.get('venueName')?.value,
-          venueAddress : this.venueForm.get('venueAddress')?.value,
-          venueDescription : this.venueForm.get('venueDescription')?.value,
-          venueImage : this.venueForm.get('venueImage')?.value,
-          venueContact : this.venueForm.get('venueContact')?.value
+          venue_name : this.venueForm.get('venueName')?.value,
+          venue_address : this.venueForm.get('venueAddress')?.value,
+          venue_description : this.venueForm.get('venueDescription')?.value,
+          venue_image : this.venueImage,
+          venue_contact : this.venueForm.get('venueContact')?.value
         }
-        console.log(formData)
+
+        this.webService.addVenueDetails(formData).subscribe(
+        {
+            next : (response : any) =>
+            {
+                console.log(response);
+            },
+            error : () =>
+            {
+                this.sharedService.showNotification("Something went wrong!", "error");
+            },
+            complete: () =>
+            {
+                this.sharedService.showNotification("Venue added", "success");
+                this.onClose();
+            }
+        })
     }
 
     public onClose()
     {
         this.dialogRef.close();
+    }
+
+    private handleFormValidationErrors()
+    {
+        if(this.venueForm.get('venueName')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please enter the venue name.", "error");
+        }
+
+        if(this.venueForm.get('venueAddress')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please enter venue address.", "error");
+        }
+
+        if(this.venueForm.get('venueContact')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please enter the venue contact details.", "error");
+        }
+
+        if(this.venueForm.get('venueDescription')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please enter a description of the venue.", "error");
+        }
+
+        if(this.venueForm.get('venueImage')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please add an image of the venue.", "error");
+        }
     }
 }

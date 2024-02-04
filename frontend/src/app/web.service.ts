@@ -46,6 +46,11 @@ export class WebService
         return this.http.post('http://localhost:5000/api/v1.0/user', data);
     }
 
+    addVenueDetails(data : any)
+    {
+        return this.http.post('http://localhost:5000/api/v1.0/venues/information', data);
+    }
+
     addNewUserDetails(data : any)
     {
         let postData = new FormData();

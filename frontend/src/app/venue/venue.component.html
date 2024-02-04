@@ -18,7 +18,7 @@
 
             <!-- Large Image -->
             <div class="image-container">
-                <img [src]="venue.cover_image" class="img-thumbnail rounded-0 custom-image-size" alt="{{venue.name}}">
+                <img [src]="venue.image[0]" class="img-thumbnail rounded-0 custom-image-size" alt="{{venue.name}}">
                     <div class="text">
                         <!-- Your text content here -->
                         <p id="venue-rating">{{venue.location}}</p>
@@ -57,7 +57,7 @@
                     </div>
 
                 </div>
-            
+
             </div>
         </div>
     </div>

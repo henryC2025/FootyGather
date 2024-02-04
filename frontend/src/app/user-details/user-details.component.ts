@@ -53,7 +53,7 @@ export class UserDetailsComponent {
     public handleAddressChange(place: google.maps.places.PlaceResult)
     {
         console.log(place)
-        if (place)
+        if(place)
         {
             this.detailsForm.get('location')?.setValue(place.formatted_address);
         }
@@ -62,10 +62,10 @@ export class UserDetailsComponent {
     public onFileSelected(event: any)
     {
         const file = event.target.files[0] as File;
-    
-        if (file)
+
+        if(file)
         {
-            if (file.type.startsWith('image/'))
+            if(file.type.startsWith('image/'))
             {
                 this.selectedFile = file;
                 
@@ -94,7 +94,7 @@ export class UserDetailsComponent {
             this.imagePreview = null;
         }
     }
-    
+
     public clearImage()
     {
         this.selectedFile = null;
@@ -103,8 +103,8 @@ export class UserDetailsComponent {
         {
             profilePicture: null,
         });
-      
-        if (this.fileInput)
+
+        if(this.fileInput)
         {
             this.fileInput.nativeElement.value = '';
         }
@@ -120,14 +120,14 @@ export class UserDetailsComponent {
                 const oauthID = user?.sub;
                 const userName = user?.nickname;
                 const selectedFile = this.selectedFile;
-    
+
                 const formData =
                 {
                     oauthID: oauthID,
                     userName: userName,
                     uploadFile: selectedFile
                 };
-    
+
                 return formData;
             }),
             switchMap(formData =>
@@ -146,22 +146,19 @@ export class UserDetailsComponent {
 
     public onSubmit()
     {
-        if (this.detailsForm.valid)
+        if(this.detailsForm.valid)
         {
-            if (this.selectedFile)
+            if(this.selectedFile)
             {
                 this.uploadImage().subscribe(
                 {
                     next: (imageLink: string) =>
                     {
                         this.profileImageLink = imageLink;
-                        console.log('Profile image link:', imageLink);
                         this.submitUserDetails();
                     },
                     error: (error: any) =>
                     {
-                        console.error('Error uploading profile image:', error);
-                        // Handle error if needed
                         this.sharedService.showNotification("Error uploading profile image", "error");
                     },
                     complete: () =>
@@ -226,22 +223,22 @@ export class UserDetailsComponent {
 
     private handleFormValidationErrors()
     {
-        if (this.detailsForm.get('firstName')?.hasError('required'))
+        if(this.detailsForm.get('firstName')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter your first name.", "error");
         }
-    
-        if (this.detailsForm.get('lastName')?.hasError('required'))
+
+        if(this.detailsForm.get('lastName')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter your last name.", "error");
         }
-    
-        if (this.detailsForm.get('location')?.hasError('required'))
+
+        if(this.detailsForm.get('location')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter the area you are located.", "error");
         }
-    
-        if (this.detailsForm.get('description')?.hasError('required'))
+
+        if(this.detailsForm.get('description')?.hasError('required'))
         {
             this.sharedService.showNotification("Please introduce yourself in the description.", "error");
         }
