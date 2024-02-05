@@ -37,20 +37,20 @@ export class VenuesComponent
             console.log(this.total_pages)
         });
 
+        this.authService.user$.subscribe((userData: any) =>
+        {
+            this.user = userData;
 
-        this.authService.user$.subscribe((userData: any) => {
-          this.user = userData;
-          
-          const userDetails =
-          {
-              oauth_id: userData?.sub // Assuming oauth_id is the property you want to use
-          };
+            const userDetails =
+            {
+                oauth_id: userData?.sub,
+            };
 
-          this.webService.getUserDetails(userDetails).subscribe((data: any) =>
-          {
-              this.isAdmin = data.is_admin;
-              console.log(this.isAdmin);
-          });
+            this.webService.getUserDetails(userDetails).subscribe((data: any) =>
+            {
+                this.isAdmin = data.is_admin;
+                console.log(this.isAdmin);
+            });
         });
     }
 

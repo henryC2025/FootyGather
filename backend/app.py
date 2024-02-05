@@ -226,6 +226,17 @@ def get_venue_by_id(id):
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
+# Delete venue
+@app.route('/api/v1.0/venues/<string:id>', methods=['DELETE'])
+def delete_venue(id):
+    venue = venues.find_one({'_id': ObjectId(id)})
+
+    if venue:
+        venues.delete_one({'_id': ObjectId(id)})
+        return make_response(jsonify({"message": "Venue deleted successfully"}), 200)
+    else:
+        return make_response(jsonify({"error": "Venue not found"}), 404)
+
 # Get count of venues
 @app.route('/api/v1.0/venues/count', methods=['GET'])
 def get_count_of_venues():
