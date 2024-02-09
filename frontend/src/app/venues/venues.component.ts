@@ -16,7 +16,7 @@ export class VenuesComponent
     page : number = 1;
     total_pages : number = 1;
     user : any;
-    isAdmin : any = false;
+    is_admin: boolean = false;
 
     constructor(public authService : AuthService,
                 public webService : WebService,
@@ -34,7 +34,6 @@ export class VenuesComponent
         {
             const count_of_venues = parseInt(data);
             this.total_pages = Math.ceil(count_of_venues / 12);
-            console.log(this.total_pages)
         });
 
         this.authService.user$.subscribe((userData: any) =>
@@ -46,12 +45,21 @@ export class VenuesComponent
                 oauth_id: userData?.sub,
             };
 
-            this.webService.getUserDetails(userDetails).subscribe((data: any) =>
+            if(this.user)
             {
-                this.isAdmin = data.is_admin;
-                console.log(this.isAdmin);
-            });
+                this.webService.getUserDetails(userDetails).subscribe((data: any) =>
+                {
+                    console.log(data)
+                    this.is_admin = (data.is_admin == "true");
+                    console.log("Am I the admin - ", this.is_admin)
+                });
+            }
         });
+    }
+
+    getAdminStatus()
+    {
+        return this.is_admin;
     }
 
     search()

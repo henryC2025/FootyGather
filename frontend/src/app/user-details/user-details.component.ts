@@ -15,11 +15,11 @@ import { catchError, map, switchMap } from 'rxjs';
 export class UserDetailsComponent {
     @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement> | undefined;
 
-    detailsForm: FormGroup;
+    details_form: FormGroup;
     user : any;
-    selectedFile: File | null = null;
-    imagePreview: string | ArrayBuffer | null = null;
-    profileImageLink : any;
+    selected_file: File | null = null;
+    image_preview: string | ArrayBuffer | null = null;
+    profile_image_link : any;
 
 
     constructor(public authService : AuthService,
@@ -28,7 +28,7 @@ export class UserDetailsComponent {
                 public router : Router,
                 private fb: FormBuilder)
                 {
-                    this.detailsForm = this.fb.group(
+                    this.details_form = this.fb.group(
                     {
                         location: ['', Validators.required],
                         description: ['', Validators.required],
@@ -55,7 +55,7 @@ export class UserDetailsComponent {
         console.log(place)
         if(place)
         {
-            this.detailsForm.get('location')?.setValue(place.formatted_address);
+            this.details_form.get('location')?.setValue(place.formatted_address);
         }
     }
 
@@ -67,16 +67,16 @@ export class UserDetailsComponent {
         {
             if(file.type.startsWith('image/'))
             {
-                this.selectedFile = file;
+                this.selected_file = file;
                 
-                this.detailsForm.patchValue(
+                this.details_form.patchValue(
                 {
                     profilePicture: file,
                 });
                 const reader = new FileReader();
                 reader.onload = () =>
                 {
-                    this.imagePreview = reader.result;
+                    this.image_preview = reader.result;
                 };
 
                 reader.readAsDataURL(file);
@@ -90,16 +90,16 @@ export class UserDetailsComponent {
         }
         else
         {
-            this.selectedFile = null;
-            this.imagePreview = null;
+            this.selected_file = null;
+            this.image_preview = null;
         }
     }
 
     public clearImage()
     {
-        this.selectedFile = null;
-        this.imagePreview = '';
-        this.detailsForm.patchValue(
+        this.selected_file = null;
+        this.image_preview = '';
+        this.details_form.patchValue(
         {
             profilePicture: null,
         });
@@ -119,13 +119,13 @@ export class UserDetailsComponent {
                 {
                 const oauthID = user?.sub;
                 const userName = user?.nickname;
-                const selectedFile = this.selectedFile;
+                const selected_file = this.selected_file;
 
                 const formData =
                 {
                     oauthID: oauthID,
                     userName: userName,
-                    uploadFile: selectedFile
+                    uploadFile: selected_file
                 };
 
                 return formData;
@@ -146,15 +146,15 @@ export class UserDetailsComponent {
 
     public onSubmit()
     {
-        if(this.detailsForm.valid)
+        if(this.details_form.valid)
         {
-            if(this.selectedFile)
+            if(this.selected_file)
             {
                 this.uploadImage().subscribe(
                 {
                     next: (imageLink: string) =>
                     {
-                        this.profileImageLink = imageLink;
+                        this.profile_image_link = imageLink;
                         this.submitUserDetails();
                     },
                     error: (error: any) =>
@@ -169,7 +169,7 @@ export class UserDetailsComponent {
             }
             else
             {
-                this.profileImageLink = 'assets/logo.png';
+                this.profile_image_link = 'assets/logo.png';
                 this.submitUserDetails();
             }
         }
@@ -186,13 +186,13 @@ export class UserDetailsComponent {
         {
             userName: this.user.nickname,
             oauthID: this.user.sub,
-            firstName: this.detailsForm.get('firstName')?.value,
-            lastName: this.detailsForm.get('lastName')?.value,
-            description: this.detailsForm.get('description')?.value,
-            location: this.detailsForm.get('location')?.value,
-            experience: this.detailsForm.get('experience')?.value,
-            subNotifications: this.detailsForm.get('subscribeToNotifications')?.value,
-            profileImage: this.profileImageLink,
+            firstName: this.details_form.get('firstName')?.value,
+            lastName: this.details_form.get('lastName')?.value,
+            description: this.details_form.get('description')?.value,
+            location: this.details_form.get('location')?.value,
+            experience: this.details_form.get('experience')?.value,
+            subNotifications: this.details_form.get('subscribeToNotifications')?.value,
+            profileImage: this.profile_image_link,
         };
 
         this.webService.addNewUserDetails(formData).subscribe(
@@ -223,22 +223,22 @@ export class UserDetailsComponent {
 
     private handleFormValidationErrors()
     {
-        if(this.detailsForm.get('firstName')?.hasError('required'))
+        if(this.details_form.get('firstName')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter your first name.", "error");
         }
 
-        if(this.detailsForm.get('lastName')?.hasError('required'))
+        if(this.details_form.get('lastName')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter your last name.", "error");
         }
 
-        if(this.detailsForm.get('location')?.hasError('required'))
+        if(this.details_form.get('location')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter the area you are located.", "error");
         }
 
-        if(this.detailsForm.get('description')?.hasError('required'))
+        if(this.details_form.get('description')?.hasError('required'))
         {
             this.sharedService.showNotification("Please introduce yourself in the description.", "error");
         }

@@ -12,27 +12,27 @@ import { SharedService } from '../shared.service';
 
 export class AuthComponent 
 {
-  constructor(public authService : AuthService,
-              public webService : WebService,
-              public sharedService : SharedService,
-              public router : Router) {}
+    constructor(public authService : AuthService,
+                public webService : WebService,
+                public sharedService : SharedService,
+                public router : Router) {}
 
-  ngOnInit()
-  {
-    
-  }
-
-  loginWithRedirect(): void
-  {
-    this.authService.loginWithRedirect(
+    ngOnInit()
     {
-        appState: { target: this.router.url }
-    })
-  }
 
-  logout(): void
-  {
-    this.authService.logout();
-    this.sharedService.resetAuthCalled();
-  }
+    }
+
+    loginWithRedirect(): void
+    {
+        this.authService.loginWithRedirect(
+        {
+            appState: { target: this.router.url }
+        })
+    }
+
+    logout(): void
+    {
+        this.authService.logout();
+        this.sharedService.resetAuthCalled();
+    }
 }

@@ -52,6 +52,11 @@ export class WebService
         return this.http.post('http://localhost:5000/api/v1.0/venues/information', data);
     }
 
+    updateVenueDetails(id: string, data: any)
+    {
+        return this.http.put(`http://localhost:5000/api/v1.0/venues/information/${id}`, data);
+    }
+
     deleteVenue(id : any)
     {
         this.venue_id = id;

@@ -2,24 +2,24 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AuthService } from "@auth0/auth0-angular";
 import { WebService } from "./web.service";
-import { Router } from "@angular/router";
+import { ActivatedRoute, ActivationStart, Route, Router } from "@angular/router";
 import { switchMap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { NotifierComponent } from "./notifier/notifier.component";
-import { VenuesDialogComponent } from './venues-dialog/venues-dialog.component';
+import { VenuesAddDialogComponent } from './venues-add-dialog/venues-add-dialog.component';
 import { MatDialog } from "@angular/material/dialog";
+import { VenueUpdateDialogComponent } from "./venue-update-dialog/venue-update-dialog.component";
 
 @Injectable()
 export class SharedService
 {
 
-    private isAuthCalled = false;
-    private userFormCompleted = false;
+    private is_auth_called = false;
+    private user_form_completed = false;
     private user : any;
-    private oauthID : any;
-    private isAuthenticated : any;
-    venueData: any;
+    private is_authenticated : any;
+    venue_data: any;
 
     constructor(private http : HttpClient,
                 private snackBar : MatSnackBar,
@@ -27,13 +27,30 @@ export class SharedService
                 public authService : AuthService,
                 public webService : WebService,
                 public router : Router) {}
-
-    showVenuesDialog()
+    showAddVenueDialog()
     {
-        const dialogRef = this.dialog.open(VenuesDialogComponent,
+        const dialogRef = this.dialog.open(VenuesAddDialogComponent,
         {
             width: '400px',
-            data: this.venueData,
+            data: this.venue_data,
+            hasBackdrop: true,
+        });
+
+        dialogRef.afterClosed().subscribe((result : any) =>
+        {
+            console.log('The dialog was closed');
+        });
+    }
+
+    showUpdateVenueDialog(id : any)
+    {
+        const dialogRef = this.dialog.open(VenueUpdateDialogComponent,
+        {
+            width: '400px',
+            data:
+            {
+                venue_id : id
+            },
             hasBackdrop: true,
         });
 
@@ -61,27 +78,27 @@ export class SharedService
 
     setUserFormCompleted(value : boolean)
     {
-        this.userFormCompleted = value;
+        this.user_form_completed = value;
     }
 
     isUserFormCompleted()
     {
-        return this.userFormCompleted;
+        return this.user_form_completed;
     }
     
     setAuthCalled(value : boolean)
     {
-        this.isAuthCalled = value;
+        this.is_auth_called = value;
     }
 
     getAuthCalled()
     {
-        return this.isAuthCalled;
+        return this.is_auth_called;
     }
 
     resetAuthCalled()
     {
-        this.isAuthCalled = false;
+        this.is_auth_called = false;
     }
 
     authUser()
@@ -89,9 +106,9 @@ export class SharedService
         this.authService.isAuthenticated$.pipe(
             switchMap((isAuthenticated: boolean) =>
             {
-                this.isAuthenticated = isAuthenticated;
+                this.is_authenticated = isAuthenticated;
 
-                if(this.isAuthenticated)
+                if(this.is_authenticated)
                 {
                     return this.authService.user$;
                 }

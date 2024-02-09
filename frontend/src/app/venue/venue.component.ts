@@ -21,10 +21,10 @@ export class VenueComponent {
     dislike_count : any = 0;
     user_id : any;
     oauth_id : any;
-    isAdmin : any = false;
+    is_admin = false;
     user : any;
     venue_id : any;
-    public isAuthenticated: boolean = false;
+    public is_authenticated: boolean = false;
 
     constructor(public authService : AuthService,
                 public webService : WebService,
@@ -49,22 +49,33 @@ export class VenueComponent {
 
         this.getLikesDislikes(this.route.snapshot.params['id']);
 
-        this.authService.user$.subscribe((user: any) =>
+        if(this.authService.user$)
         {
-            this.oauth_id = user?.sub;
-            this.user = user;
-
-            const userDetails =
+            this.authService.user$.subscribe((user: any) =>
             {
-                oauth_id: user?.sub,
-            };
+                this.oauth_id = user?.sub;
+                this.user = user;
 
-            this.webService.getUserDetails(userDetails).subscribe((data: any) =>
-            {
-                this.isAdmin = data.is_admin;
-                console.log(this.isAdmin);
+                const userDetails =
+                {
+                    oauth_id: user?.sub,
+                };
+
+                if(this.oauth_id && this.user)
+                {
+                    this.webService.getUserDetails(userDetails).subscribe((data: any) =>
+                    {
+                        this.is_admin = (data.is_admin == "true");
+                        console.log("Is admin: ", this.is_admin);
+                    });
+                }
             });
-        });
+        }
+    }
+
+    onUpdateVenue()
+    {
+        this.sharedService.showUpdateVenueDialog(this.route.snapshot.params['id']);
     }
 
     onDeleteVenue(venue_id : any, image_id : any)

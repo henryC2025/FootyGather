@@ -11,15 +11,15 @@
     <hr>
 
     <h2>More Information</h2>
-    <form [formGroup]="detailsForm" (ngSubmit)="onSubmit()" class="details-form">
+    <form [formGroup]="details_form" (ngSubmit)="onSubmit()" class="details-form">
 
       <div class="form-group">
         <label for="profilePicture" class="form-label">Add a Profile Picture</label>
         <input type="file" #fileInput id="profilePicture" accept="image/*" (change)="onFileSelected($event)">
-        <img *ngIf="selectedFile" [src]="imagePreview" alt="Selected Image">
+        <img *ngIf="selected_file" [src]="image_preview" alt="Selected Image">
 
         <br>
-        <button id="fg-button" type="button" *ngIf="selectedFile" (click)="clearImage()">Clear Image</button>
+        <button id="fg-button" type="button" *ngIf="selected_file" (click)="clearImage()">Clear Image</button>
       </div>
 
       <div class="form-group">

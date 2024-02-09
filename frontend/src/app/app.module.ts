@@ -26,7 +26,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { VenueComponent } from './venue/venue.component';
-import { VenuesDialogComponent } from './venues-dialog/venues-dialog.component';
+import { VenuesAddDialogComponent } from './venues-add-dialog/venues-add-dialog.component';
+import { VenueUpdateDialogComponent } from './venue-update-dialog/venue-update-dialog.component';
 
 var routes : any = [
   {
@@ -78,7 +79,8 @@ var routes : any = [
     UserDetailsComponent,
     NotifierComponent,
     VenueComponent,
-    VenuesDialogComponent,
+    VenuesAddDialogComponent,
+    VenueUpdateDialogComponent,
   ],
   imports: [
     BrowserModule,

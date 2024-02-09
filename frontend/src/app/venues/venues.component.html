@@ -5,8 +5,8 @@
             <input type="text" class="form-control" placeholder="Search for venues" [(ngModel)]="search_query" (input)="search()">
         </div>
 
-            <div class="input-group mb-3" id="admin-add-venue">
-                <button id="fg-button" *ngIf="isAdmin" (click)="this.sharedService.showVenuesDialog()">Add Venue (Admin Only)</button>
+            <div *ngIf="is_admin" class="input-group mb-3" id="admin-add-venue">
+                <button id="fg-button" (click)="sharedService.showAddVenueDialog()">Add Venue (Admin Only)</button>
             </div>
 
             <!-- Display search results -->

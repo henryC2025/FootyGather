@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VenuesDialogComponent } from './venues-dialog.component';
+import { VenuesAddDialogComponent } from './venues-add-dialog.component';
 
-describe('VenuesDialogComponent', () => {
-  let component: VenuesDialogComponent;
-  let fixture: ComponentFixture<VenuesDialogComponent>;
+describe('VenuesAddDialogComponent', () => {
+  let component: VenuesAddDialogComponent;
+  let fixture: ComponentFixture<VenuesAddDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [VenuesDialogComponent]
+      declarations: [VenuesAddDialogComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(VenuesDialogComponent);
+    fixture = TestBed.createComponent(VenuesAddDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

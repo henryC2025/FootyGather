@@ -4,7 +4,7 @@
     <mat-icon id="dialog-close" class="close-icon" (click)="onClose()">close</mat-icon>
   </div>
 
-  <form [formGroup]="venueForm" class="styled-form">
+  <form [formGroup]="venue_form" class="styled-form">
 
       <div class="form-group">
         <input type="text" id="venueName" formControlName="venueName" placeholder="What is the venue name?"/>
@@ -25,9 +25,9 @@
       <div class="form-group" id="preview-img">
         <label for="profilePicture" class="form-label">Add a Venue Picture</label>
         <input type="file" #fileInput id="profilePicture" accept="image/*" (change)="onFileSelected($event)">
-        <img *ngIf="selectedFile" id="venue-dialog-img" [src]="imagePreview" alt="Selected Image">
+        <img *ngIf="selected_file" id="venue-dialog-img" [src]="image_preview" alt="Selected Image">
 
-        <button id="fg-button" type="button" *ngIf="selectedFile" (click)="clearImage()">Clear Image</button>
+        <button id="fg-button" type="button" *ngIf="selected_file" (click)="clearImage()">Clear Image</button>
       </div>
 
       <hr>

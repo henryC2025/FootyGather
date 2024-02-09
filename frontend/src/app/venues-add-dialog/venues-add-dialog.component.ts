@@ -8,16 +8,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { map } from 'rxjs';
 
 @Component({
-  selector: 'app-venues-dialog',
-  templateUrl: './venues-dialog.component.html',
-  styleUrl: './venues-dialog.component.css'
+  selector: 'app-venues-add-dialog',
+  templateUrl: './venues-add-dialog.component.html',
+  styleUrl: './venues-add-dialog.component.css'
 })
-export class VenuesDialogComponent {
+export class VenuesAddDialogComponent {
     @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement> | undefined;
-    venueForm: FormGroup;
-    selectedFile: File | null = null;
-    imagePreview: string | ArrayBuffer | null = null;
-    venueImage : any;
+    venue_form: FormGroup;
+    selected_file: File | null = null;
+    image_preview: string | ArrayBuffer | null = null;
+    venue_image : any;
 
     constructor(public authService : AuthService,
                 public webService : WebService,
@@ -25,14 +25,14 @@ export class VenuesDialogComponent {
                 public router : Router,
                 @Inject(MAT_DIALOG_DATA) public data: any,
                 private fb: FormBuilder,
-                public dialogRef: MatDialogRef<VenuesDialogComponent>)
+                public dialogRef: MatDialogRef<VenuesAddDialogComponent>)
                 {
-                    this.venueForm = this.fb.group(
+                    this.venue_form = this.fb.group(
                     {
                         venueName: ['', Validators.required],
                         venueAddress: ['', Validators.required],
                         venueDescription: ['', Validators.required],
-                        venueImage: [null, Validators.required],
+                        venue_image: [null, Validators.required],
                         venueContact: ['', Validators.required],
                     });
                 }
@@ -45,7 +45,7 @@ export class VenuesDialogComponent {
     {
         if(place)
         {
-            this.venueForm.get('venueAddress')?.setValue(place.formatted_address);
+            this.venue_form.get('venueAddress')?.setValue(place.formatted_address);
         }
     }
 
@@ -57,16 +57,16 @@ export class VenuesDialogComponent {
         {
             if(file.type.startsWith('image/'))
             {
-                this.selectedFile = file;
+                this.selected_file = file;
 
-                this.venueForm.patchValue(
+                this.venue_form.patchValue(
                 {
-                    venueImage: file,
+                    venue_image: file,
                 });
                 const reader = new FileReader();
                 reader.onload = () =>
                 {
-                    this.imagePreview = reader.result;
+                    this.image_preview = reader.result;
                 };
 
                 reader.readAsDataURL(file);
@@ -80,18 +80,18 @@ export class VenuesDialogComponent {
         }
         else
         {
-            this.selectedFile = null;
-            this.imagePreview = null;
+            this.selected_file = null;
+            this.image_preview = null;
         }
     }
 
     public clearImage()
     {
-        this.selectedFile = null;
-        this.imagePreview = '';
-        this.venueForm.patchValue(
+        this.selected_file = null;
+        this.image_preview = '';
+        this.venue_form.patchValue(
         {
-            venueImage: null,
+            venue_image: null,
         });
 
         if(this.fileInput)
@@ -104,7 +104,7 @@ export class VenuesDialogComponent {
     {
         const formData =
         {
-            uploadFile: this.selectedFile
+            uploadFile: this.selected_file
         };
 
         return this.webService.uploadVenueImage(formData).pipe(
@@ -119,18 +119,18 @@ export class VenuesDialogComponent {
     {
         const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net';
 
-        if(this.venueForm.valid)
+        if(this.venue_form.valid)
         {
-            if(this.selectedFile)
+            if(this.selected_file)
             {
                 this.uploadImage().subscribe(
                 {
                     next : (response : any) =>
                     {
-                        this.venueImage = [blobStorage + response.filePath, response.id];
+                        this.venue_image = [blobStorage + response.filePath, response.id];
                         this.submitVenueDetails();
                     },
-                    error : (error) =>
+                    error : (error : any) =>
                     {
                         this.sharedService.showNotification("Error uploading profile image", "error");
                     },
@@ -155,11 +155,11 @@ export class VenuesDialogComponent {
     {
         const formData =
         {
-          venue_name : this.venueForm.get('venueName')?.value,
-          venue_address : this.venueForm.get('venueAddress')?.value,
-          venue_description : this.venueForm.get('venueDescription')?.value,
-          venue_image : this.venueImage,
-          venue_contact : this.venueForm.get('venueContact')?.value
+          venue_name : this.venue_form.get('venueName')?.value,
+          venue_address : this.venue_form.get('venueAddress')?.value,
+          venue_description : this.venue_form.get('venueDescription')?.value,
+          venue_image : this.venue_image,
+          venue_contact : this.venue_form.get('venueContact')?.value
         }
 
         this.webService.addVenueDetails(formData).subscribe(
@@ -187,27 +187,27 @@ export class VenuesDialogComponent {
 
     private handleFormValidationErrors()
     {
-        if(this.venueForm.get('venueName')?.hasError('required'))
+        if(this.venue_form.get('venueName')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter the venue name.", "error");
         }
 
-        if(this.venueForm.get('venueAddress')?.hasError('required'))
+        if(this.venue_form.get('venueAddress')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter venue address.", "error");
         }
 
-        if(this.venueForm.get('venueContact')?.hasError('required'))
+        if(this.venue_form.get('venueContact')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter the venue contact details.", "error");
         }
 
-        if(this.venueForm.get('venueDescription')?.hasError('required'))
+        if(this.venue_form.get('venueDescription')?.hasError('required'))
         {
             this.sharedService.showNotification("Please enter a description of the venue.", "error");
         }
 
-        if(this.venueForm.get('venueImage')?.hasError('required'))
+        if(this.venue_form.get('venue_image')?.hasError('required'))
         {
             this.sharedService.showNotification("Please add an image of the venue.", "error");
         }

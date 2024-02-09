@@ -142,9 +142,6 @@ def search_venues():
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
-
-
-
 # Add new venue
 @app.route('/api/v1.0/venues/information', methods=['POST'])
 def add_venue_details():
@@ -184,6 +181,38 @@ def add_venue_details():
     except Exception as e:
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
 
+# Update venue details
+@app.route('/api/v1.0/venues/information/<venue_id>', methods=['PUT'])
+def update_venue_details(venue_id):
+    try:
+        data = request.get_json()
+
+        venue_name = data.get('venue_name')
+        venue_address = data.get('venue_address')
+        venue_description = data.get('venue_description')
+        venue_image = data.get('venue_image')
+        venue_contact = data.get('venue_contact')
+
+        update_query = {
+            "$set": {
+                "name": venue_name,
+                "address": venue_address,
+                "description": venue_description,
+                "image": venue_image,
+                "contact_info": venue_contact
+            }
+        }
+
+        result = venues.update_one({"_id": ObjectId(venue_id)}, update_query)
+
+        if result.modified_count > 0:
+            return make_response(jsonify({'message': 'Venue details updated successfully'}), 200)
+        else:
+            return make_response(jsonify({'error': 'Failed to update venue details'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
 
 # Get all venues
 @app.route('/api/v1.0/venues', methods=['GET'])
@@ -200,8 +229,6 @@ def get_all_venues():
 
         for venue in db.venues.find().skip(page_start).limit(page_size):
             venue['_id'] = str(venue['_id'])
-            for comment in venue.get('comments', []):
-                comment['_id'] = str(comment['_id'])
             venues_list.append(venue)
 
         return make_response(jsonify(venues_list), 200)
@@ -217,14 +244,14 @@ def get_venue_by_id(id):
 
         if venue:
             venue['_id'] = str(venue['_id'])
-            for comment in venue.get('comments', []):
-                comment['_id'] = str(comment['_id'])
             return make_response(jsonify([venue]), 200)
         else:
             return make_response(jsonify({'message': 'Venue not found'}), 404)
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+
 
 # Delete venue
 @app.route('/api/v1.0/venues/<string:id>', methods=['DELETE'])

@@ -1,0 +1,37 @@
+<div>
+    <div id="venue-dialog-header">
+      <h2 mat-dialog-title>Update Venue</h2>
+      <mat-icon id="dialog-close" class="close-icon" (click)="onClose()">close</mat-icon>
+    </div>
+
+    <form [formGroup]="venue_form" class="styled-form">
+
+        <div class="form-group">
+          <input type="text" id="venueName" formControlName="venueName" placeholder="What is the venue name?"/>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="venueAddress" formControlName="venueAddress" #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" placeholder="Where is the venue located?"/>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="venueContact" formControlName="venueContact" placeholder="Add website/phone number"/>
+        </div>
+
+        <div class="form-group">
+          <textarea id="venueDescription" formControlName="venueDescription" placeholder="Add a description"></textarea>
+        </div>
+
+        <div class="form-group" id="preview-img">
+          <label for="profilePicture" class="form-label">Add a Venue Picture</label>
+          <input type="file" #fileInput id="profilePicture" accept="image/*" (change)="onFileSelected($event)">
+          <img *ngIf="selected_file" id="venue-dialog-img" [src]="image_preview" alt="Selected Image">
+
+          <button id="fg-button" type="button" *ngIf="selected_file" (click)="clearImage()">Clear Image</button>
+        </div>
+
+        <hr>
+
+        <button id="fg-button" (click)="onSubmit()">Update Venue</button>
+      </form>
+  </div>

@@ -77,11 +77,11 @@
                         <hr>
                     </div>
 
-                    <div class="input-group mb-3 d-flex justify-content-center" id="admin-add-venue">
+                    <div *ngIf="is_admin" class="input-group mb-3 d-flex justify-content-center" id="admin-add-venue">
                         <hr>
-                        <button id="fg-button" *ngIf="isAdmin" (click)="onDeleteVenue(venue_id, venue.image[1])">Delete Venue (Admin Only)</button>
+                        <button id="fg-button" (click)="onDeleteVenue(venue_id, venue.image[1])">Delete Venue (Admin Only)</button>
                         <hr>
-                        <button id="fg-button" *ngIf="isAdmin" (click)="onDeleteVenue(venue_id, venue.image[1])">Update Venue (Admin Only)</button>
+                        <button id="fg-button" (click)="onUpdateVenue()">Update Venue (Admin Only)</button>
                     </div>
 
                 </div>
