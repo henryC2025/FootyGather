@@ -35,4 +35,9 @@ export class ProfileComponent {
             }
         });
     }
+
+    onUpdateUserDetails()
+    {
+        this.sharedService.showUpdateUserDetailsDialog();
+    }
 }

@@ -41,24 +41,26 @@ def auth_user():
 @app.route('/api/v1.0/user/information', methods=['POST'])
 def add_user_details():
     try:
-        oauth_id = request.form.get('oauth_id')
+        data = request.get_json()
+
+        oauth_id = data.get('oauth_id')
         # Check if a user with the given oauth_id already exists
         existing_user = users.find_one({"oauth_id": oauth_id})
         if existing_user:
             return jsonify({'error': 'User with the same oauth_id already exists'}), 400
 
-        user_name = request.form.get('user_name')
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        description = request.form.get('description')
-        location = request.form.get('location')
-        experience = request.form.get('experience')
-        sub_notifications = request.form.get('sub_notifications')
-        profile_image = request.form.get('profile_image')
-        games_joined = request.form.get('games_joined')
-        games_attended = request.form.get('games_attended')
-        balance = request.form.get('balance')
-        is_admin = request.form.get('is_admin')
+        user_name = data.get('user_name')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        description = data.get('description')
+        location = data.get('location')
+        experience = data.get('experience')
+        sub_notifications = data.get('sub_notifications')
+        profile_image = data.get('profile_image')
+        games_joined = data.get('games_joined')
+        games_attended = data.get('games_attended')
+        balance = data.get('balance')
+        is_admin = data.get('is_admin')
 
         new_user = {
             "_id": ObjectId(),
@@ -99,6 +101,51 @@ def get_user_details():
             return make_response(jsonify(user), 200)
         else:
             return make_response(jsonify({'error': 'User not found'}), 404)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# UPDATE USER DETAILS
+@app.route('/api/v1.0/user/information', methods=['PUT'])
+def update_user_details():
+    try:
+        data = request.get_json()
+
+        oauth_id = data.get('oauth_id')
+        # Check if a user with the given oauth_id already exists
+        existing_user = users.find_one({"oauth_id": oauth_id})
+        if not existing_user:
+            return jsonify({'error': 'User not found'}), 404
+
+        # These fields won't be updated
+        games_joined = existing_user.get('games_joined')
+        games_attended = existing_user.get('games_attended')
+        balance = existing_user.get('balance')
+        is_admin = existing_user.get('is_admin')
+
+        # Update user details
+        existing_user.update({
+            "user_name": data.get('user_name', existing_user.get('user_name')),
+            "first_name": data.get('first_name', existing_user.get('first_name')),
+            "last_name": data.get('last_name', existing_user.get('last_name')),
+            "description": data.get('description', existing_user.get('description')),
+            "location": data.get('location', existing_user.get('location')),
+            "experience": data.get('experience', existing_user.get('experience')),
+            "sub_notifications": data.get('sub_notifications', existing_user.get('sub_notifications')),
+            "profile_image": data.get('profile_image', existing_user.get('profile_image')),
+            "games_joined": games_joined,
+            "games_attended": games_attended,
+            "balance": balance,
+            "is_admin": is_admin,
+            "updated_at": datetime.datetime.utcnow()
+        })
+
+        result = users.update_one({"oauth_id": oauth_id}, {"$set": existing_user})
+
+        if result.modified_count:
+            return make_response(jsonify({'message': 'User details updated successfully'}), 200)
+        else:
+            return make_response(jsonify({'message': 'No changes detected in user details'}), 200)
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)

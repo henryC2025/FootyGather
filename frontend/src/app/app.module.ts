@@ -28,6 +28,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { VenueComponent } from './venue/venue.component';
 import { VenuesAddDialogComponent } from './venues-add-dialog/venues-add-dialog.component';
 import { VenueUpdateDialogComponent } from './venue-update-dialog/venue-update-dialog.component';
+import { ProfileUpdateDialogComponent } from './profile-update-dialog/profile-update-dialog.component';
 
 var routes : any = [
   {
@@ -81,6 +82,7 @@ var routes : any = [
     VenueComponent,
     VenuesAddDialogComponent,
     VenueUpdateDialogComponent,
+    ProfileUpdateDialogComponent,
   ],
   imports: [
     BrowserModule,

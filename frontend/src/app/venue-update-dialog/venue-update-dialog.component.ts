@@ -12,6 +12,7 @@ import { map } from 'rxjs';
   templateUrl: './venue-update-dialog.component.html',
   styleUrl: './venue-update-dialog.component.css'
 })
+
 export class VenueUpdateDialogComponent
 {
     @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement> | undefined;
@@ -20,6 +21,14 @@ export class VenueUpdateDialogComponent
     image_preview: string | ArrayBuffer | null = null;
     venue_image : any;
     venue_id : any;
+    existing_data: any =
+    {
+        venue_name: '',
+        venue_address: '',
+        venue_description: '',
+        venue_contact: '',
+        venue_image: '',
+    };
 
     constructor(public authService : AuthService,
                 public webService : WebService,
@@ -40,15 +49,6 @@ export class VenueUpdateDialogComponent
                     });
                 }
 
-    existing_data: any =
-    {
-        venue_name: '',
-        venue_address: '',
-        venue_description: '',
-        venue_contact: '',
-        venue_image: '',
-    };
-    
     ngOnInit()
     {
         this.venue_id = this.data.venue_id;
@@ -180,7 +180,7 @@ export class VenueUpdateDialogComponent
                         this.submitUpdateVenueDetails();
 
                         // CALL DELETE OLDER IMAGE HERE
-                        this.webService.deleteVenueImage(this.existing_data.venue_image[1]).subscribe(
+                        this.webService.deleteVenueImage(this.existing_data.venue_image[1], this.existing_data.venue_image[2]).subscribe(
                         {
                             next : (response) =>
                             {

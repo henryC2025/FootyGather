@@ -10,6 +10,7 @@ import { NotifierComponent } from "./notifier/notifier.component";
 import { VenuesAddDialogComponent } from './venues-add-dialog/venues-add-dialog.component';
 import { MatDialog } from "@angular/material/dialog";
 import { VenueUpdateDialogComponent } from "./venue-update-dialog/venue-update-dialog.component";
+import { ProfileUpdateDialogComponent } from "./profile-update-dialog/profile-update-dialog.component";
 
 @Injectable()
 export class SharedService
@@ -50,6 +51,24 @@ export class SharedService
             data:
             {
                 venue_id : id
+            },
+            hasBackdrop: true,
+        });
+
+        dialogRef.afterClosed().subscribe((result : any) =>
+        {
+            console.log('The dialog was closed');
+        });
+    }
+
+    showUpdateUserDetailsDialog()
+    {
+        const dialogRef = this.dialog.open(ProfileUpdateDialogComponent,
+        {
+            width: '400px',
+            data:
+            {
+                
             },
             hasBackdrop: true,
         });

@@ -19,7 +19,7 @@ export class UserDetailsComponent {
     user : any;
     selected_file: File | null = null;
     image_preview: string | ArrayBuffer | null = null;
-    profile_image_link : any;
+    profile_image : any;
 
 
     constructor(public authService : AuthService,
@@ -132,7 +132,7 @@ export class UserDetailsComponent {
             }),
             switchMap(formData =>
                 this.webService.uploadProfileImage(formData).pipe(
-                    map((response: any) => blobStorage + response.filePath),
+                    map((response: any) => [blobStorage + response.filePath, response.id, response.filePath]),
                     catchError(error =>
                     {
                         console.error('Form submission failed', error);
@@ -152,9 +152,9 @@ export class UserDetailsComponent {
             {
                 this.uploadImage().subscribe(
                 {
-                    next: (imageLink: string) =>
+                    next: (image_details: any) =>
                     {
-                        this.profile_image_link = imageLink;
+                        this.profile_image = image_details;
                         this.submitUserDetails();
                     },
                     error: (error: any) =>
@@ -169,7 +169,7 @@ export class UserDetailsComponent {
             }
             else
             {
-                this.profile_image_link = 'assets/logo.png';
+                this.profile_image = ['assets/logo.png', "0000"];
                 this.submitUserDetails();
             }
         }
@@ -182,20 +182,24 @@ export class UserDetailsComponent {
 
     private submitUserDetails()
     {
-        const formData =
+        const form_data =
         {
-            userName: this.user.nickname,
-            oauthID: this.user.sub,
-            firstName: this.details_form.get('firstName')?.value,
-            lastName: this.details_form.get('lastName')?.value,
-            description: this.details_form.get('description')?.value,
-            location: this.details_form.get('location')?.value,
-            experience: this.details_form.get('experience')?.value,
-            subNotifications: this.details_form.get('subscribeToNotifications')?.value,
-            profileImage: this.profile_image_link,
+            user_name : this.user.nickname,
+            oauth_id : this.user.sub,
+            first_name : this.details_form.get('firstName')?.value,
+            last_name : this.details_form.get('lastName')?.value,
+            description : this.details_form.get('description')?.value,
+            location : this.details_form.get('location')?.value,
+            experience : this.details_form.get('experience')?.value,
+            sub_notifications : this.details_form.get('subscribeToNotifications')?.value,
+            profile_image : this.profile_image,
+            games_joined : 0,
+            games_attended : 0,
+            balance : 0,
+            is_admin : "false"
         };
 
-        this.webService.addNewUserDetails(formData).subscribe(
+        this.webService.addNewUserDetails(form_data).subscribe(
         {
             next: (response) =>
             {

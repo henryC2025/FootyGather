@@ -127,16 +127,16 @@ export class VenuesAddDialogComponent {
                 {
                     next : (response : any) =>
                     {
-                        this.venue_image = [blobStorage + response.filePath, response.id];
+                        this.venue_image = [blobStorage + response.filePath, response.id, response.filePath];
                         this.submitVenueDetails();
                     },
                     error : (error : any) =>
                     {
-                        this.sharedService.showNotification("Error uploading profile image", "error");
+                        this.sharedService.showNotification("Error uploading venue image", "error");
                     },
                     complete: () =>
                     {
-                        console.log('Profile image upload completed.');
+                        console.log('Venue image upload completed.');
                     }
                 })
             }
@@ -176,6 +176,7 @@ export class VenuesAddDialogComponent {
             {
                 this.sharedService.showNotification("Venue added", "success");
                 this.onClose();
+                this.router.navigate(['/venues']);
             }
         })
     }

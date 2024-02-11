@@ -20,7 +20,7 @@ export class WebService
     // private query : any;
     private cpiURL = 'https://prod-09.centralus.logic.azure.com:443/workflows/14df396b4875481e844146328068033a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=nhXrxC9BMddEpgDKzGLg2RhkcdB2bhtih1M7vEHJaRc' 
     private cviURL = 'https://prod-09.centralus.logic.azure.com:443/workflows/22df00e54dad4c02be499f2b8ace1ec6/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=c9KFMZrMoGsCimGKKKMalT1TcBVyUhdy9RT_wrY7j8E'
-    private rviURL = 'https://prod-10.centralus.logic.azure.com/workflows/3c43554199ed46b2a6c09a836ff86945/triggers/manual/paths/invoke/rest/v1/venues/media/{id}?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Y7W2YPve8tovGT_KBGVisnCHW-tMK-SR8kvA13Ehw0E';
+    private dviURL = 'https://prod-10.centralus.logic.azure.com/workflows/3c43554199ed46b2a6c09a836ff86945/triggers/manual/paths/invoke/rest/v1/venues/media/{id}/{path}?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Y7W2YPve8tovGT_KBGVisnCHW-tMK-SR8kvA13Ehw0E';
 
     constructor(private http: HttpClient) {}
 
@@ -32,6 +32,16 @@ export class WebService
         postData.append("uploadFile", data.uploadFile);
 
         return this.http.post(this.cpiURL, postData);
+    }
+
+    deleteProfileImage(data : any)
+    {
+
+    }
+
+    deleteProfile(id : any)
+    {
+
     }
 
     uploadVenueImage(data : any)
@@ -64,46 +74,27 @@ export class WebService
         return this.http.delete(`http://localhost:5000/api/v1.0/venues/${this.venue_id}`);
     }
 
-    deleteVenueImage(id : any)
+    deleteVenueImage(id : any, file_path : any)
     {
-        const url = `${this.rviURL.replace('{id}', id)}`;
-        console.log(url)
-        return this.http.delete(url);
+        const url = `${this.dviURL.replace('{id}', id)}`;
+        const url_full = `${url.replace('{path}', file_path)}`;
+        console.log(url_full)
+        return this.http.delete(url_full);
     }
 
     addNewUserDetails(data : any)
     {
-        let postData = new FormData();
-        postData.append("oauth_id", data.oauthID);
-        postData.append("user_name", data.userName);
-        postData.append("first_name", data.firstName);
-        postData.append("last_name", data.lastName);
-        postData.append("description", data.description);
-        postData.append("location", data.location);
-        postData.append("experience", data.experience);
-        postData.append("sub_notifications", data.subNotifications);
-        postData.append("profile_image", data.profileImage);
-        postData.append("games_joined", '0');
-        postData.append("games_attended", '0');
-        postData.append("balance", '0');
-        postData.append("is_admin", 'false');
+        return this.http.post('http://localhost:5000/api/v1.0/user/information', data);
+    }
 
-        return this.http.post('http://localhost:5000/api/v1.0/user/information', postData);
+    updateUserDetails(data : any)
+    {
+        return this.http.put('http://localhost:5000/api/v1.0/user/information', data);
     }
 
     getUserDetails(data : any)
     {
         return this.http.post('http://localhost:5000/api/v1.0/user/details', data);
-    }
-
-    testConnection()
-    {
-        return this.http.get('http://localhost:5000/api/v1.0/test');
-    }
-
-    userCheck(id : any)
-    {
-
     }
 
     searchGame(query : any)

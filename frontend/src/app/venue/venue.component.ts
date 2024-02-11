@@ -78,23 +78,28 @@ export class VenueComponent {
         this.sharedService.showUpdateVenueDialog(this.route.snapshot.params['id']);
     }
 
-    onDeleteVenue(venue_id : any, image_id : any)
+    onDeleteVenue(venue_id : any, image_id : any, image_path : any)
     {
         const prompt = window.confirm("Are you sure you want to delete this venue?");
 
         if(prompt)
         {
-            this.deleteVenue(venue_id, image_id);
+            this.deleteVenue(venue_id, image_id, image_path);
         }
     }
 
-    deleteVenue(venue_id : any, image_id : any)
+    deleteVenue(venue_id : any, image_id : any, image_path : any)
     {
+        const url = image_path;
+        const parts = url.split('/');
+        const image_path_code = parts[parts.length - 1];
+        console.log(image_path_code);
+        console.log(image_path);
         this.webService.deleteVenue(venue_id).subscribe(
         {
             next : (response) =>
             {
-                this.webService.deleteVenueImage(image_id).subscribe(
+                this.webService.deleteVenueImage(image_id, image_path_code).subscribe(
                 {
                     next : (response) =>
                     {
@@ -185,5 +190,4 @@ export class VenueComponent {
             }}
         );
     }
-
 }

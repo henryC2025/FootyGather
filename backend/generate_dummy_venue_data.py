@@ -30,7 +30,7 @@ def generate_sample_venue():
         'description': 'A fantastic venue for sports and events.',
         'games_played': 15,
         'contact_info': 'https://www.samplevenue.com',
-        'image': ['https://via.placeholder.com/800x600', '000TEST000'],
+        'image': ['https://via.placeholder.com/800x600', '000TEST000', 'FILEPATH'],
         'likes_dislikes': {
             'user_likes': ['user1', 'user2'],  # Example initial likes
             'user_dislikes': ['user3', 'user4']  # Example initial dislikes
