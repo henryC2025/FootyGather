@@ -18,7 +18,7 @@ export class ProfileComponent {
                 public router : Router) {}
 
     user : any;
-    user_details : any;
+    user_details : any = [];
 
     ngOnInit()
     {
@@ -56,5 +56,35 @@ export class ProfileComponent {
     onUpdateUserDetails()
     {
         this.sharedService.showUpdateUserDetailsDialog();
+    }
+
+    onDeleteUser(oauth_id : any, image_id : any, image_path : any)
+    {
+        const prompt = window.confirm("Are you sure you want to delete your user details?");
+        if(prompt)
+        {
+            this.webService.deleteProfileImage(image_id, image_path).subscribe(
+            {
+                next : () =>
+                {
+                    this.webService.deleteUser(oauth_id).subscribe(
+                    {
+                        next : () =>
+                        {
+                            this.authService.logout();
+                            this.router.navigate(['/']);
+                        },
+                        error : () =>
+                        {
+                            this.sharedService.showNotification("Something went wrong when deleting user!", "error");
+                        }
+                    })
+                },
+                error : () =>
+                {
+                    this.sharedService.showNotification("Something went wrong when deleting user image!", "error");
+                }
+            })
+        }
     }
 }

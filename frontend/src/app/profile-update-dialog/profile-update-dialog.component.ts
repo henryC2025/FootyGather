@@ -245,7 +245,6 @@ export class ProfileUpdateDialogComponent
                 console.log("Old image kept");
                 this.user_image = this.existing_user_data.profile_image;
                 this.submitUpdateProfileDetails();
-                this.router.navigate(['/profile']);
             }
         }
         else
@@ -281,7 +280,11 @@ export class ProfileUpdateDialogComponent
             {
                 this.sharedService.showNotification("User details updated", "success");
                 this.onClose();
-                this.router.navigate(['/profile']);
+                // FIX THIS LATER ON
+                this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
+                {
+                    this.router.navigate(['/profile']);
+                });
             }
         })
     }

@@ -62,6 +62,12 @@ export class WebService
         return this.http.post('http://localhost:5000/api/v1.0/user', data);
     }
 
+    deleteUser(id : any)
+    {
+        this.oauth_id = id;
+        return this.http.delete(`http://localhost:5000/api/v1.0/user/delete/${this.oauth_id}`);
+    }
+
     addVenueDetails(data : any)
     {
         return this.http.post('http://localhost:5000/api/v1.0/venues/information', data);

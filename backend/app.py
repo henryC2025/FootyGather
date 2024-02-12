@@ -90,6 +90,30 @@ def add_user_details():
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
+@app.route('/api/v1.0/user/delete/<string:id>', methods=['DELETE'])
+def delete_user(id):
+    try:
+        user = users.find_one({"oauth_id": id})
+        if user:
+            users.delete_one({"oauth_id": id})
+            return make_response(jsonify({'message': 'User deleted successfully'}), 200)
+        else:
+            return make_response(jsonify({'error': 'User not found'}), 404)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Delete venue
+# @app.route('/api/v1.0/venues/<string:id>', methods=['DELETE'])
+# def delete_venue(id):
+#     venue = venues.find_one({'_id': ObjectId(id)})
+
+#     if venue:
+#         venues.delete_one({'_id': ObjectId(id)})
+#         return make_response(jsonify({"message": "Venue deleted successfully"}), 200)
+#     else:
+#         return make_response(jsonify({"error": "Venue not found"}), 404)
+
 @app.route('/api/v1.0/user/details', methods=['POST'])
 def get_user_details():
     try:

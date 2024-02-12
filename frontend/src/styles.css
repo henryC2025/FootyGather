@@ -464,13 +464,6 @@ hr
 }
 
 /* PROFILE */
-#home-heading
-{
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-}
-
 #profile-hr
 {
     margin: 5px;
@@ -498,10 +491,11 @@ hr
 
 .profile-header img
 {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     object-fit: cover;
+    border: solid 3px #2c972c;
 }
 
 .profile-details

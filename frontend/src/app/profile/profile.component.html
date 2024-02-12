@@ -1,16 +1,18 @@
 <div class="container" id="content-container">
   <h1 id="home-heading">Profile</h1>
+  <hr>
 
   <ng-container *ngIf="authService.isAuthenticated$ | async; else notAuthenticated">
     <!-- Display user information when authenticated -->
     <div class="profile-actions">
       <button id="fg-button" (click)="onUpdateUserDetails()">Update Profile</button>
-      <!-- <button class="profile-button" (click)="onDeleteUser()">Delete Account</button> -->
+      <br>
+      <button id="fg-button" (click)="onDeleteUser(user?.sub, user_details.profile_image[1], user_details.profile_image[2])">Delete Account</button>
     </div>
 
     <div *ngIf="user_details" class="user-profile">
       <div class="profile-header">
-        <h2>Welcome, {{ user_details.user_name }}</h2>
+        <!-- <h2>Welcome, {{ user_details.user_name }}</h2> -->
         <img *ngIf="user_details.profile_image" [src]="user_details.profile_image[0]" alt="Profile Image">
       </div>
 
@@ -19,7 +21,14 @@
           <label>Email</label>
           <hr id="profile-hr">
           <h3>
-            {{ user?.sub }}
+            {{ user?.email }}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Username</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user?.nickname }}
           </h3>
         </div>
         <div class="profile-row">
