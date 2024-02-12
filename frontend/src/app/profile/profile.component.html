@@ -3,10 +3,104 @@
 
   <ng-container *ngIf="authService.isAuthenticated$ | async; else notAuthenticated">
     <!-- Display user information when authenticated -->
-    <h2>{{ user?.sub }}</h2>
-    <h2>{{ user?.email }}</h2>
-    <h2>{{ user?.nickname }}</h2>
-    <button id="fg-button" (click)="onUpdateUserDetails()">Update User</button>
+    <div class="profile-actions">
+      <button id="fg-button" (click)="onUpdateUserDetails()">Update Profile</button>
+      <!-- <button class="profile-button" (click)="onDeleteUser()">Delete Account</button> -->
+    </div>
+
+    <div *ngIf="user_details" class="user-profile">
+      <div class="profile-header">
+        <h2>Welcome, {{ user_details.user_name }}</h2>
+        <img *ngIf="user_details.profile_image" [src]="user_details.profile_image[0]" alt="Profile Image">
+      </div>
+
+      <div class="profile-details">
+        <div class="profile-row">
+          <label>Email</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user?.sub }}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Full Name</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.first_name }} {{ user_details.last_name }}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Description</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.description }}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Experience</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.experience }}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Location</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.location }}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Games Joined</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.games_joined }}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Games Attended</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.games_attended }}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Balance</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.balance }}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Subscribed to Notifications</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.sub_notifications ? 'Yes' : 'No' }}
+          </h3>
+        </div>
+        <!-- <div class="profile-row">
+          <label>Full Name</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.is_admin ? 'Yes' : 'No' }}
+          </h3>
+        </div> -->
+        <div class="profile-row">
+          <label>Created At</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.create_at | date}}
+          </h3>
+        </div>
+        <div class="profile-row">
+          <label>Last Updated</label>
+          <hr id="profile-hr">
+          <h3>
+            {{ user_details.updated_at | date }}
+          </h3>
+        </div>
+      </div>
+    </div>
   </ng-container>
 
   <!-- Display a message and sign-in link when not authenticated -->

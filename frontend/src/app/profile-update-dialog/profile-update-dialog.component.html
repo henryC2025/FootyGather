@@ -1,37 +1,53 @@
 <div>
-    <div id="venue-dialog-header">
-      <h2 mat-dialog-title>Update Venue</h2>
+    <div id="dialog-header">
+      <h2 mat-dialog-title>Update User Details</h2>
       <mat-icon id="dialog-close" class="close-icon" (click)="onClose()">close</mat-icon>
     </div>
 
     <form [formGroup]="user_details_form" class="styled-form">
 
         <div class="form-group">
-          <input type="text" id="venueName" formControlName="venueName" placeholder="What is the venue name?"/>
+          <input type="text" id="first_name" formControlName="first_name" placeholder="What is your first name?"/>
         </div>
 
         <div class="form-group">
-          <input type="text" id="venueAddress" formControlName="venueAddress" #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" placeholder="Where is the venue located?"/>
+          <input type="text" id="last_name" formControlName="last_name" placeholder="What is your last name?"/>
         </div>
 
         <div class="form-group">
-          <input type="text" id="venueContact" formControlName="venueContact" placeholder="Add website/phone number"/>
+          <input type="text" id="location" formControlName="location" #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" placeholder="Where are you located?"/>
         </div>
 
         <div class="form-group">
-          <textarea id="venueDescription" formControlName="venueDescription" placeholder="Add a description"></textarea>
+          <textarea id="description" formControlName="description" placeholder="Add a description"></textarea>
+        </div>
+
+        <!-- experience -->
+        <!-- sub notification -->
+        <div class="form-group">
+          <select id="experience" formControlName="experience">
+            <option value="" disabled selected>Select your experience level</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="experienced">Experienced</option>
+          </select>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="sub_notifications" formControlName="sub_notifications">
+          <label for="sub_notifications" class="checkbox-label">Subscribe to Notifications</label>
         </div>
 
         <div class="form-group" id="preview-img">
-          <label for="profilePicture" class="form-label">Add a Venue Picture</label>
+          <label for="profilePicture" class="form-label">Update a Profile Picture</label>
           <input type="file" #fileInput id="profilePicture" accept="image/*" (change)="onFileSelected($event)">
-          <img *ngIf="selected_file" id="venue-dialog-img" [src]="image_preview" alt="Selected Image">
+          <img *ngIf="selected_file" id="dialog-img" [src]="image_preview" alt="Selected Image">
 
           <button id="fg-button" type="button" *ngIf="selected_file" (click)="clearImage()">Clear Image</button>
         </div>
 
         <hr>
 
-        <button id="fg-button" (click)="onSubmit()">Update Venue</button>
+        <button id="fg-button" (click)="onSubmit()">Update Profile</button>
       </form>
   </div>

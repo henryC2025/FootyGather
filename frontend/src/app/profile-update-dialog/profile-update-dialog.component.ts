@@ -32,23 +32,6 @@ export class ProfileUpdateDialogComponent
         profile_image: '',
     };
 
-    // const form_data =
-    //     {
-    //         user_name : this.user.nickname,
-    //         oauth_id : this.user.sub,
-    //         first_name : this.details_form.get('firstName')?.value,
-    //         last_name : this.details_form.get('lastName')?.value,
-    //         description : this.details_form.get('description')?.value,
-    //         location : this.details_form.get('location')?.value,
-    //         experience : this.details_form.get('experience')?.value,
-    //         sub_notifications : this.details_form.get('subscribeToNotifications')?.value,
-    //         profile_image : this.profile_image,
-    //         games_joined : 0,
-    //         games_attended : 0,
-    //         balance : 0,
-    //         is_admin : "false"
-    //     };
-
     constructor(public authService : AuthService,
                 public webService : WebService,
                 public sharedService : SharedService,
@@ -60,13 +43,13 @@ export class ProfileUpdateDialogComponent
                 {
                     this.user_details_form = this.fb.group(
                     {
-                        first_name: ['', Validators.required],
-                        last_name: ['', Validators.required],
-                        description: ['', Validators.required],
-                        location: ['', Validators.required],
-                        experience: ['', Validators.required],
-                        sub_notifications: ['', Validators.required],
-                        profile_image: [null],
+                        first_name : ['', Validators.required],
+                        last_name : ['', Validators.required],
+                        description : ['', Validators.required],
+                        location : ['', Validators.required],
+                        experience : ['', Validators.required],
+                        sub_notifications : [false],
+                        profile_image : [null],
                     });
                 }
 
@@ -78,7 +61,6 @@ export class ProfileUpdateDialogComponent
             this.user = user;
             this.populateForm();
         });
-  
     }
 
     populateForm()
@@ -95,26 +77,34 @@ export class ProfileUpdateDialogComponent
             next : (data : any) =>
             {
                 console.log(data);
-                // const venue_name = data[0].name;
-                // const venue_address = data[0].address;
-                // const venue_description = data[0].description;
-                // const venue_contact_info = data[0].contact_info;
-                // const venue_image = data[0].image;
+                const first_name = data?.first_name;
+                const last_name = data?.last_name;
+                const description = data?.description;
+                const location = data?.location;
+                const experience = data?.experience;
+                const sub_notifications = data?.sub_notifications;
+                const profile_image = data?.profile_image;
 
-                // this.existing_user_data.venue_name = venue_name;
-                // this.existing_user_data.venue_address = venue_address;
-                // this.existing_user_data.venue_description = venue_description;
-                // this.existing_user_data.venue_contact = venue_contact_info;
-                // this.existing_user_data.venue_image = venue_image;
+                this.existing_user_data.first_name = first_name;
+                this.existing_user_data.last_name = last_name;
+                this.existing_user_data.description = description;
+                this.existing_user_data.location = location;
+                this.existing_user_data.experience = experience;
+                this.existing_user_data.sub_notifications = sub_notifications;
+                this.existing_user_data.profile_image = profile_image;
 
-                // this.user_details_form.patchValue(
-                // {
-                //     venueName : venue_name,
-                //     venueAddress : venue_address,
-                //     venueDescription : venue_description,
-                //     venueContact : venue_contact_info,
-                //     venueImage : venue_image,
-                // });
+                console.log(this.existing_user_data);
+                this.user_details_form.patchValue(
+                {
+                    first_name : first_name,
+                    last_name : last_name,
+                    description : description,
+                    location : location,
+                    experience : experience,
+                    sub_notifications : sub_notifications,
+                    profile_image : profile_image,
+
+                })
             },
             error : () =>
             {
@@ -189,7 +179,6 @@ export class ProfileUpdateDialogComponent
             oauthID : this.user?.sub,
             userName : this.user?.nickname,
             uploadFile : this.selected_file
-
         };
 
         return this.webService.uploadProfileImage(formData).pipe(
@@ -213,27 +202,33 @@ export class ProfileUpdateDialogComponent
                 {
                     next : (response : any) =>
                     {
-                        this.user_image = [blobStorage + response.filePath, response.id];
-                        this.submitUpdateVenueDetails();
+                        this.user_image = [blobStorage + response.filePath, response.id, response.filePath];
+                        this.submitUpdateProfileDetails();
 
                         // CALL DELETE OLDER IMAGE HERE
-                        // this.webService.deleteVenueImage(this.existing_user_data.venue_image[1]).subscribe(
-                        // {
-                        //     next : (response) =>
-                        //     {
-            
-                        //     },
-                        //     error : (error) =>
-                        //     {
-            
-                        //     },
-                        //     complete : () =>
-                        //     {
-                        //         console.log("Venue deleted!")
-                        //         this.router.navigate(['/venues']);
-                        //         // ADD NOTIFIER HERE
-                        //     }
-                        // })
+                        console.log(this.existing_user_data);
+                        if(this.existing_user_data.profile_image[2] && this.existing_user_data.profile_image[2] != '0000')
+                        {
+                            console.log(this.existing_user_data.profile_image);
+                            this.webService.deleteProfileImage(this.existing_user_data.profile_image[1], this.existing_user_data.profile_image[2]).subscribe(
+                            {
+                                next : (response) =>
+                                {
+
+                                },
+                                error : (error) =>
+                                {
+
+                                },
+                                complete : () =>
+                                {
+                                    console.log("Profile Image deleted!")
+                                    this.router.navigate(['/profile']);
+                                    // ADD NOTIFIER HERE
+                                }
+                            })
+                        }
+
                     },
                     error : (error) =>
                     {
@@ -248,8 +243,9 @@ export class ProfileUpdateDialogComponent
             else
             {
                 console.log("Old image kept");
-                this.user_image = this.existing_user_data.venue_image;
-                this.submitUpdateVenueDetails();
+                this.user_image = this.existing_user_data.profile_image;
+                this.submitUpdateProfileDetails();
+                this.router.navigate(['/profile']);
             }
         }
         else
@@ -258,19 +254,19 @@ export class ProfileUpdateDialogComponent
         }
     }
 
-    public submitUpdateVenueDetails()
+    public submitUpdateProfileDetails()
     {
         const formData =
         {
-          venue_name : this.user_details_form.get('venueName')?.value,
-          venue_address : this.user_details_form.get('venueAddress')?.value,
-          venue_description : this.user_details_form.get('venueDescription')?.value,
-          venue_image : this.user_image,
-          venue_contact : this.user_details_form.get('venueContact')?.value
+            oauth_id : this.user?.sub,
+            first_name : this.user_details_form.get('first_name')?.value,
+            last_name : this.user_details_form.get('last_name')?.value,
+            description : this.user_details_form.get('description')?.value,
+            location : this.user_details_form.get('location')?.value,
+            experience : this.user_details_form.get('experience')?.value,
+            sub_notifications : this.user_details_form.get('sub_notifications')?.value,
+            profile_image : this.user_image,
         }
-
-        console.log(this.user_image)
-
         this.webService.updateUserDetails(formData).subscribe(
         {
             next : (response : any) =>
@@ -285,7 +281,7 @@ export class ProfileUpdateDialogComponent
             {
                 this.sharedService.showNotification("User details updated", "success");
                 this.onClose();
-                this.router.navigate(['/venues']);
+                this.router.navigate(['/profile']);
             }
         })
     }
@@ -297,29 +293,29 @@ export class ProfileUpdateDialogComponent
 
     private handleFormValidationErrors()
     {
-        if(this.user_details_form.get('venueName')?.hasError('required'))
+        if(this.user_details_form.get('first_name')?.hasError('required'))
         {
-            this.sharedService.showNotification("Please enter the venue name.", "error");
+            this.sharedService.showNotification("Please enter your first name.", "error");
         }
 
-        if(this.user_details_form.get('venueAddress')?.hasError('required'))
+        if(this.user_details_form.get('last_name')?.hasError('required'))
         {
-            this.sharedService.showNotification("Please enter venue address.", "error");
+            this.sharedService.showNotification("Please enter your last name.", "error");
         }
 
-        if(this.user_details_form.get('venueContact')?.hasError('required'))
+        if(this.user_details_form.get('description')?.hasError('required'))
         {
-            this.sharedService.showNotification("Please enter the venue contact details.", "error");
+            this.sharedService.showNotification("Please enter a description.", "error");
         }
 
-        if(this.user_details_form.get('venueDescription')?.hasError('required'))
+        if(this.user_details_form.get('location')?.hasError('required'))
         {
-            this.sharedService.showNotification("Please enter a description of the venue.", "error");
+            this.sharedService.showNotification("Please enter your location.", "error");
         }
 
-        if(this.user_details_form.get('venueImage')?.hasError('required'))
+        if(this.user_details_form.get('experience')?.hasError('required'))
         {
-            this.sharedService.showNotification("Please add an image of the venue.", "error");
+            this.sharedService.showNotification("Please select an experience level.", "error");
         }
     }
 }

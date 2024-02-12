@@ -21,7 +21,7 @@ export class WebService
     private cpiURL = 'https://prod-09.centralus.logic.azure.com:443/workflows/14df396b4875481e844146328068033a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=nhXrxC9BMddEpgDKzGLg2RhkcdB2bhtih1M7vEHJaRc' 
     private cviURL = 'https://prod-09.centralus.logic.azure.com:443/workflows/22df00e54dad4c02be499f2b8ace1ec6/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=c9KFMZrMoGsCimGKKKMalT1TcBVyUhdy9RT_wrY7j8E'
     private dviURL = 'https://prod-10.centralus.logic.azure.com/workflows/3c43554199ed46b2a6c09a836ff86945/triggers/manual/paths/invoke/rest/v1/venues/media/{id}/{path}?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Y7W2YPve8tovGT_KBGVisnCHW-tMK-SR8kvA13Ehw0E';
-
+    private dpiURL = 'https://prod-22.centralus.logic.azure.com/workflows/37daa6855a9a4e0da8afdf1d19e112ee/triggers/manual/paths/invoke/rest/v1/profile/media/{id}/{path}?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=M8i0j3x8EdYBJHW56VNSuPwKGffUX64moXCaBBF4600';
     constructor(private http: HttpClient) {}
 
     uploadProfileImage(data : any)
@@ -34,14 +34,19 @@ export class WebService
         return this.http.post(this.cpiURL, postData);
     }
 
-    deleteProfileImage(data : any)
+    // deleteProfileImage(data : any)
+    // {
+
+    // }
+
+    deleteProfileImage(id : any, file_path : any)
     {
-
-    }
-
-    deleteProfile(id : any)
-    {
-
+        const file_path_full = file_path.split('/');
+        const file_path_id = file_path_full[file_path_full.length - 1];
+        const url = `${this.dpiURL.replace('{id}', id)}`;
+        const url_full = `${url.replace('{path}', file_path_id)}`;
+        console.log(url_full)
+        return this.http.delete(url_full);
     }
 
     uploadVenueImage(data : any)
@@ -76,8 +81,10 @@ export class WebService
 
     deleteVenueImage(id : any, file_path : any)
     {
+        const file_path_full = file_path.split('/');
+        const file_path_id = file_path_full[file_path_full.length - 1];
         const url = `${this.dviURL.replace('{id}', id)}`;
-        const url_full = `${url.replace('{path}', file_path)}`;
+        const url_full = `${url.replace('{path}', file_path_id)}`;
         console.log(url_full)
         return this.http.delete(url_full);
     }

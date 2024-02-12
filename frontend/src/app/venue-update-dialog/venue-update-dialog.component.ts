@@ -176,7 +176,7 @@ export class VenueUpdateDialogComponent
                 {
                     next : (response : any) =>
                     {
-                        this.venue_image = [blobStorage + response.filePath, response.id];
+                        this.venue_image = [blobStorage + response.filePath, response.id, response.filePath];
                         this.submitUpdateVenueDetails();
 
                         // CALL DELETE OLDER IMAGE HERE

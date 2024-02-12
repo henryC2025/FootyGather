@@ -70,6 +70,11 @@
     background-color: #5abd5a;
 }
 
+.mdc-dialog__container
+{
+    max-height: 700px !important;
+}
+
 /* HOME */
 
 #home-heading
@@ -404,7 +409,7 @@ textarea, input[type="text"], select, input[type="file"]
 
 /* VENUES DIALOG */
 
-#venue-dialog-img
+#dialog-img
 {
     max-width: 200px;
     max-height: 120px;
@@ -413,7 +418,7 @@ textarea, input[type="text"], select, input[type="file"]
     margin-bottom: 10px;
 }
 
-#venue-dialog-header
+#dialog-header
 {
     display: flex;
     justify-content: space-between;
@@ -456,6 +461,62 @@ hr
 {
     width: 100%;
     margin-top: 15px;
+}
+
+/* PROFILE */
+#home-heading
+{
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+#profile-hr
+{
+    margin: 5px;
+}
+
+.profile-actions
+{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.profile-header
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.profile-header h2
+{
+    margin-right: 10px;
+}
+
+.profile-header img
+{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-details
+{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.profile-row
+{
+    margin-bottom: 10px;
+    padding: 5px;
+    background: #272727;
+    border-radius: 8px;
 }
 
 /* MEDIA */

@@ -169,7 +169,7 @@ export class UserDetailsComponent {
             }
             else
             {
-                this.profile_image = ['assets/logo.png', "0000"];
+                this.profile_image = ['assets/logo.png', "0000", "0000"];
                 this.submitUserDetails();
             }
         }

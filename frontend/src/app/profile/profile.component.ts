@@ -18,21 +18,38 @@ export class ProfileComponent {
                 public router : Router) {}
 
     user : any;
+    user_details : any;
 
     ngOnInit()
     {
         this.authService.user$.subscribe(user =>
         {
             this.user = user;
-        });
-
-        this.authService.isAuthenticated$.subscribe(response =>
-        {
-            if(response === false)
+            this.authService.isAuthenticated$.subscribe(
             {
-                this.sharedService.showNotification("Please sign in to access the profile page.", "error");
-                this.router.navigate(['/']);
-            }
+                next : (response : any) =>
+                {
+                    if(response === false)
+                    {
+                        this.sharedService.showNotification("Please sign in to access the profile page.", "error");
+                        this.router.navigate(['/']);
+                    }
+
+                    const form_data =
+                    {
+                        oauth_id : this.user?.sub,
+                    }
+                    console.log(form_data)
+                    this.webService.getUserDetails(form_data).subscribe(
+                    {
+                        next : (data : any) =>
+                        {
+                            this.user_details = data;
+                            console.log(this.user_details);
+                        }
+                    })
+                }
+            });
         });
     }
 

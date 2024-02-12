@@ -1,5 +1,5 @@
 <div>
-  <div id="venue-dialog-header">
+  <div id="dialog-header">
     <h2 mat-dialog-title>Add New Venue</h2>
     <mat-icon id="dialog-close" class="close-icon" (click)="onClose()">close</mat-icon>
   </div>
@@ -25,7 +25,7 @@
       <div class="form-group" id="preview-img">
         <label for="profilePicture" class="form-label">Add a Venue Picture</label>
         <input type="file" #fileInput id="profilePicture" accept="image/*" (change)="onFileSelected($event)">
-        <img *ngIf="selected_file" id="venue-dialog-img" [src]="image_preview" alt="Selected Image">
+        <img *ngIf="selected_file" id="dialog-img" [src]="image_preview" alt="Selected Image">
 
         <button id="fg-button" type="button" *ngIf="selected_file" (click)="clearImage()">Clear Image</button>
       </div>
