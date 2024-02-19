@@ -1,0 +1,37 @@
+<div>
+    <div id="dialog-header">
+      <h2 mat-dialog-title>Add New Community</h2>
+      <mat-icon id="dialog-close" class="close-icon" (click)="onClose()">close</mat-icon>
+    </div>
+
+    <form [formGroup]="community_form" class="styled-form">
+  
+        <div class="form-group">
+          <input type="text" id="community-name" formControlName="community_name" placeholder="What is the community name?"/>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="community-location" formControlName="community_location" #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" placeholder="Where is the venue located?"/>
+        </div>
+
+        <div class="form-group">
+          <textarea id="community-description" formControlName="community_description" placeholder="Add a description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <textarea id="community-rules" formControlName="community_rules" placeholder="Add rules for the community"></textarea>
+        </div>
+
+        <div class="form-group" id="preview-img">
+          <label for="profilePicture" class="form-label">Add a Community Picture</label>
+          <input type="file" #fileInput id="profilePicture" accept="image/*" (change)="onFileSelected($event)">
+          <img *ngIf="selected_file" id="dialog-img" [src]="image_preview" alt="Selected Image">
+
+          <button id="fg-button" type="button" *ngIf="selected_file" (click)="clearImage()">Clear Image</button>
+        </div>
+
+        <hr>
+
+        <button id="fg-button" (click)="onSubmit()">Add Community</button>
+      </form>
+</div>  

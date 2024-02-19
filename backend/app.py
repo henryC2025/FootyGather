@@ -13,6 +13,7 @@ client = MongoClient('mongodb://127.0.0.1:27017')
 db = client['footyGatherDB']  
 users = db['users']
 venues = db['venues']
+communities = db['communities']
 
 @app.route('/')
 def hello_world():
@@ -103,17 +104,6 @@ def delete_user(id):
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
-# Delete venue
-# @app.route('/api/v1.0/venues/<string:id>', methods=['DELETE'])
-# def delete_venue(id):
-#     venue = venues.find_one({'_id': ObjectId(id)})
-
-#     if venue:
-#         venues.delete_one({'_id': ObjectId(id)})
-#         return make_response(jsonify({"message": "Venue deleted successfully"}), 200)
-#     else:
-#         return make_response(jsonify({"error": "Venue not found"}), 404)
-
 @app.route('/api/v1.0/user/details', methods=['POST'])
 def get_user_details():
     try:
@@ -189,6 +179,193 @@ def get_all_users():
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+######################################################################
+
+# Get all communities
+@app.route('/api/v1.0/communities', methods=['GET'])
+def get_all_communities():
+    try:
+        page_num, page_size = 1, 12
+        if request.args.get('pn'): 
+            page_num = int(request.args.get('pn'))
+        if request.args.get('ps'):
+            page_size = int(request.args.get('ps'))
+        page_start = (page_size * (page_num - 1))
+
+        communities_list = []
+
+        for community in communities.find().skip(page_start).limit(page_size):
+            community['_id'] = str(community['_id'])
+            for comment in community['comments']:
+                comment['_id'] = str(comment['_id'])
+            communities_list.append(community)
+
+        return make_response(jsonify(communities_list), 200)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Search community
+@app.route('/api/v1.0/communities/search', methods=['GET'])
+def search_communities():
+    try:
+        query = request.args.get('query', '')
+
+        regex_pattern = f'.*{query}.*'
+        query_filter = {'name': {'$regex': regex_pattern, '$options': 'i'}}
+
+        matching_communities = communities.find(query_filter)
+
+        matching_communities_list = []
+        for community in matching_communities:
+            community['_id'] = str(community['_id']) 
+            for comment in community.get('comments', []):
+                comment['_id'] = str(comment['_id'])
+            matching_communities_list.append(community)
+
+        return make_response(jsonify(matching_communities_list), 200)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Create new community
+@app.route('/api/v1.0/communities/information', methods=['POST'])
+def add_community_details():
+    try:
+        data = request.get_json()
+
+        community_name = data.get('community_name')
+        community_location = data.get('community_location')
+        community_description = data.get('community_description')
+        community_image = data.get('community_image')
+        community_creator_oauth_id = data.get('community_creator_oauth_id')
+        community_rules = data.get('community_rules')
+
+        new_community = {
+            "_id": ObjectId(),
+            "name": community_name,
+            "location": community_location,
+            "description": community_description,
+            "rules" : community_rules,
+            "image": community_image,
+            "creator_oauth_id" : community_creator_oauth_id,
+            "comments": [],
+            "total_players": 0,
+            "players": [],
+            "current_games" : [],
+            "previous_games" : [],
+            "created_at": datetime.datetime.utcnow()
+        }
+
+        # Insert data into MongoDB
+        result = communities.insert_one(new_community)
+
+        # Handle result and return response
+        if result.inserted_id:
+            return make_response(jsonify({'message': 'Community details added successfully'}), 200)
+        else:
+            return make_response(jsonify({'error': 'Failed to add community details'}), 500)
+
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
+
+# Update community details
+@app.route('/api/v1.0/communities/information/<community_id>', methods=['PUT'])
+def update_community_details(community_id):
+    try:
+        data = request.get_json()
+
+        community_name = data.get('community_name')
+        community_location = data.get('community_location')
+        community_description = data.get('community_description')
+        community_rules = data.get('community_rules')
+        community_image = data.get('community_image')
+        community_creator_oauth_id = data.get('community_creator_oauth_id')
+
+        # Retrieve the existing community details
+        existing_community = communities.find_one({"_id": ObjectId(community_id)})
+
+        # Check if the provided oauth_id matches the creator_oauth_id of the community
+        if existing_community['creator_oauth_id'] != community_creator_oauth_id:
+            return make_response(jsonify({'error': 'You are not authorized to update this community'}), 401)
+
+        # Construct the update query
+        update_query = {
+            "$set": {
+                "name": community_name,
+                "location": community_location,
+                "description": community_description,
+                "image": community_image,
+                "rules": community_rules
+            }
+        }
+
+        # Update the community details
+        result = communities.update_one({"_id": ObjectId(community_id)}, update_query)
+
+        # Handle the result and return response
+        if result.modified_count > 0:
+            return make_response(jsonify({'message': 'Community details updated successfully'}), 200)
+        else:
+            return make_response(jsonify({'error': 'Failed to update community details'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
+# Get a community by id
+@app.route('/api/v1.0/communities/<string:id>', methods=['GET'])
+def get_community_by_id(id):
+    try:
+        community = communities.find_one({'_id': ObjectId(id)})
+
+        if community:
+            community['_id'] = str(community['_id'])
+            for comment in community['comments']:
+                comment['_id'] = str(comment['_id'])
+            return make_response(jsonify([community]), 200)
+        else:
+            return make_response(jsonify({'message': 'Community not found'}), 404)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Delete community (admin only)
+@app.route('/api/v1.0/communities/<string:id>', methods=['DELETE'])
+def delete_community(id):
+    community = communities.find_one({'_id': ObjectId(id)})
+
+    if community:
+        communities.delete_one({'_id': ObjectId(id)})
+        return make_response(jsonify({"message": "Community deleted successfully"}), 200)
+    else:
+        return make_response(jsonify({"error": "Community not found"}), 404)
+
+# Sort community by date
+
+# Sort community by distance
+
+## GAMES ##
+# Add game
+# Remove game
+# Update game
+
+    # return {
+    #     '_id' : ObjectId(),
+    #     'name' : "Sample Community",
+    #     'description' : 'We welcome everyone to play footy with us!',
+    #     'location' : 'Belfast',
+    #     'creator_id' : "001",
+    #     'created_at' : datetime.datetime.utcnow(),
+    #     'current_games' : ['001', '002', '003'],
+    #     'previous_games' : ['004, 005, 006'],
+    #     'total_players' : len(players),
+    #     'players' : players,
+    #     'comments' : comments
+    # }
+
+######################################################################
 
 # Search venues by name
 @app.route('/api/v1.0/venues/search', methods=['GET'])
@@ -321,8 +498,6 @@ def get_venue_by_id(id):
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
-
-
 
 # Delete venue
 @app.route('/api/v1.0/venues/<string:id>', methods=['DELETE'])

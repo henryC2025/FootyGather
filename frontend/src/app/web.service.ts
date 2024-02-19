@@ -9,21 +9,19 @@ export class WebService
     community_list : any;
     game_list : any;
     private venue_id : any;
+    private community_id : any;
     private game_id : any;
-    private user_id : any;
     private oauth_id : any;
     private query : any;
-    // private game_id : any;
-    // private user_id : any;
-    // private comment_id : any;
-    // private comment_text : any;
-    // private query : any;
     private cpiURL = 'https://prod-09.centralus.logic.azure.com:443/workflows/14df396b4875481e844146328068033a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=nhXrxC9BMddEpgDKzGLg2RhkcdB2bhtih1M7vEHJaRc' 
     private cviURL = 'https://prod-09.centralus.logic.azure.com:443/workflows/22df00e54dad4c02be499f2b8ace1ec6/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=c9KFMZrMoGsCimGKKKMalT1TcBVyUhdy9RT_wrY7j8E'
     private dviURL = 'https://prod-10.centralus.logic.azure.com/workflows/3c43554199ed46b2a6c09a836ff86945/triggers/manual/paths/invoke/rest/v1/venues/media/{id}/{path}?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Y7W2YPve8tovGT_KBGVisnCHW-tMK-SR8kvA13Ehw0E';
     private dpiURL = 'https://prod-22.centralus.logic.azure.com/workflows/37daa6855a9a4e0da8afdf1d19e112ee/triggers/manual/paths/invoke/rest/v1/profile/media/{id}/{path}?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=M8i0j3x8EdYBJHW56VNSuPwKGffUX64moXCaBBF4600';
+    private cciURL = 'https://prod-27.centralus.logic.azure.com:443/workflows/cd7fe63d7af94240a8aaa3d3a38288c8/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7Fg4r1odgjnX8cZqPkxKxR47K1S1aqpAJljn6s9ov-Y'
+    private dciURL = 'https://prod-20.centralus.logic.azure.com/workflows/79b108a852ce417c93260c0c8ebbe2a5/triggers/manual/paths/invoke/rest/v1/communities/media/{id}/{path}?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=kWdx4MOL4QD5wB5tPlGytctC4058kmf_JEVc2ZT92dk'
     constructor(private http: HttpClient) {}
-
+    
+    //  Users
     uploadProfileImage(data : any)
     {
         let postData = new FormData();
@@ -33,12 +31,7 @@ export class WebService
 
         return this.http.post(this.cpiURL, postData);
     }
-
-    // deleteProfileImage(data : any)
-    // {
-
-    // }
-
+    
     deleteProfileImage(id : any, file_path : any)
     {
         const file_path_full = file_path.split('/');
@@ -49,12 +42,19 @@ export class WebService
         return this.http.delete(url_full);
     }
 
-    uploadVenueImage(data : any)
+    addNewUserDetails(data : any)
     {
-        let postData = new FormData();
-        postData.append("uploadFile", data.uploadFile);
+        return this.http.post('http://localhost:5000/api/v1.0/user/information', data);
+    }
 
-        return this.http.post(this.cviURL, postData);
+    updateUserDetails(data : any)
+    {
+        return this.http.put('http://localhost:5000/api/v1.0/user/information', data);
+    }
+
+    getUserDetails(data : any)
+    {
+        return this.http.post('http://localhost:5000/api/v1.0/user/details', data);
     }
 
     authUser(data : any)
@@ -68,9 +68,18 @@ export class WebService
         return this.http.delete(`http://localhost:5000/api/v1.0/user/delete/${this.oauth_id}`);
     }
 
+    //  Venues
     addVenueDetails(data : any)
     {
         return this.http.post('http://localhost:5000/api/v1.0/venues/information', data);
+    }
+
+    uploadVenueImage(data : any)
+    {
+        let postData = new FormData();
+        postData.append("uploadFile", data.uploadFile);
+
+        return this.http.post(this.cviURL, postData);
     }
 
     updateVenueDetails(id: string, data: any)
@@ -94,45 +103,14 @@ export class WebService
         console.log(url_full)
         return this.http.delete(url_full);
     }
-
-    addNewUserDetails(data : any)
-    {
-        return this.http.post('http://localhost:5000/api/v1.0/user/information', data);
-    }
-
-    updateUserDetails(data : any)
-    {
-        return this.http.put('http://localhost:5000/api/v1.0/user/information', data);
-    }
-
-    getUserDetails(data : any)
-    {
-        return this.http.post('http://localhost:5000/api/v1.0/user/details', data);
-    }
-
-    searchGame(query : any)
-    {
-        this.query = query
-
-        return this.http.get(
-            'http://localhost:5000/api/v1.0/venues/search?query=' + query
-        );
-    }
-
-    getCountOfVenues()
-    {
-        return this.http.get(
-            'http://localhost:5000/api/v1.0/venues/count'
-        );
-    }
-
+    
     getVenues(page : number)
     {
         return this.http.get(
             'http://localhost:5000/api/v1.0/venues?pn=' + page
         );
     }
-
+    
     getVenueByID(id : any)
     {
         this.venue_id = id;
@@ -140,6 +118,23 @@ export class WebService
             'http://localhost:5000/api/v1.0/venues/' + id
         );
     }
+
+    searchVenue(query : any)
+    {
+        this.query = query
+        
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/venues/search?query=' + query
+        );
+    }
+    
+    getCountOfVenues()
+    {
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/venues/count'
+        );
+    }
+
 
     addLike(venue_id : any, oauth_id : any)
     {
@@ -151,13 +146,13 @@ export class WebService
             'http://localhost:5000/api/v1.0/venues/' + this.venue_id + '/likes_dislikes/likes', postData
         );
     }
-
+    
     addDislike(venue_id : any, oauth_id : any)
     {
         this.venue_id = venue_id;
         let postData = new FormData();
         postData.append("oauth_id", oauth_id);
-
+        
         return this.http.post(
             'http://localhost:5000/api/v1.0/venues/' + this.venue_id + '/likes_dislikes/dislikes', postData
         );
@@ -174,27 +169,66 @@ export class WebService
     getLikesDislikesFromUser(oauth_id : any)
     {
         this.oauth_id = oauth_id;
-
+        
         return this.http.get(
             'http://localhost:5000/api/v1.0/users/' + this.oauth_id + '/likes_dislikes'
         )
     }
 
-    removeUserLikeFromGame(venue_id : any, oauth_id : any)
+    // Communities
+    getCommunities(page : any)
     {
-        this.venue_id = venue_id;
-        this.oauth_id = oauth_id;
-
-        return this.http.delete(
-            'http://localhost:5000/api/v1.0/venues/' + this.venue_id + '/likes_dislikes/likes?user_id=' + this.oauth_id)
+        return this.http.get('http://localhost:5000/api/v1.0/communities?pn=' + page);
     }
 
-    removeUserDislikeFromGame(venue_id : any, oauth_id : any)
+    getCommunityByID(id : any)
     {
-        this.venue_id = venue_id;
-        this.oauth_id = oauth_id;
+        this.community_id = id;
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/communities/' + this.community_id
+        );
+    }
 
-        return this.http.delete(
-            'http://localhost:5000/api/v1.0/venues/' + this.venue_id + '/likes_dislikes/dislikes?oauth_id=' + this.oauth_id)
+    searchCommunity(query : any)
+    {
+        this.query = query
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/communities/search?query=' + this.query
+        );
+    }
+
+    addCommunityDetails(data : any)
+    {
+        return this.http.post('http://localhost:5000/api/v1.0/communities/information', data);
+    }
+
+    uploadCommunityImage(data : any)
+    {
+        let postData = new FormData();
+        postData.append("uploadFile", data.uploadFile);
+
+        return this.http.post(this.cciURL, postData);
+    }
+
+    deleteCommunityImage(id : any, file_path : any)
+    {
+        const file_path_full = file_path.split('/');
+        const file_path_id = file_path_full[file_path_full.length - 1];
+        const url = `${this.dciURL.replace('{id}', id)}`;
+        const url_full = `${url.replace('{path}', file_path_id)}`;
+        console.log(url_full)
+        return this.http.delete(url_full);
+    }
+
+    updateCommunityDetails(id: string, data: any)
+    {
+        return this.http.put(`http://localhost:5000/api/v1.0/communities/information/${id}`, data);
+    }
+
+    deleteCommunity(id : any)
+    {
+        this.community_id = id;
+
+        return this.http.delete(`http://localhost:5000/api/v1.0/communities/${this.community_id}`);
     }
 }

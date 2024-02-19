@@ -11,6 +11,7 @@ import { VenuesAddDialogComponent } from './venues-add-dialog/venues-add-dialog.
 import { MatDialog } from "@angular/material/dialog";
 import { VenueUpdateDialogComponent } from "./venue-update-dialog/venue-update-dialog.component";
 import { ProfileUpdateDialogComponent } from "./profile-update-dialog/profile-update-dialog.component";
+import { CommunitiesAddDialogComponent } from "./communities-add-dialog/communities-add-dialog.component";
 
 @Injectable()
 export class SharedService
@@ -21,6 +22,7 @@ export class SharedService
     private user : any;
     private is_authenticated : any;
     venue_data: any;
+    community_data : any;
 
     constructor(private http : HttpClient,
                 private snackBar : MatSnackBar,
@@ -34,6 +36,21 @@ export class SharedService
         {
             width: '400px',
             data: this.venue_data,
+            hasBackdrop: true,
+        });
+
+        dialogRef.afterClosed().subscribe((result : any) =>
+        {
+            console.log('The dialog was closed');
+        });
+    }
+
+    showAddCommunityDialog()
+    {
+        const dialogRef = this.dialog.open(CommunitiesAddDialogComponent,
+        {
+            width: '400px',
+            data: this.community_data,
             hasBackdrop: true,
         });
 

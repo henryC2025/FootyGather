@@ -12,20 +12,21 @@ import { map } from 'rxjs';
   templateUrl: './venues-add-dialog.component.html',
   styleUrl: './venues-add-dialog.component.css'
 })
-export class VenuesAddDialogComponent {
-    @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement> | undefined;
-    venue_form: FormGroup;
-    selected_file: File | null = null;
-    image_preview: string | ArrayBuffer | null = null;
+export class VenuesAddDialogComponent
+{
+    @ViewChild('fileInput') fileInput : ElementRef<HTMLInputElement> | undefined;
+    venue_form : FormGroup;
+    selected_file : File | null = null;
+    image_preview : string | ArrayBuffer | null = null;
     venue_image : any;
 
     constructor(public authService : AuthService,
                 public webService : WebService,
                 public sharedService : SharedService,
                 public router : Router,
-                @Inject(MAT_DIALOG_DATA) public data: any,
-                private fb: FormBuilder,
-                public dialogRef: MatDialogRef<VenuesAddDialogComponent>)
+                @Inject(MAT_DIALOG_DATA) public data : any,
+                private fb : FormBuilder,
+                public dialogRef : MatDialogRef<VenuesAddDialogComponent>)
                 {
                     this.venue_form = this.fb.group(
                     {

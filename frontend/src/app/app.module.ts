@@ -29,6 +29,7 @@ import { VenueComponent } from './venue/venue.component';
 import { VenuesAddDialogComponent } from './venues-add-dialog/venues-add-dialog.component';
 import { VenueUpdateDialogComponent } from './venue-update-dialog/venue-update-dialog.component';
 import { ProfileUpdateDialogComponent } from './profile-update-dialog/profile-update-dialog.component';
+import { CommunitiesAddDialogComponent } from './communities-add-dialog/communities-add-dialog.component';
 
 var routes : any = [
   {
@@ -83,6 +84,7 @@ var routes : any = [
     VenuesAddDialogComponent,
     VenueUpdateDialogComponent,
     ProfileUpdateDialogComponent,
+    CommunitiesAddDialogComponent,
   ],
   imports: [
     BrowserModule,

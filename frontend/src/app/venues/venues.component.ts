@@ -66,7 +66,7 @@ export class VenuesComponent
     {   
         if(this.search_query)
         {
-            this.webService.searchGame(this.search_query).subscribe(
+            this.webService.searchVenue(this.search_query).subscribe(
             {
                 next: (response : any) =>
                 {

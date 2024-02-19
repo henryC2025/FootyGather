@@ -1,1 +1,75 @@
-<p>communities works!</p>
+<div class="container" id="content-container">
+    <div class="row">
+
+        <div class="input-group mb-3" id="search-button">
+            <input type="text" class="form-control" placeholder="Search for communities by name" [(ngModel)]="search_query" (input)="search()">
+        </div>
+
+            <div class="input-group mb-3" id="admin-add-venue">
+                <button id="fg-button" (click)="sharedService.showAddCommunityDialog()">Add Community</button>
+            </div>
+
+            <!-- Display search results -->
+            <div *ngFor= "let community of (search_query ? search_results : community_list | async)" class="col-md-6 mb-4">
+
+                <!-- Background colour and link to single venue -->
+                <div class="card text-white custom-bg-color mb-3 venue-card"
+                    style="cursor: pointer;" [routerLink]="['/venues', community._id]">
+
+                <!-- Header for card -->
+                <div class="card-header">
+                    <div id="venue-name" class="truncate-text">
+                      {{community.name}}
+                    </div>
+                </div>
+
+                <!-- Large Image -->
+                <div class="image-container">
+                    <img [src]="community.image[0]" class="img-thumbnail rounded-0 venues-image" alt="{{community.name}}">
+                </div>
+
+                <!-- Footer for card -->
+                <div class="card-footer" id="card-footer">
+                    <div class="col-md-12" id="venues-details">
+                        <p>Location: {{community.location}}</p>
+                    </div>
+
+                    <div class="col-md-12" id="venues-details">
+                        <p>Total Players: {{community.total_players}}</p>
+                    </div>
+                    
+                </div> <!-- End of footer -->
+                </div> <!-- End of card -->
+            </div> <!-- End of ng -->
+    </div> <!-- End of row -->
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation" *ngIf="!search_query">
+        <ul class="pagination">
+
+            <li class="page-item">
+                <button class="page-link" (click)="firstPage()">First</button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" (click)="previousPage()" [disabled]="page === 1">{{"\<"}}</button>
+            </li>
+            
+            <ng-container *ngFor="let pageNum of [page - 2, page - 1, page, page + 1, page + 2]">
+                <li class="page-item" *ngIf="pageNum > 0 && pageNum <= total_pages" [class.active]="pageNum === page">
+                    <button class="page-link" (click)="goToPage(pageNum)">{{pageNum}}</button>
+                </li>
+            </ng-container>                  
+
+            <li class="page-item">
+                <button class="page-link" (click)="nextPage()">{{"\>"}}</button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" (click)="lastPage()">Last</button>
+            </li>
+        </ul>
+    </nav>
+    <!-- End of Pagination -->
+
+</div> <!-- End of container -->
