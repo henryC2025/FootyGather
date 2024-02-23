@@ -18,12 +18,33 @@ export class CommunitiesComponent
     user : any;
     is_admin: boolean = false;
 
+    origin: string = 'ballymena';
+    destination: string = 'belfast';
+    distance: string = '';
+    errorMessage: string = '';
+    lat : any | null;
+    lng : any | null;
+
     constructor(public authService : AuthService,
                 public webService : WebService,
                 public sharedService : SharedService) {}
 
     ngOnInit()
     {
+        if (navigator.geolocation)
+        {
+            navigator.geolocation.getCurrentPosition(position =>
+            {
+                this.lat = position.coords.latitude;
+                this.lng = position.coords.longitude;
+                console.log(this.lat + ", " + this.lng);
+            });
+        }
+        else
+        {
+            console.log("Geolocation is not supported by this browser.");
+        }
+
         if(sessionStorage['page'])
         {
             this.page = Number(sessionStorage['page']);
@@ -122,6 +143,50 @@ export class CommunitiesComponent
         this.page = pageNum;
         sessionStorage['page'] = this.page;
         this.community_list = this.webService.getCommunities(this.page);
+    }
+
+    calculateDistance()
+    {
+        this.webService.calculateDistance(this.origin, this.destination).subscribe(
+        {
+            next : (data : any) =>
+            {
+                if (data.status === 'OK' && data.rows.length > 0)
+                {
+                    const row = data.rows[0];
+                    if (row && row.elements.length > 0) {
+                        const element = row.elements[0];
+                        if (element.status === 'OK')
+                        {
+                            const distanceText = element.distance.text;
+                            const distanceValue = element.distance.value;
+                            const durationText = element.duration.text;
+                            const durationValue = element.duration.value;
+
+                            // RETURN THIS DATA HERE
+                            console.log(`Distance: ${distanceText} (${distanceValue} meters)`);
+                            console.log(`Duration: ${durationText} (${durationValue} seconds)`);
+                        }
+                        else
+                        {
+                            console.error('Error calculating distance:', element.status);
+                        }
+                    }
+                    else
+                    {
+                        console.error('No elements found in the response');
+                    }
+                }
+                else
+                {
+                    console.error('Invalid response received:', data);
+                }
+            },
+            error : (error : any) =>
+            {
+                console.log("Something went wrong!")
+            }
+        })
     }
 
 // COMMUNITIES

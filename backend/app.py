@@ -5,6 +5,7 @@ import datetime
 import uuid
 import jwt
 from flask_cors import CORS
+import requests
 
 app = Flask(__name__)
 CORS(app)
@@ -660,6 +661,16 @@ def remove_dislike(venue_id):
 @app.route('/api/v1.0/test', methods=['GET'])
 def testConnection():
     return "200"
+
+@app.route('/api/v1.0/distance', methods=['GET'])
+def get_distance():
+    origin = request.args.get('origin')
+    destination = request.args.get('destination')
+    api_key = 'AIzaSyAYYaztrROgb-QD7ibhLJorPJILazXCNAo'
+
+    url = f'https://maps.googleapis.com/maps/api/distancematrix/json?origins={origin}&destinations={destination}&units=imperial&key={api_key}'
+    response = requests.get(url)
+    return make_response(jsonify(response.json()), 200)
 
 if __name__ == '__main__':
     app.run(debug=True)

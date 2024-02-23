@@ -231,4 +231,12 @@ export class WebService
 
         return this.http.delete(`http://localhost:5000/api/v1.0/communities/${this.community_id}`);
     }
+
+    calculateDistance(origin: string, destination: string)
+    {
+        let baseUrl = 'http://localhost:5000/api/v1.0/';
+        
+        const url = `${baseUrl}/distance?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
+        return this.http.get<any>(url);
+    }
 }
