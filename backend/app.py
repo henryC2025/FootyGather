@@ -183,9 +183,9 @@ def get_all_users():
 
 ######################################################################
 
-# Get all communities
+# Get communities
 @app.route('/api/v1.0/communities', methods=['GET'])
-def get_all_communities():
+def get_communities():
     try:
         page_num, page_size = 1, 12
         if request.args.get('pn'): 
@@ -206,6 +206,25 @@ def get_all_communities():
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Get all communities
+@app.route('/api/v1.0/all_communities', methods=['GET'])
+def get_all_communities():
+    try:
+        communities_list = []
+
+        # Retrieve all communities without pagination
+        for community in communities.find():
+            community['_id'] = str(community['_id'])
+            for comment in community['comments']:
+                comment['_id'] = str(comment['_id'])
+            communities_list.append(community)
+
+        return make_response(jsonify(communities_list), 200)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
 
 # Search community
 @app.route('/api/v1.0/communities/search', methods=['GET'])
@@ -657,11 +676,6 @@ def remove_dislike(venue_id):
     else:
         return make_response(jsonify({'error_message': 'Venue not found'}), 404)
 
-
-@app.route('/api/v1.0/test', methods=['GET'])
-def testConnection():
-    return "200"
-
 @app.route('/api/v1.0/distance', methods=['GET'])
 def get_distance():
     origin = request.args.get('origin')
@@ -671,6 +685,41 @@ def get_distance():
     url = f'https://maps.googleapis.com/maps/api/distancematrix/json?origins={origin}&destinations={destination}&units=imperial&key={api_key}'
     response = requests.get(url)
     return make_response(jsonify(response.json()), 200)
+
+@app.route('/api/v1.0/communities/save_distance', methods=['POST'])
+def save_community_distance():
+    try:
+        data = request.get_json()
+        community_id = data.get('community_id')
+        distance_from_user = data.get('distance_from_user')
+
+        community = communities.find_one({'_id': ObjectId(community_id)})
+        if not community:
+            return make_response(jsonify({'error': 'Community not found'}), 404)
+
+        communities.update_one(
+            {'_id': ObjectId(community_id)},
+            {'$set': {'distance_from_user': distance_from_user}}
+        )
+
+        return make_response(jsonify({'message': 'Distance saved successfully'}), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/v1.0/communities/distance_unavailable', methods=['POST'])
+def reset_community_distance():
+    try:
+        data = request.get_json()
+        community_id = data.get('community_id')
+        
+        communities.update_one(
+            {'_id': ObjectId(community_id)},
+            {'$set': {'distance_from_user': 'Distance From User Not Available'}}
+        )
+
+        return make_response(jsonify({'message': 'Distance saved successfully'}), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

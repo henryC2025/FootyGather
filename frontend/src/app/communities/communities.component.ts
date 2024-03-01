@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { WebService } from '../web.service';
 import { SharedService } from '../shared.service';
+import { Observable, catchError, concatMap, map, of, tap, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-communities',
@@ -13,13 +14,14 @@ export class CommunitiesComponent
     search_query: string = '';
     search_results: any = [];
     community_list : any = [];
+    all_community_list : any = [];
     page : number = 1;
     total_pages : number = 1;
     user : any;
     is_admin: boolean = false;
 
-    origin: string = 'ballymena';
-    destination: string = 'belfast';
+    origin: string = '';
+    destination: string = '';
     distance: string = '';
     errorMessage: string = '';
     lat : any | null;
@@ -31,32 +33,30 @@ export class CommunitiesComponent
 
     ngOnInit()
     {
+        // this.community_list = this.webService.getCommunities(this.page);
+        this.community_list = this.webService.getAllCommunities();
         if (navigator.geolocation)
         {
             navigator.geolocation.getCurrentPosition(position =>
             {
                 this.lat = position.coords.latitude;
                 this.lng = position.coords.longitude;
-                console.log(this.lat + ", " + this.lng);
+                this.getLocationName(this.lat, this.lng);
+                this.getCommunities();
+                this.community_list = this.webService.getCommunities(this.page);
             });
         }
         else
         {
             console.log("Geolocation is not supported by this browser.");
+            // Call reset distance from user to not supported
         }
 
         if(sessionStorage['page'])
         {
             this.page = Number(sessionStorage['page']);
         }
-        
-        this.community_list = this.webService.getCommunities(this.page);
 
-        // this.webService.getCountOfCommunities().subscribe((data: any) =>
-        // {
-        //     const count_of_communities = parseInt(data);
-        //     this.total_pages = Math.ceil(count_of_venues / 12);
-        // });
 
         this.authService.user$.subscribe((userData: any) =>
         {
@@ -71,10 +71,24 @@ export class CommunitiesComponent
             {
                 this.webService.getUserDetails(userDetails).subscribe((data: any) =>
                 {
-                    console.log(data)
                     this.is_admin = (data.is_admin == "true");
-                    console.log("Am I the admin - ", this.is_admin)
                 });
+            }
+        });
+    }
+
+    getLocationName(latitude: number, longitude: number)
+    {
+        this.webService.getAddressFromCoordinates(latitude, longitude).subscribe(response =>
+        {
+            if (response && response.status === 'OK')
+            {
+                const address = response.results[0].formatted_address;
+                this.origin = address;
+            }
+            else
+            {
+                console.error('Error retrieving address:', response);
             }
         });
     }
@@ -87,11 +101,11 @@ export class CommunitiesComponent
             {
                 next: (response : any) =>
                 {
-                  this.search_results = response;
+                    this.search_results = response;
                 },
                 error: (error) =>
                 {
-                  console.error('Error:', error);
+                    console.error('Error:', error);
                 }
             })
         }
@@ -145,46 +159,112 @@ export class CommunitiesComponent
         this.community_list = this.webService.getCommunities(this.page);
     }
 
-    calculateDistance()
+    calculateCommunityDistance(destination: any)
     {
-        this.webService.calculateDistance(this.origin, this.destination).subscribe(
+        this.destination = destination;
+        console.log("Origin: " + this.origin);
+        console.log("Destination: " + this.destination);
+        if (!this.origin || !this.destination)
         {
-            next : (data : any) =>
+            this.sharedService.showNotification('No origin or destination found', 'error');
+        }
+
+        return this.webService.calculateDistance(this.origin, this.destination).pipe(
+            map((data: any) =>
             {
                 if (data.status === 'OK' && data.rows.length > 0)
                 {
                     const row = data.rows[0];
-                    if (row && row.elements.length > 0) {
+                    if (row && row.elements.length > 0)
+                    {
                         const element = row.elements[0];
                         if (element.status === 'OK')
                         {
-                            const distanceText = element.distance.text;
-                            const distanceValue = element.distance.value;
-                            const durationText = element.duration.text;
-                            const durationValue = element.duration.value;
-
-                            // RETURN THIS DATA HERE
-                            console.log(`Distance: ${distanceText} (${distanceValue} meters)`);
-                            console.log(`Duration: ${durationText} (${durationValue} seconds)`);
+                            const distance_text = element.distance.text;
+                            const distance_value = this.sharedService.metersToMiles(element.distance.value);
+                            const duration_text = element.duration.text;
+                            const duration_value = this.sharedService.metersToMiles(element.duration.value);
+            
+                        return {
+                            distance: {
+                            text: distance_text,
+                            value: distance_value
+                            },
+                            duration: {
+                            text: duration_text,
+                            value: duration_value
+                            }
+                        };
                         }
                         else
                         {
                             console.error('Error calculating distance:', element.status);
+                            return null;
                         }
                     }
                     else
                     {
                         console.error('No elements found in the response');
+                        return null;
                     }
-                }
+                } 
                 else
                 {
                     console.error('Invalid response received:', data);
+                    return null;
                 }
-            },
-            error : (error : any) =>
+            }),
+            catchError(error =>
             {
-                console.log("Something went wrong!")
+                console.error('Error calculating distance:', error);
+                return throwError('Error calculating distance');
+            })
+        );
+    }
+
+    getCommunities()
+    {
+        this.webService.getAllCommunities().subscribe((communityList: any) =>
+        {
+            this.all_community_list = communityList;
+            this.calculateAndSaveDistanceForCommunities();
+        });
+    }
+
+    calculateAndSaveDistanceForCommunities()
+    {
+        for (let i = 0; i < this.all_community_list.length; i++)
+        {
+            const community = this.all_community_list[i];
+            this.calculateCommunityDistance(community.location).subscribe((distanceData: any) =>
+            {
+                this.saveDistanceForCommunity(community._id, distanceData);
+            });
+        }
+        console.log("Finished calculating distances!");
+    }
+
+    saveDistanceForCommunity(community_id: string, distance_json_data : any)
+    {
+        const distance_text = distance_json_data.distance.text;
+        const distance_value = distance_json_data.distance.value;
+        const duration_text = distance_json_data.duration.text;
+        const duration_value = distance_json_data.duration.value;
+        const distance_data =
+        {
+            community_id : community_id,
+            distance_from_user : distance_value
+        }
+
+        this.webService.saveCommunityDistanceFromUser(distance_data).subscribe(
+        {
+            next : () =>
+            {
+                console.log(`Distance saved for community ${community_id}`);
+            },
+            error : () =>
+            {
+
             }
         })
     }

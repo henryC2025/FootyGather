@@ -200,4 +200,11 @@ export class SharedService
             },
         });
     }
+
+    metersToMiles(meters : number)
+    {
+        const miles = meters / 1609.34;
+        const roundedMiles = Math.round(miles * 100) / 100;
+        return roundedMiles;
+    }
 }

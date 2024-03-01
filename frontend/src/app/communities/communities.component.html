@@ -7,12 +7,10 @@
 
             <div class="input-group mb-3" id="admin-add-venue">
                 <button id="fg-button" (click)="sharedService.showAddCommunityDialog()">Add Community</button>
-                <button id="fg-button" (click)="calculateDistance()">Check Distance</button>
             </div>
 
             <!-- Display search results -->
             <div *ngFor= "let community of (search_query ? search_results : community_list | async)" class="col-md-6 mb-4">
-
                 <!-- Background colour and link to single venue -->
                 <div class="card text-white custom-bg-color mb-3 venue-card"
                     style="cursor: pointer;" [routerLink]="['/venues', community._id]">
@@ -36,6 +34,10 @@
                     </div>
 
                     <div class="col-md-12" id="venues-details">
+                        <p>Distance: {{community.distance_from_user}} miles</p>
+                    </div>
+
+                    <div class="col-md-12" id="venues-details">
                         <p>Total Players: {{community.total_players}}</p>
                     </div>
                     
@@ -55,12 +57,12 @@
             <li class="page-item">
                 <button class="page-link" (click)="previousPage()" [disabled]="page === 1">{{"\<"}}</button>
             </li>
-            
+
             <ng-container *ngFor="let pageNum of [page - 2, page - 1, page, page + 1, page + 2]">
                 <li class="page-item" *ngIf="pageNum > 0 && pageNum <= total_pages" [class.active]="pageNum === page">
                     <button class="page-link" (click)="goToPage(pageNum)">{{pageNum}}</button>
                 </li>
-            </ng-container>                  
+            </ng-container>
 
             <li class="page-item">
                 <button class="page-link" (click)="nextPage()">{{"\>"}}</button>

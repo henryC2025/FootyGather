@@ -181,6 +181,11 @@ export class WebService
         return this.http.get('http://localhost:5000/api/v1.0/communities?pn=' + page);
     }
 
+    getAllCommunities()
+    {
+        return this.http.get('http://localhost:5000/api/v1.0/all_communities');
+    }
+
     getCommunityByID(id : any)
     {
         this.community_id = id;
@@ -238,5 +243,23 @@ export class WebService
         
         const url = `${baseUrl}/distance?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
         return this.http.get<any>(url);
+    }
+
+    getAddressFromCoordinates(latitude : number, longitude : number)
+    {
+        const api_key = 'AIzaSyAYYaztrROgb-QD7ibhLJorPJILazXCNAo';
+        let geocodingApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
+        const url = `${geocodingApiUrl}?latlng=${latitude},${longitude}&key=${api_key}`;
+        return this.http.get<any>(url);
+    }
+
+    saveCommunityDistanceFromUser(data : any)
+    {
+        return this.http.post('http://localhost:5000/api/v1.0/communities/save_distance', data);
+    }
+
+    resetCommunityDistanceFromUser(data : any)
+    {
+        return this.http.post('http://localhost:5000/api/v1.0/communities/distance_unavailable', data);
     }
 }

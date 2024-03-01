@@ -69,6 +69,7 @@ def generate_sample_community():
         'created_at' : datetime.datetime.utcnow(),
         'current_games' : ['001', '002', '003'],
         'previous_games' : ['004, 005, 006'],
+        'distance_from_user' : 0,
         'total_players' : len(players),
         'players' : players,
         'comments' : comments
