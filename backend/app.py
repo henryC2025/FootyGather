@@ -714,10 +714,37 @@ def reset_community_distance():
         
         communities.update_one(
             {'_id': ObjectId(community_id)},
-            {'$set': {'distance_from_user': 'Distance From User Not Available'}}
+            {'$set': {'distance_from_user': 0}}
         )
 
         return make_response(jsonify({'message': 'Distance saved successfully'}), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+# Sort communtities by distance
+@app.route('/api/v1.0/communities/sort', methods=['GET'])
+def sort_communities_by_distance():
+    try:
+        sort_option = request.args.get('sort_option', default='closest')
+        communities_list = []
+
+        # Retrieve all communities without pagination
+        if sort_option == 'closest':
+            for community in communities.find().sort('distance_from_user', 1):
+                community['_id'] = str(community['_id'])
+                for comment in community['comments']:
+                    comment['_id'] = str(comment['_id'])
+                communities_list.append(community)
+        elif sort_option == 'furthest':
+            for community in communities.find().sort('distance_from_user', -1):
+                community['_id'] = str(community['_id'])
+                for comment in community['comments']:
+                    comment['_id'] = str(comment['_id'])
+                communities_list.append(community)
+        else:
+            return make_response(jsonify({'error': 'Invalid sort option'}), 400)
+
+        return make_response(jsonify(communities_list), 200)
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 500)
 

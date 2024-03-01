@@ -5,9 +5,20 @@
             <input type="text" class="form-control" placeholder="Search for communities by name" [(ngModel)]="search_query" (input)="search()">
         </div>
 
-            <div class="input-group mb-3" id="admin-add-venue">
-                <button id="fg-button" (click)="sharedService.showAddCommunityDialog()">Add Community</button>
+            <div class="container mb-3">
+                <div class="row">
+                  <div class="col-md-3">
+                    <button id="fg-button" (click)="sharedService.showAddCommunityDialog()">Add Community</button>
+                  </div>
+                  <div class="col-md-9">
+                    <select class="form-select" [(ngModel)]="selectedSortOption" (change)="onSortChange()">
+                      <option value="closest">Sort by Closest Distance</option>
+                      <option value="furthest">Sort by Furthest Distance</option>
+                    </select>
+                  </div>
+                </div>
             </div>
+
 
             <!-- Display search results -->
             <div *ngFor= "let community of (search_query ? search_results : community_list | async)" class="col-md-6 mb-4">

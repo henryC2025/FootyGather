@@ -11,6 +11,7 @@ import { Observable, catchError, concatMap, map, of, tap, throwError } from 'rxj
 })
 export class CommunitiesComponent
 {
+    selectedSortOption: string = "closest";
     search_query: string = '';
     search_results: any = [];
     community_list : any = [];
@@ -37,20 +38,61 @@ export class CommunitiesComponent
         this.community_list = this.webService.getAllCommunities();
         if (navigator.geolocation)
         {
-            navigator.geolocation.getCurrentPosition(position =>
+            console.log("Geolocation is supported");
+            navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus =>
             {
-                this.lat = position.coords.latitude;
-                this.lng = position.coords.longitude;
-                this.getLocationName(this.lat, this.lng);
-                this.getCommunities();
-                this.community_list = this.webService.getCommunities(this.page);
+                if (permissionStatus.state === 'granted')
+                {
+                    console.log('Geolocation permission granted');
+                    navigator.geolocation.getCurrentPosition(position =>
+                    {
+                        this.lat = position.coords.latitude;
+                        this.lng = position.coords.longitude;
+                        this.getLocationName(this.lat, this.lng);
+                        this.getCommunities();
+                        this.community_list = this.webService.getCommunities(this.page);
+                    });
+                }
+                else
+                {
+                    console.log('Geolocation permission not granted');
+                    this.webService.getAllCommunities().subscribe((communityList: any) =>
+                    {
+                        this.all_community_list = communityList;
+                        this.resetDistanceForAllCommunities();
+                    });
+                    this.community_list = this.webService.getCommunities(this.page);
+                    console.log("Geolocation is not supported by this browser.");
+                }
             });
         }
         else
         {
-            console.log("Geolocation is not supported by this browser.");
-            // Call reset distance from user to not supported
+            console.log("Geolocation not supported!")
         }
+        // if (navigator.geolocation)
+        // {
+        //     console.log("geo here")
+        //     navigator.geolocation.getCurrentPosition(position =>
+        //     {
+        //         this.lat = position.coords.latitude;
+        //         this.lng = position.coords.longitude;
+        //         this.getLocationName(this.lat, this.lng);
+        //         this.getCommunities();
+        //         this.community_list = this.webService.getCommunities(this.page);
+        //     });
+        // }
+        // else
+        // {
+        //     this.webService.getAllCommunities().subscribe((communityList: any) =>
+        //     {
+        //         this.all_community_list = communityList;
+        //         this.resetDistanceForAllCommunities();
+        //     });
+        //     this.community_list = this.webService.getCommunities(this.page);
+        //     console.log("Geolocation is not supported by this browser.");
+        //     // Call reset distance from user to not supported
+        // }
 
         if(sessionStorage['page'])
         {
@@ -233,23 +275,24 @@ export class CommunitiesComponent
 
     calculateAndSaveDistanceForCommunities()
     {
-        for (let i = 0; i < this.all_community_list.length; i++)
+        if(this.all_community_list)
         {
-            const community = this.all_community_list[i];
-            this.calculateCommunityDistance(community.location).subscribe((distanceData: any) =>
+            for (let i = 0; i < this.all_community_list.length; i++)
             {
-                this.saveDistanceForCommunity(community._id, distanceData);
-            });
+                const community = this.all_community_list[i];
+                this.calculateCommunityDistance(community.location).subscribe((distanceData: any) =>
+                {
+                    this.saveDistanceForCommunity(community._id, distanceData);
+                });
+            }
+            console.log("Finished calculating distances!");
         }
-        console.log("Finished calculating distances!");
     }
 
     saveDistanceForCommunity(community_id: string, distance_json_data : any)
     {
-        const distance_text = distance_json_data.distance.text;
         const distance_value = distance_json_data.distance.value;
-        const duration_text = distance_json_data.duration.text;
-        const duration_value = distance_json_data.duration.value;
+
         const distance_data =
         {
             community_id : community_id,
@@ -268,6 +311,57 @@ export class CommunitiesComponent
             }
         })
     }
+
+    resetDistanceForAllCommunities()
+    {
+        for (let i = 0; i < this.all_community_list.length; i++)
+        {
+            const community = this.all_community_list[i];
+            this.resetDistanceForCommunity(community._id);
+        }
+    }
+
+    resetDistanceForCommunity(community_id : string)
+    {
+        const data =
+        {
+            community_id : community_id
+        }
+
+        this.webService.resetCommunityDistanceFromUser(data).subscribe(
+        {
+            next : () =>
+            {
+                console.log("Distance reset for commnitiy: " + community_id);
+            },
+            error : (error : any) =>
+            {
+                console.log("Something went wrong resetting the communities!")
+                console.log(error)
+            }
+        })
+    }
+
+    //  TO DO 
+    onSortChange()
+    {
+        if (this.selectedSortOption === 'closest')
+        {
+            this.community_list = this.webService.getSortedCommunities("closest");
+            // Handle sorting by closest distance
+            console.log(this.community_list)
+            console.log('Sorting by Closest Distance');
+            // Call a method to sort by closest distance
+        }
+        else if (this.selectedSortOption === 'furthest')
+        {
+            this.community_list = this.webService.getSortedCommunities("furthest");
+            // Handle sorting by furthest distance
+            console.log(this.community_list)
+            console.log('Sorting by Furthest Distance');
+            // Call a method to sort by furthest distance
+        }
+      }
 
 // COMMUNITIES
 // - ObjectID

@@ -262,4 +262,9 @@ export class WebService
     {
         return this.http.post('http://localhost:5000/api/v1.0/communities/distance_unavailable', data);
     }
+
+    getSortedCommunities(sort_option : string)
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/sort?sort_option=${sort_option}`);
+    }
 }

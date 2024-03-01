@@ -163,7 +163,9 @@ export class CommunitiesAddDialogComponent {
                     if(response === false)
                     {
                         this.sharedService.showNotification("Please sign in to access add a new community.", "error");
+                        this.onClose();
                         this.router.navigate(['/']);
+                        return;
                     }
 
                     const form_data =
