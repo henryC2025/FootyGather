@@ -20,7 +20,7 @@ export class WebService
     private cciURL = 'https://prod-27.centralus.logic.azure.com:443/workflows/cd7fe63d7af94240a8aaa3d3a38288c8/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7Fg4r1odgjnX8cZqPkxKxR47K1S1aqpAJljn6s9ov-Y'
     private dciURL = 'https://prod-20.centralus.logic.azure.com/workflows/79b108a852ce417c93260c0c8ebbe2a5/triggers/manual/paths/invoke/rest/v1/communities/media/{id}/{path}?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=kWdx4MOL4QD5wB5tPlGytctC4058kmf_JEVc2ZT92dk'
     constructor(private http: HttpClient) {}
-    
+
     //  Users
     uploadProfileImage(data : any)
     {
@@ -103,14 +103,14 @@ export class WebService
         console.log(url_full)
         return this.http.delete(url_full);
     }
-    
+
     getVenues(page : number)
     {
         return this.http.get(
             'http://localhost:5000/api/v1.0/venues?pn=' + page
         );
     }
-    
+
     getVenueByID(id : any)
     {
         this.venue_id = id;
@@ -127,14 +127,13 @@ export class WebService
             'http://localhost:5000/api/v1.0/venues/search?query=' + query
         );
     }
-    
+
     getCountOfVenues()
     {
         return this.http.get(
             'http://localhost:5000/api/v1.0/venues/count'
         );
     }
-
 
     addLike(venue_id : any, oauth_id : any)
     {
@@ -266,5 +265,12 @@ export class WebService
     getSortedCommunities(sort_option : string)
     {
         return this.http.get(`http://localhost:5000/api/v1.0/communities/sort?sort_option=${sort_option}`);
+    }
+
+    getCountOfCommunities()
+    {
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/communities/count'
+        );
     }
 }

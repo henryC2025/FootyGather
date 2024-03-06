@@ -5,27 +5,43 @@
         <div class="venue-container">
 
             <!-- Background colour and link to single venue -->
-            <div class="card text-white custom-bg-color mb-3"
-            style="cursor: pointer;"
-            [routerLink]="['/venues', venue._id]">
+            <div class="card text-white mb-3 rounded-0 ">
 
             <!-- Header for card -->
             <div class="card-header">
                 <div id="venue-name">
-                {{venue.name}} - {{venue.location}}
-                </div>
-            </div>
-
-            <!-- Large Image -->
-            <div class="image-container">
-                <img [src]="venue.image[0]" class="img-thumbnail rounded-0 venue-image" alt="{{venue.name}}">
+                {{venue.name}}
                 </div>
             </div>
 
             <!-- Body for card -->
-            <div class="card-body" id="card-body">
+            <div class="card-body" id="venue-card-body">
 
                 <div class="row" id="venue-details">
+                
+                    <div class="col-md-12" id="venue-summary">
+                        <h4>Description</h4>
+                        <p>{{venue.description}}</p>
+                        <hr>
+                    </div>
+
+                    <div class="col-md-12" id="venue-summary">
+                        <h4>Website / Links</h4>
+                        <p>{{venue.contact_info}}</p>
+                        <hr>
+                    </div>
+
+                    <div class="col-md-12" id="venue-summary">
+                        <h4>Address</h4>
+                        <p>{{venue.address}}</p>
+                        <hr>
+                    </div>
+
+                    <div class="col-md-12">
+                        <h4>Games Played</h4>
+                        <p id="venue-details">{{venue.games_played}}</p>
+                        <hr>
+                    </div>
 
                     <div class="col-md-12">
                         <div class="row">
@@ -52,36 +68,18 @@
                         </div>
                         <hr>
                     </div>
-                
-                    <div class="col-md-12" id="venue-summary">
-                        <h4>Description</h4>
-                        <p>{{venue.description}}</p>
-                        <hr>
-                    </div>
-
-                    <div class="col-md-12" id="venue-summary">
-                        <h4>Website / Links</h4>
-                        <p>{{venue.contact_info}}</p>
-                        <hr>
-                    </div>
-
-                    <div class="col-md-12" id="venue-summary">
-                        <h4>Address</h4>
-                        <p>{{venue.address}}</p>
-                        <hr>
-                    </div>
-
-                    <div class="col-md-12">
-                        <h4>Games Played</h4>
-                        <p id="venue-details">{{venue.games_played}}</p>
-                        <hr>
-                    </div>
 
                     <div *ngIf="is_admin" class="input-group mb-3 d-flex justify-content-center" id="admin-add-venue">
                         <hr>
                         <button id="fg-button" (click)="onDeleteVenue(venue_id, venue.image[1], venue.image[2])">Delete Venue (Admin Only)</button>
                         <hr>
                         <button id="fg-button" (click)="onUpdateVenue()">Update Venue (Admin Only)</button>
+                    </div>
+
+                    <!-- Large Image -->
+                    <div class="image-container">
+                        <img [src]="venue.image[0]" class="img-thumbnail rounded-0 venue-image" alt="{{venue.name}}">
+                        </div>
                     </div>
 
                 </div>

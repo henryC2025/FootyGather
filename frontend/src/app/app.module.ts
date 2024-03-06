@@ -44,6 +44,11 @@ var routes : any = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'communities/:id',
+    component: CommunityComponent,
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'venues',
     component: VenuesComponent,
     canActivate: [AuthGuard]

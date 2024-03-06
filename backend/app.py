@@ -748,6 +748,17 @@ def sort_communities_by_distance():
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 500)
 
+# Get count of communities
+@app.route('/api/v1.0/communities/count', methods=['GET'])
+def get_count_of_communities():
+    try:
+        count_of_communities = db.communities.distinct("_id")
+
+        return f"{len(count_of_communities)}"
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
 if __name__ == '__main__':
     app.run(debug=True)
 

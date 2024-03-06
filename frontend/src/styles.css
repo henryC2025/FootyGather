@@ -292,18 +292,26 @@ textarea, input[type="text"], select, input[type="file"]
 
 /* VENUES */
 
+#venues-name
+{
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
 .card-header
 {
     background-color: #2c972c !important;
 }
 
-#venues-details, #venue-name
+#venues-details, #venue-name, #communities-details, #community-name
 {
     color: #272727;
     font-weight: 500;
 }
 
-.venues-image
+.venues-image, .communities-image
 {
     width: 800px !important;
     height: 400px !important;
@@ -344,8 +352,9 @@ textarea, input[type="text"], select, input[type="file"]
 #venue-name
 {
     color: #ffffff;
-    font-size: 20px;
+    font-size: 35px;
     font-weight: 600;
+    letter-spacing: 5px;
     text-transform: uppercase;
 }
 
@@ -358,8 +367,23 @@ textarea, input[type="text"], select, input[type="file"]
 {
     width: 800px !important;
     height: 600px !important;
-    object-fit: contain;
+    object-fit: fill;
     background-color: #272727 !important;
+}
+
+.venue-image-container
+{
+    background-color: #272727;
+}
+
+.venue-image-header
+{
+    color: #272727;
+}
+
+#venue-card-body
+{
+    background-color: #272727;
 }
 
 .like-button i, .dislike-button i
@@ -521,6 +545,12 @@ hr
         height: 50%;
         width: auto;
     }
+
+    .venue-image
+    {
+        object-fit: contain;
+        background-color: #272727 !important;
+    }
 }
 
 /* SCREEN */
@@ -563,4 +593,14 @@ hr
     color: #555;
     font-size: 16px;
     margin-bottom: 20px;
+}
+
+/* COMMUNITIES */
+
+#communities-name
+{
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
 }

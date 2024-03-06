@@ -62,6 +62,11 @@ export class VenuesComponent
         return this.is_admin;
     }
 
+    onAddVenue()
+    {
+        this.sharedService.showAddVenueDialog();
+    }
+
     search()
     {   
         if(this.search_query)

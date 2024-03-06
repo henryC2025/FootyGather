@@ -6,7 +6,7 @@
         </div>
 
             <div *ngIf="is_admin" class="input-group mb-3" id="admin-add-venue">
-                <button id="fg-button" (click)="sharedService.showAddVenueDialog()">Add Venue (Admin Only)</button>
+                <button id="fg-button" (click)="onAddVenue()">Add Venue (Admin Only)</button>
             </div>
 
             <!-- Display search results -->
@@ -18,7 +18,7 @@
 
                 <!-- Header for card -->
                 <div class="card-header">
-                    <div id="venue-name" class="truncate-text">
+                    <div id="venues-name" class="truncate-text">
                       {{venue.name}}
                     </div>
                 </div>
@@ -62,7 +62,7 @@
             </ng-container>                  
 
             <li class="page-item">
-                <button class="page-link" (click)="nextPage()">{{"\>"}}</button>
+                <button class="page-link" (click)="nextPage()" [disabled]="page === total_pages">{{"\>"}}</button>
             </li>
 
             <li class="page-item">
