@@ -271,7 +271,6 @@ def add_community_details():
             "image": community_image,
             "creator_oauth_id" : community_creator_oauth_id,
             "comments": [],
-            "total_players": 0,
             "players": [],
             "current_games" : [],
             "previous_games" : [],
@@ -302,16 +301,7 @@ def update_community_details(community_id):
         community_description = data.get('community_description')
         community_rules = data.get('community_rules')
         community_image = data.get('community_image')
-        community_creator_oauth_id = data.get('community_creator_oauth_id')
 
-        # Retrieve the existing community details
-        existing_community = communities.find_one({"_id": ObjectId(community_id)})
-
-        # Check if the provided oauth_id matches the creator_oauth_id of the community
-        if existing_community['creator_oauth_id'] != community_creator_oauth_id:
-            return make_response(jsonify({'error': 'You are not authorized to update this community'}), 401)
-
-        # Construct the update query
         update_query = {
             "$set": {
                 "name": community_name,
@@ -361,6 +351,66 @@ def delete_community(id):
         return make_response(jsonify({"message": "Community deleted successfully"}), 200)
     else:
         return make_response(jsonify({"error": "Community not found"}), 404)
+
+# Add a route to join a community
+@app.route('/api/v1.0/communities/<community_id>/join', methods=['POST'])
+def join_community(community_id):
+    try:
+        data = request.get_json()
+
+        # Assuming you have some form of authentication to identify the user
+        creator_oauth_id = data.get('creator_oauth_id')
+
+        # Find the community by its ID
+        community = communities.find_one({'_id': ObjectId(community_id)})
+
+        if community:
+            # Check if the user is not already in the community
+            if creator_oauth_id not in community['players']:
+                # Add the user to the community
+                communities.update_one(
+                    {'_id': ObjectId(community_id)},
+                    {'$push': {'players': creator_oauth_id}}
+                )
+
+                return make_response(jsonify({'message': 'User joined the community successfully'}), 200)
+            else:
+                return make_response(jsonify({'message': 'User is already a member of the community'}), 200)
+        else:
+            return make_response(jsonify({'error': 'Community not found'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
+# Add a route to leave a community
+@app.route('/api/v1.0/communities/<community_id>/leave', methods=['POST'])
+def leave_community(community_id):
+    try:
+        data = request.get_json()
+
+        # Assuming you have some form of authentication to identify the user
+        creator_oauth_id = data.get('creator_oauth_id')
+
+        # Find the community by its ID
+        community = communities.find_one({'_id': ObjectId(community_id)})
+
+        if community:
+            # Check if the user is in the community
+            if creator_oauth_id in community['players']:
+                # Remove the user from the community
+                communities.update_one(
+                    {'_id': ObjectId(community_id)},
+                    {'$pull': {'players': creator_oauth_id}}
+                )
+
+                return make_response(jsonify({'message': 'User left the community successfully'}), 200)
+            else:
+                return make_response(jsonify({'message': 'User is not a member of the community'}), 200)
+        else:
+            return make_response(jsonify({'error': 'Community not found'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
 
 # Sort community by date
 
@@ -728,7 +778,6 @@ def sort_communities_by_distance():
         sort_option = request.args.get('sort_option', default='closest')
         communities_list = []
 
-        # Retrieve all communities without pagination
         if sort_option == 'closest':
             for community in communities.find().sort('distance_from_user', 1):
                 community['_id'] = str(community['_id'])
@@ -758,6 +807,133 @@ def get_count_of_communities():
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Add community comment
+@app.route('/api/v1.0/communities/<string:community_id>/add_comment', methods=['POST'])
+def add_community_comment(community_id):
+    try:
+        data = request.get_json()
+
+        comment_oauth_id = data.get('comment_oauth_id')
+        comment_description = data.get('comment_description')
+        comment_user = data.get('comment_user')
+
+        new_comment = {
+            "_id": ObjectId(),
+            "description": comment_description,
+            "user": comment_user,
+            "comment_oauth_id": comment_oauth_id,
+            "created_at": datetime.datetime.utcnow(),
+            "timestamp" : datetime.datetime.utcnow().timestamp()
+        }
+
+        result = communities.update_one(
+        {'_id': ObjectId(community_id)},
+        {'$push': {'comments': new_comment}}
+        )
+
+        if result.modified_count > 0:
+            print('Comment added successfully')
+        else:
+            print('Failed to add comment')
+
+        if result.modified_count > 0:
+            return make_response(jsonify({'message': 'Comment added successfully'}), 200)
+        else:
+            return make_response(jsonify({'error': 'Failed to add comment'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
+# Delete community comment
+@app.route('/api/v1.0/communities/<string:community_id>/delete_comment/<string:comment_id>', methods=['DELETE'])
+def delete_community_comment(community_id, comment_id):
+    try:
+        community = communities.find_one({'_id': ObjectId(community_id)})
+
+        if community:
+            comment_exists = any(str(comment['_id']) == comment_id for comment in community['comments'])
+            if comment_exists:
+                updated_comments = [comment for comment in community['comments'] if str(comment['_id']) != comment_id]
+
+                result = communities.update_one(
+                    {'_id': ObjectId(community_id)},
+                    {'$set': {'comments': updated_comments}}
+                )
+
+                if result.modified_count > 0:
+                    return make_response(jsonify({'message': 'Comment deleted successfully'}), 200)
+                else:
+                    return make_response(jsonify({'error': 'Failed to delete comment'}), 500)
+            else:
+                return make_response(jsonify({'error': 'Comment not found'}), 404)
+        else:
+            return make_response(jsonify({'error': 'Community not found'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': 'An error occurred while deleting a comment. Please try again later.'}), 500)
+
+# Get all comments for a community
+@app.route('/api/v1.0/communities/<string:community_id>/comments', methods=['GET'])
+def get_community_comments(community_id):
+    try:
+        community = communities.find_one({'_id': ObjectId(community_id)})
+        comments_list = []
+        if community:
+            comments = community.get('comments', [])
+            for comment in comments:
+                comment['_id'] = str(comment['_id'])
+                comments_list.append(comment)
+            return make_response(jsonify(comments_list), 200)
+        else:
+            return make_response(jsonify({'error': 'Community not found'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': 'An error occurred while fetching comments. Please try again later.'}), 500)
+
+# Sort communtity comments
+@app.route('/api/v1.0/communities/<string:community_id>/comments/sort', methods=['GET'])
+def sort_community_comments(community_id):
+    try:
+        sort_option = request.args.get('sort_option', default='newest')
+        community = communities.find_one({"_id": ObjectId(community_id)})
+
+        if community and 'comments' in community:
+            # Convert '_id' of the document and comments from ObjectId to str for JSON serialization
+            community['_id'] = str(community['_id'])
+            for comment in community['comments']:
+                comment['_id'] = str(comment['_id'])
+
+            # Sorting comments within the community based on 'timestamp'
+            if sort_option == 'newest':
+                sorted_comments = sorted(community['comments'], key=lambda x: x['timestamp'], reverse=True)
+            else:  # Default to oldest if sort_option is not 'newest'
+                sorted_comments = sorted(community['comments'], key=lambda x: x['timestamp'])
+
+            return make_response(jsonify(sorted_comments), 200)
+        else:
+            return make_response(jsonify({'error': 'Community not found or has no comments'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+
+# @app.route('/api/v1.0/all_communities', methods=['GET'])
+# def get_all_communities():
+#     try:
+#         communities_list = []
+
+#         # Retrieve all communities without pagination
+#         for community in communities.find():
+#             community['_id'] = str(community['_id'])
+#             for comment in community['comments']:
+#                 comment['_id'] = str(comment['_id'])
+#             communities_list.append(community)
+
+#         return make_response(jsonify(communities_list), 200)
+#     except Exception as e:
+#         print(e)
+#         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

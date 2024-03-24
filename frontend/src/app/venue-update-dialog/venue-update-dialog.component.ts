@@ -200,11 +200,11 @@ export class VenueUpdateDialogComponent
                     },
                     error : (error) =>
                     {
-                        this.sharedService.showNotification("Error uploading profile image", "error");
+                        this.sharedService.showNotification("Error uploading venue image", "error");
                     },
                     complete: () =>
                     {
-                        console.log('Profile image upload completed.');
+                        console.log('Venue image upload completed.');
                     }
                 })
             }

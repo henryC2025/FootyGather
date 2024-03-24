@@ -31,6 +31,10 @@ import { VenueUpdateDialogComponent } from './venue-update-dialog/venue-update-d
 import { ProfileUpdateDialogComponent } from './profile-update-dialog/profile-update-dialog.component';
 import { CommunitiesAddDialogComponent } from './communities-add-dialog/communities-add-dialog.component';
 import { CommunityComponent } from './community/community.component';
+import { CommunityUpdateDialogComponent } from './community-update-dialog/community-update-dialog.component';
+import { GamesComponent } from './games/games.component';
+import { GameComponent } from './game/game.component';
+import { CommunityAddCommentDialogComponent } from './community-add-comment-dialog/community-add-comment-dialog.component';
 
 var routes : any = [
   {
@@ -46,6 +50,16 @@ var routes : any = [
   {
     path: 'communities/:id',
     component: CommunityComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'communities/:id/games',
+    component: GamesComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'communities/:id/games/:id',
+    component: GameComponent,
     canActivate: [AuthGuard]
   },
   {
@@ -92,6 +106,10 @@ var routes : any = [
     ProfileUpdateDialogComponent,
     CommunitiesAddDialogComponent,
     CommunityComponent,
+    CommunityUpdateDialogComponent,
+    GamesComponent,
+    GameComponent,
+    CommunityAddCommentDialogComponent,
   ],
   imports: [
     BrowserModule,

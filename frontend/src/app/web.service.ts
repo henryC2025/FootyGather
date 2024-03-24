@@ -269,8 +269,49 @@ export class WebService
 
     getCountOfCommunities()
     {
-        return this.http.get(
-            'http://localhost:5000/api/v1.0/communities/count'
-        );
+        return this.http.get('http://localhost:5000/api/v1.0/communities/count');
+    }
+
+    joinCommunity(data : any, id : any)
+    {
+        this.community_id = id;
+
+        return this.http.post(`http://localhost:5000/api/v1.0/communities/${this.community_id}/join`, data);
+    }
+
+    leaveCommunity(data : any, id : any)
+    {
+        this.community_id = id;
+
+        return this.http.post(`http://localhost:5000/api/v1.0/communities/${this.community_id}/leave`, data);
+    }
+
+    getCommunityComments(id : any)
+    {
+        this.community_id = id;
+
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/comments`);
+    }
+
+    addCommunityComment(id : any, data : any)
+    {
+        this.community_id = id;
+
+        return this.http.post(`http://localhost:5000/api/v1.0/communities/${this.community_id}/add_comment`, data);
+    }
+
+    deleteCommunityComment(community_id : any, comment_id : any)
+    {
+        this.community_id = community_id;
+
+        return this.http.delete(`http://localhost:5000/api/v1.0/communities/${this.community_id}/delete_comment/${comment_id}`);
+    }
+
+    getSortedCommunityComments(community_id : any, sort_option : any)
+    {
+        this.community_id = community_id;
+
+        // http://localhost:5000/api/v1.0/communities/65da3923bdad038c26176f75/comments/sort?sort_option=oldest
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/comments/sort?sort_option=${sort_option}`);
     }
 }

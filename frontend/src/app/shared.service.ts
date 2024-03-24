@@ -12,6 +12,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { VenueUpdateDialogComponent } from "./venue-update-dialog/venue-update-dialog.component";
 import { ProfileUpdateDialogComponent } from "./profile-update-dialog/profile-update-dialog.component";
 import { CommunitiesAddDialogComponent } from "./communities-add-dialog/communities-add-dialog.component";
+import { CommunityUpdateDialogComponent } from "./community-update-dialog/community-update-dialog.component";
+import { CommunityAddCommentDialogComponent } from "./community-add-comment-dialog/community-add-comment-dialog.component";
 
 @Injectable()
 export class SharedService
@@ -45,6 +47,24 @@ export class SharedService
         });
     }
 
+    showAddCommunityCommentDialog(id : any)
+    {
+        const dialogRef = this.dialog.open(CommunityAddCommentDialogComponent,
+        {
+            width: '400px',
+            data:
+            {
+                community_id : id
+            },
+            hasBackdrop: true,
+        });
+
+        dialogRef.afterClosed().subscribe((result : any) =>
+        {
+            console.log('The dialog was closed');
+        });
+    }
+
     showAddCommunityDialog()
     {
         const dialogRef = this.dialog.open(CommunitiesAddDialogComponent,
@@ -68,6 +88,24 @@ export class SharedService
             data:
             {
                 venue_id : id
+            },
+            hasBackdrop: true,
+        });
+
+        dialogRef.afterClosed().subscribe((result : any) =>
+        {
+            console.log('The dialog was closed');
+        });
+    }
+
+    showUpdateCommunityDialog(id : any)
+    {
+        const dialogRef = this.dialog.open(CommunityUpdateDialogComponent,
+        {
+            width: '400px',
+            data:
+            {
+                community_id : id
             },
             hasBackdrop: true,
         });

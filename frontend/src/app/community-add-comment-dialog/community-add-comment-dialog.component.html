@@ -1,0 +1,17 @@
+<div>
+    <div id="dialog-header">
+      <h2 mat-dialog-title>Add a Comment</h2>
+      <mat-icon id="dialog-close" class="close-icon" (click)="onClose()">close</mat-icon>
+    </div>
+
+    <form [formGroup]="comment_form" class="styled-form">
+  
+        <div class="form-group">
+          <textarea id="comment-content" formControlName="comment_content" placeholder="Enter your comment here"></textarea>
+        </div>
+
+        <hr>
+
+        <button id="fg-button" (click)="onSubmit()">Add Comment</button>
+      </form>
+</div>  

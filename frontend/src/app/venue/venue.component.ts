@@ -9,14 +9,12 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './venue.component.html',
   styleUrl: './venue.component.css'
 })
-export class VenueComponent {
-
-    venue_list : any = []
-    comments : any = []
-    commentForm : any = []
-    like_dislike_list : any = []
-    username : any
-    email : any
+export class VenueComponent
+{
+    venue_list : any = [];
+    like_dislike_list : any = [];;
+    username : any;
+    email : any;
     like_count : any = 0;
     dislike_count : any = 0;
     user_id : any;

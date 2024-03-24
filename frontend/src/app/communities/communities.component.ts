@@ -190,12 +190,6 @@ export class CommunitiesComponent
     calculateCommunityDistance(destination: any)
     {
         this.destination = destination;
-        console.log("Origin: " + this.origin);
-        console.log("Destination: " + this.destination);
-        if (!this.origin || !this.destination)
-        {
-            this.sharedService.showNotification('No origin or destination found', 'error');
-        }
 
         return this.webService.calculateDistance(this.origin, this.destination).pipe(
             map((data: any) =>
@@ -232,13 +226,12 @@ export class CommunitiesComponent
                     }
                     else
                     {
-                        console.error('No elements found in the response');
                         return null;
                     }
                 } 
                 else
                 {
-                    console.error('Invalid response received:', data);
+                    console.log("Calculating distance data...")
                     return null;
                 }
             }),
@@ -266,10 +259,24 @@ export class CommunitiesComponent
             for (let i = 0; i < this.all_community_list.length; i++)
             {
                 const community = this.all_community_list[i];
-                this.calculateCommunityDistance(community.location).subscribe((distanceData: any) =>
+                if(community)
                 {
-                    this.saveDistanceForCommunity(community._id, distanceData);
-                });
+                    this.calculateCommunityDistance(community.location).subscribe((distanceData: any) =>
+                    {
+                        if(distanceData)
+                        {
+                            this.saveDistanceForCommunity(community._id, distanceData);
+                        }
+                        else
+                        {
+                            console.log("Getting distance data...")
+                        }
+                    });
+                }
+                else
+                {
+                    console.log("Community data loading..")
+                }
             }
             console.log("Finished calculating distances!");
         }
@@ -277,8 +284,12 @@ export class CommunitiesComponent
 
     saveDistanceForCommunity(community_id: string, distance_json_data : any)
     {
-        const distance_value = distance_json_data.distance.value;
+        let distance_value = 0;
         let distance_data;
+        if(distance_json_data.distance.value)
+        {
+            distance_value = distance_json_data.distance.value;
+        }
 
         if(distance_value)
         {
@@ -356,7 +367,7 @@ export class CommunitiesComponent
         {
             this.community_list = this.webService.getCommunities(this.page);
         }
-      }
+    }
 
 // COMMUNITIES
 // - ObjectID

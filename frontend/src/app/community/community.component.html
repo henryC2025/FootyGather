@@ -1,10 +1,82 @@
 <div class="container" id="content-container">
 
+    <div *ngFor = "let community of community_list | async">
+
+        <div>
+            <h1 class="community-heading">{{community.name}}</h1>
+            <button class="col-md-12 mb-2" id="fg-button" (click)="onJoinCommunity()" *ngIf="!is_player_joined">Join Community</button>
+            <button class="col-md-12 mb-2" id="fg-button" (click)="onLeaveCommunity()" *ngIf="is_player_joined">Leave Community</button>
+            <div class="input-group mb-3 d-flex justify-content-center" id="admin-add-venue">
+                <hr>
+                <button class="col-md-6" id="fg-button-delete" (click)="onDeleteCommunity(community_id, community.image[1], community.image[2])">Delete Community (Admin Only)</button>
+                <hr>
+                <button class="col-md-6" id="fg-button" (click)="onUpdateCommunity()">Update Community (Admin Only)</button>
+            </div>
+
+            <h2 class="community-details">Total Players: {{this.total_players}}</h2>
+    
+            <h2 class="community-details">Description: {{community.description}}</h2>
+    
+            <h2 class="community-details">Rules: {{community.rules}}</h2>
+    
+            <h2 class="community-details">Location: {{community.location}}</h2>
+    
+            <h2 class="community-details">Creator: {{community.creator_oauth_id}}</h2>
+    
+            <h2 class="community-details">Created At: {{community.created_at}}</h2>
+
+            <h2 class="player-list-title">Games</h2>
+            <button class="col-md-12 mb-2" id="fg-button">Go to Community Games</button>
+    
+            <h2 class="player-list-title">Player List</h2>
+    
+        </div>
+
+        <div class="image-container">
+            <img [src]="community.image[0]" class="img-thumbnail rounded-0 venue-image" alt="{{community.name}}">
+        </div>
+
+        <div *ngFor="let community of community_list | async">
+
+            <h2 class="comment-title">Comments</h2>
+            <!-- Sorting dropdown placeholder -->
+            <div class="col-md-12 comment-sort">
+                <select class="form-select" [(ngModel)]="selected_sort_option" (change)="onSortCommentChange()">
+                  <option value="default">Sort by Default</option>
+                  <option value="newest">Sort by Newest</option>
+                  <option value="oldest">Sort by Oldest</option>
+                </select>
+            </div>
+            <!-- <div class="sort-comments col-md-12">
+                <label class="col-md-2" for="sortComments">Sort by:</label>
+                <select id="sortComments" class="col-md-10">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                </select>
+            </div> -->
+            <button class="col-md-12" id="fg-button" (click)="onAddCommunityComment()">Add a Comment</button>
+    
+            <div class="comments-section">
+                <div *ngFor="let comment of comments_list | async" class="comment">
+                    <div class="comment-header">
+                        <span class="comment-user">{{comment.user}}</span>
+                        <span class="comment-date">{{comment.created_at | date: 'medium'}}</span>
+                    </div>
+                    <p class="comment-body">{{comment.description}}</p>
+                    <div *ngIf="comment.comment_oauth_id === user?.sub" class="comment-actions">
+                        <button id="fg-button-delete" class="col-md-12" (click)="onDeleteCommunityComment(comment._id)">DELETE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
     <!-- INFORMATION -->
     <!-- SET UP NEW GAME -->
     <!-- UPCOMING GAMES -->
     <!-- PREVIOUS GAMES -->
     <!-- COMMENTS -->
+    <!-- UPDATE BUTTON, DELETE BUTTON -->
 
 <!-- 
     // COMMUNITIES
