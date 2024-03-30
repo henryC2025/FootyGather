@@ -1,0 +1,105 @@
+<div>
+  <div id="dialog-header">
+    <h2 mat-dialog-title>Organise a Game</h2>
+    <mat-icon id="dialog-close" class="close-icon" (click)="onClose()">close</mat-icon>
+  </div>
+
+  <form [formGroup]="game_form" class="styled-form">
+      <div class="form-group">
+          <label for="game-name">Name:</label>
+          <input type="text" id="game-name" formControlName="game_name" placeholder="Enter a name for the game"/>
+      </div>
+      
+      <div class="form-group">
+          <label for="game-description">Description:</label>
+          <textarea id="game-description" formControlName="game_description" placeholder="Add a description"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="game-venue">Venue:</label>
+        <select class="form-control" id="game-venue" formControlName="game_venue">
+          <option value="" disabled selected>Select a venue</option>
+          <option *ngFor="let venue of venue_list" [value]="venue.id">{{ venue.name }}</option>
+        </select>
+      </div>
+
+      <!-- GAME LENGTH DROP DOWN -->
+      <div class="form-group">
+        <label for="game-length">Length:</label>
+        <select id="game-length" formControlName="game_length" class="form-control">
+            <option value="" disabled selected>Select game length</option>
+            <option value="30">30 min</option>
+            <option value="60">60 min</option>
+            <option value="90">90 min</option>
+            <option value="120">120 min</option>
+        </select>
+      </div>
+
+      <!-- PAYMENT TYPE DROP DOWN -->
+      <div class="form-group">
+        <label for="game-payment-type">Payment Type:</label>
+        <select id="game-payment-type" formControlName="game_payment_type" class="form-control">
+            <option value="" disabled selected>Select game payment</option>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+        </select>
+      </div>
+
+      <!-- GAME SIZE DROP DOWN -->
+      <div class="form-group">
+        <label for="game-size">Size:</label>
+        <select id="game-size" formControlName="game_size" class="form-control">
+            <option value="" disabled selected>Select game size</option>
+            <option value="5">5-a-side</option>
+            <option value="6">6-a-side</option>
+            <option value="7">7-a-side</option>
+            <option value="8">8-a-side</option>
+            <option value="9">9-a-side</option>
+            <option value="10">10-a-side</option>
+            <option value="11">11-a-side</option>
+        </select>
+      </div>
+
+      <!-- GAME PRICE - DECIMALS -->
+      <div class="form-group">
+        <label for="game-price">Price (£):</label>
+        <input type="number" class="form-control" id="game-price" formControlName="game_price" min="0" step="1"/>
+      </div>
+      
+      <!-- GAME DATE CALENDAR -->
+      <div class="form-group">
+        <label for="game-date">Date:</label>
+        <input type="date" class="form-control" id="game-date" formControlName="game_date" [min]="minimum_date" />
+      </div>      
+
+      <!-- GAME TIME CLOCK DIGITS -->
+      <div class="form-group">
+        <label for="game-time">Start Time:</label>
+        <input type="time" class="form-control" id="game-time" formControlName="game_time" />
+      </div>      
+
+      <hr>
+
+      <button type="button" id="fg-button" (click)="onSubmit()">Add Game</button>
+  </form>
+</div>
+
+
+<!-- GAMES
+- ObjectID
+- GameName
+- Description
+- CommunityID
+- OrganizerID
+- PlayersList (UserID, UserName, Payed)
+- DateTime
+- Length
+- PaymentType
+- GroupSize
+- Age
+- Gender
+- Venue (take id of venue)
+- Price
+- GameType
+- CreatedAt
+- Timestamp -->

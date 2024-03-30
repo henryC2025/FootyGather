@@ -35,19 +35,22 @@ export class ProfileComponent {
                         this.router.navigate(['/']);
                     }
 
-                    const form_data =
+                    if(this.user)
                     {
-                        oauth_id : this.user?.sub,
-                    }
-                    console.log(form_data)
-                    this.webService.getUserDetails(form_data).subscribe(
-                    {
-                        next : (data : any) =>
+                        const form_data =
                         {
-                            this.user_details = data;
-                            console.log(this.user_details);
+                            oauth_id : this.user?.sub,
                         }
-                    })
+                        console.log(form_data)
+                        this.webService.getUserDetails(form_data).subscribe(
+                        {
+                            next : (data : any) =>
+                            {
+                                this.user_details = data;
+                                console.log(this.user_details);
+                            }
+                        })
+                    }
                 }
             });
         });

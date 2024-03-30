@@ -35,6 +35,8 @@ import { CommunityUpdateDialogComponent } from './community-update-dialog/commun
 import { GamesComponent } from './games/games.component';
 import { GameComponent } from './game/game.component';
 import { CommunityAddCommentDialogComponent } from './community-add-comment-dialog/community-add-comment-dialog.component';
+import { ProfilesComponent } from './profiles/profiles.component';
+import { GamesAddDialogComponent } from './games-add-dialog/games-add-dialog.component';
 
 var routes : any = [
   {
@@ -58,7 +60,7 @@ var routes : any = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'communities/:id/games/:id',
+    path: 'communities/:c_id/games/:g_id',
     component: GameComponent,
     canActivate: [AuthGuard]
   },
@@ -75,6 +77,11 @@ var routes : any = [
   {
     path: 'profile',
     component: ProfileComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile/:id',
+    component: ProfilesComponent,
     canActivate: [AuthGuard]
   },
   {
@@ -110,6 +117,8 @@ var routes : any = [
     GamesComponent,
     GameComponent,
     CommunityAddCommentDialogComponent,
+    ProfilesComponent,
+    GamesAddDialogComponent,
   ],
   imports: [
     BrowserModule,

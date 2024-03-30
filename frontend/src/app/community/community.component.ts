@@ -21,7 +21,9 @@ export class CommunityComponent
     user_id : any;
     oauth_id : any;
     user : any;
+    user_details : any;
     creator_id : any;
+    is_creator = false;
     is_admin = false;
     total_players : any;
     player_list : any = [];
@@ -40,6 +42,7 @@ export class CommunityComponent
 
         if(this.authService.user$)
         {
+            console.log(this.authService.user$)
             this.authService.user$.subscribe((user: any) =>
             {
                 this.oauth_id = user?.sub;
@@ -52,8 +55,10 @@ export class CommunityComponent
 
                 if(this.oauth_id && this.user)
                 {
+                    this.is_authenticated = true;
                     this.webService.getUserDetails(userDetails).subscribe((data: any) =>
                     {
+                        this.user_details = data;
                         this.is_admin = (data.is_admin == "true");
                         console.log("Is admin: ", this.is_admin);
                     });
@@ -81,57 +86,80 @@ export class CommunityComponent
     {
         this.webService.getCommunityByID(this.route.snapshot.params['id']).subscribe(
         {
-            next : (data : any) =>
+            next: (data: any) =>
             {
-                console.log(data)
+                console.log(data);
                 this.creator_id = data[0].creator_oauth_id;
                 this.total_players = data[0].players.length;
                 this.player_list = data[0].players;
 
-                if(this.player_list.includes(this.user?.sub))
+                const user_oauth_id = this.user?.sub;
+
+                if(this.creator_id === user_oauth_id)
                 {
-                    this.is_player_joined = true;
+                    this.is_creator = true;
+                }
+                console.log("is creator: " + this.is_creator)
+                if (user_oauth_id)
+                {
+                    this.is_player_joined = this.player_list.some((player : any) => player.oauth_id === user_oauth_id);
                 }
                 else
                 {
                     this.is_player_joined = false;
                 }
             },
-            error : () =>
+            error: () =>
             {
                 console.log("Something went wrong retrieving community creator ID!");
+            },
+            complete: () =>
+            {
+                console.log(this.is_player_joined)
             }
-        })
+        });
     }
 
     onJoinCommunity()
     {
-        if(!this.is_player_joined)
+        console.log("TESTING: " + this.is_authenticated)
+        if(this.is_authenticated === true)
         {
-            const prompt = window.confirm("Are you sure you want to join?");
-            if(prompt)
+            console.log(this.is_player_joined);
+            if(!this.is_player_joined)
             {
-                const data =
+                const prompt = window.confirm("Are you sure you want to join?");
+                if(prompt)
                 {
-                    creator_oauth_id : this.user?.sub
-                }
-        
-                if(data)
-                {
-                    this.webService.joinCommunity(data, this.route.snapshot.params['id']).subscribe(
+                    const data =
                     {
-                        next : () =>
+                        user_oauth_id : this.user?.sub,
+                        user_id : this.user_details?._id,
+                        user_nickname : this.user?.nickname,
+                        user_email : this.user?.email
+                    }
+    
+                    if(data)
+                    {
+                        this.webService.joinCommunity(data, this.route.snapshot.params['id']).subscribe(
                         {
-                            console.log("User joined the community");
-                            this.initCommunity();
-                        },
-                        error : () =>
-                        {
-                            console.log("Something went wrong!");
-                        }
-                    })
+                            next : () =>
+                            {
+                                console.log("User joined the community");
+                                this.initCommunity();
+                            },
+                            error : () =>
+                            {
+                                console.log("Something went wrong!");
+                            }
+                        })
+                    }
                 }
             }
+        }
+        else
+        {
+            this.sharedService.showNotification("Please sign in to join a community", "error");
         }
     }
 
@@ -144,9 +172,9 @@ export class CommunityComponent
             {
                 const data =
                 {
-                    creator_oauth_id : this.user?.sub
+                    user_oauth_id : this.user?.sub
                 }
-        
+                console.log(data.user_oauth_id)
                 if(data)
                 {
                     this.webService.leaveCommunity(data, this.route.snapshot.params['id']).subscribe(
@@ -158,7 +186,7 @@ export class CommunityComponent
                         },
                         error : () =>
                         {
-                            console.log("Something went wrong!");
+                            console.log("An error occured when trying to leave community!");
                         }
                     })
                 }
@@ -166,9 +194,52 @@ export class CommunityComponent
         }
     }
 
+    onRemoveFromCommunity(player_oauth_id : any)
+    {
+        const prompt = window.confirm("Are you sure you want to remove this player?");
+        if(prompt)
+        {
+            const data =
+            {
+                user_oauth_id : player_oauth_id
+            }
+   
+            if(data)
+            {
+                this.webService.leaveCommunity(data, this.route.snapshot.params['id']).subscribe(
+                {
+                    next : () =>
+                    {
+                        console.log("User has been removed from the community");
+                        this.initCommunity();
+                    },
+                    error : () =>
+                    {
+                        console.log("An issue occured when removing player from community!");
+                    }
+                })
+            }
+        }
+        else
+        {
+            console.log("left")
+        }
+    }
+
     onAddCommunityComment()
     {
-        this.sharedService.showAddCommunityCommentDialog(this.route.snapshot.params['id']);
+        if(this.is_player_joined)
+        {
+            this.sharedService.showAddCommunityCommentDialog(this.route.snapshot.params['id']);
+            this.sharedService.community_comments_updated.subscribe(() =>
+            {
+                this.comments_list = this.webService.getSortedCommunityComments(this.community_id, "newest");
+            });
+        }
+        else
+        {
+            this.sharedService.showNotification("Please join the community to enter a comment", "error");
+        }
     }
 
     onDeleteCommunityComment(comment_id : any)

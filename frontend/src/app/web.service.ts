@@ -111,6 +111,13 @@ export class WebService
         );
     }
 
+    getAllVenues()
+    {
+        return this.http.get(
+            'http://localhost:5000/api/v1.0/venues'
+        );
+    }
+
     getVenueByID(id : any)
     {
         this.venue_id = id;

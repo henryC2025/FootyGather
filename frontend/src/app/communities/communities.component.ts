@@ -119,6 +119,10 @@ export class CommunitiesComponent
     onAddCommunity()
     {
         this.sharedService.showAddCommunityDialog();
+        this.sharedService.community_added.subscribe(() =>
+        {
+            this.community_list = this.webService.getAllCommunities();
+        });
     }
 
     search()
@@ -368,16 +372,4 @@ export class CommunitiesComponent
             this.community_list = this.webService.getCommunities(this.page);
         }
     }
-
-// COMMUNITIES
-// - ObjectID
-// - CommunityName
-// - Description
-// - Location (Area)
-// - CreatorID
-// - CreatedAt 
-// - Games - array of game ids
-// - FinishedGames - array of games ids
-// - TotalPlayers - count of playes
-// - Players - array of player ids
 }

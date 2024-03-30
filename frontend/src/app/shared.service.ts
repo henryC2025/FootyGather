@@ -4,7 +4,7 @@ import { AuthService } from "@auth0/auth0-angular";
 import { WebService } from "./web.service";
 import { ActivatedRoute, ActivationStart, Route, Router } from "@angular/router";
 import { switchMap } from 'rxjs/operators';
-import { EMPTY } from 'rxjs';
+import { EMPTY, Subject } from 'rxjs';
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { NotifierComponent } from "./notifier/notifier.component";
 import { VenuesAddDialogComponent } from './venues-add-dialog/venues-add-dialog.component';
@@ -14,11 +14,13 @@ import { ProfileUpdateDialogComponent } from "./profile-update-dialog/profile-up
 import { CommunitiesAddDialogComponent } from "./communities-add-dialog/communities-add-dialog.component";
 import { CommunityUpdateDialogComponent } from "./community-update-dialog/community-update-dialog.component";
 import { CommunityAddCommentDialogComponent } from "./community-add-comment-dialog/community-add-comment-dialog.component";
+import { GamesAddDialogComponent } from "./games-add-dialog/games-add-dialog.component";
 
 @Injectable()
 export class SharedService
 {
-
+    community_added = new Subject<void>();
+    community_comments_updated = new Subject<void>();
     private is_auth_called = false;
     private user_form_completed = false;
     private user : any;
@@ -68,6 +70,21 @@ export class SharedService
     showAddCommunityDialog()
     {
         const dialogRef = this.dialog.open(CommunitiesAddDialogComponent,
+        {
+            width: '400px',
+            data: this.community_data,
+            hasBackdrop: true,
+        });
+
+        dialogRef.afterClosed().subscribe((result : any) =>
+        {
+            console.log('The dialog was closed');
+        });
+    }
+
+    showAddGameDialog()
+    {
+        const dialogRef = this.dialog.open(GamesAddDialogComponent,
         {
             width: '400px',
             data: this.community_data,

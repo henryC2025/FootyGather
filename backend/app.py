@@ -260,6 +260,9 @@ def add_community_details():
         community_description = data.get('community_description')
         community_image = data.get('community_image')
         community_creator_oauth_id = data.get('community_creator_oauth_id')
+        community_creator_email = data.get('community_creator_email')
+        community_creator_nickname = data.get('community_creator_nickname')
+
         community_rules = data.get('community_rules')
 
         new_community = {
@@ -270,6 +273,8 @@ def add_community_details():
             "rules" : community_rules,
             "image": community_image,
             "creator_oauth_id" : community_creator_oauth_id,
+            "creator_email" : community_creator_email,
+            "creator_nickname" : community_creator_nickname,
             "comments": [],
             "players": [],
             "current_games" : [],
@@ -352,27 +357,30 @@ def delete_community(id):
     else:
         return make_response(jsonify({"error": "Community not found"}), 404)
 
-# Add a route to join a community
 @app.route('/api/v1.0/communities/<community_id>/join', methods=['POST'])
 def join_community(community_id):
     try:
         data = request.get_json()
 
-        # Assuming you have some form of authentication to identify the user
-        creator_oauth_id = data.get('creator_oauth_id')
+        # Extract player information from the request
+        player_info = {
+            "oauth_id": data.get('user_oauth_id'),
+            "user_id": data.get("user_id"),
+            "nickname": data.get("user_nickname"),
+            "email": data.get("user_email")
+        }
 
         # Find the community by its ID
         community = communities.find_one({'_id': ObjectId(community_id)})
 
         if community:
             # Check if the user is not already in the community
-            if creator_oauth_id not in community['players']:
+            if not any(player['oauth_id'] == player_info['oauth_id'] for player in community['players']):
                 # Add the user to the community
                 communities.update_one(
                     {'_id': ObjectId(community_id)},
-                    {'$push': {'players': creator_oauth_id}}
+                    {'$push': {'players': player_info}}
                 )
-
                 return make_response(jsonify({'message': 'User joined the community successfully'}), 200)
             else:
                 return make_response(jsonify({'message': 'User is already a member of the community'}), 200)
@@ -382,6 +390,7 @@ def join_community(community_id):
     except Exception as e:
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
 
+
 # Add a route to leave a community
 @app.route('/api/v1.0/communities/<community_id>/leave', methods=['POST'])
 def leave_community(community_id):
@@ -389,28 +398,28 @@ def leave_community(community_id):
         data = request.get_json()
 
         # Assuming you have some form of authentication to identify the user
-        creator_oauth_id = data.get('creator_oauth_id')
+        user_oauth_id = data.get('user_oauth_id')
 
         # Find the community by its ID
         community = communities.find_one({'_id': ObjectId(community_id)})
 
         if community:
             # Check if the user is in the community
-            if creator_oauth_id in community['players']:
+            if any(player['oauth_id'] == user_oauth_id for player in community['players']):
                 # Remove the user from the community
                 communities.update_one(
                     {'_id': ObjectId(community_id)},
-                    {'$pull': {'players': creator_oauth_id}}
+                    {'$pull': {'players': {'oauth_id': user_oauth_id}}}
                 )
-
                 return make_response(jsonify({'message': 'User left the community successfully'}), 200)
             else:
-                return make_response(jsonify({'message': 'User is not a member of the community'}), 200)
+                return make_response(jsonify({'message': 'User is not a member of the community'}), 404)
         else:
             return make_response(jsonify({'error': 'Community not found'}), 404)
 
     except Exception as e:
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
 
 # Sort community by date
 
@@ -534,7 +543,7 @@ def update_venue_details(venue_id):
 
 # Get all venues
 @app.route('/api/v1.0/venues', methods=['GET'])
-def get_all_venues():
+def get_venues():
     try:
         page_num, page_size = 1, 12
         if request.args.get('pn'): 
@@ -549,6 +558,16 @@ def get_all_venues():
             venue['_id'] = str(venue['_id'])
             venues_list.append(venue)
 
+        return make_response(jsonify(venues_list), 200)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+@app.route('/api/v1.0/venues', methods=['GET'])
+def get_all_venues():
+    try:
+        venues_list = db.venues.find()
+        # Convert the Cursor object to a list, and then use dumps to convert the list to a JSON string
         return make_response(jsonify(venues_list), 200)
     except Exception as e:
         print(e)
@@ -917,23 +936,19 @@ def sort_community_comments(community_id):
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 500)
 
-
-# @app.route('/api/v1.0/all_communities', methods=['GET'])
-# def get_all_communities():
-#     try:
-#         communities_list = []
-
-#         # Retrieve all communities without pagination
-#         for community in communities.find():
-#             community['_id'] = str(community['_id'])
-#             for comment in community['comments']:
-#                 comment['_id'] = str(comment['_id'])
-#             communities_list.append(community)
-
-#         return make_response(jsonify(communities_list), 200)
-#     except Exception as e:
-#         print(e)
-#         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+# Player details
+@app.route('/api/v1.0/player-details/<string:id>', methods=['GET'])
+def get_profile_details(id):
+    try:
+        user = users.find_one({"_id": id})
+        if user:
+            user['_id'] = str(user['_id'])
+            return make_response(jsonify(user), 200)
+        else:
+            return make_response(jsonify({'error': 'User not found'}), 404)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

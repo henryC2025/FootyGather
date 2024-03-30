@@ -323,10 +323,16 @@ textarea, input[type="text"], select, input[type="file"]
     background-color: #2c972c !important;
 }
 
-#venues-details, #venue-name, #communities-details, #community-name
+#venues-details, #venue-name, #communities-details
 {
-    color: #272727;
+    color: white;
+    margin-top: 5px;
     font-weight: 500;
+    font-size: larger;
+    background-color: #272727b3;
+    padding: 10px;
+    border-radius: 8px;
+    text-transform: uppercase;
 }
 
 .venues-image, .communities-image
@@ -631,6 +637,7 @@ hr
     border: white solid 1px;
     border-radius: 8px;
     text-align: left;
+    font-size: larger;
 }
 
 .community-heading
@@ -719,9 +726,9 @@ hr
 
 .comment-body
 {
-    color: white;
+    color: #272727;
     margin-top: 0;
-    background-color: #272727;
+    background-color: white;
     border-radius: 0px 0px 8px 8px;
     padding: 10px;
 }
@@ -731,22 +738,10 @@ hr
     margin-bottom: 5px;
 }
 
-.delete-comment-btn, .add-comment-btn
+.player-list
 {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.delete-comment-btn
-{
-    background-color: #dc3545;
-}
-
-.delete-comment-btn:hover, .add-comment-btn:hover
-{
-    opacity: 0.8;
+    background-color: #f9f9f970;
+    color: #272727;
+    padding: 5px;
+    border-radius: 8px;
 }

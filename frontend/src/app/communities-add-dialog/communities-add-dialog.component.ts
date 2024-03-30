@@ -176,8 +176,10 @@ export class CommunitiesAddDialogComponent {
                         community_location : this.community_form.get('community_location')?.value,
                         community_image : this.community_image,
                         community_creator_oauth_id : this.user?.sub,
+                        community_creator_email : this.user?.email,
+                        community_creator_nickname : this.user?.nickname
                     }
-          
+
                     this.webService.addCommunityDetails(form_data).subscribe(
                     {
                         next : (response : any) =>
@@ -193,6 +195,7 @@ export class CommunitiesAddDialogComponent {
                             this.sharedService.showNotification("Community added", "success");
                             this.onClose();
                             this.router.navigate(['/communities']);
+                            this.sharedService.community_added.next();
                         }
                     })
                 }

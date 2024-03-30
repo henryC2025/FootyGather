@@ -55,6 +55,10 @@ export class CommunityAddCommentDialogComponent {
         {
             this.submitComment();
         }
+        else
+        {
+            this.handleFormValidationErrors();
+        }
     }
 
     private submitComment()
@@ -94,7 +98,7 @@ export class CommunityAddCommentDialogComponent {
                         {
                             this.sharedService.showNotification("Comment added", "success");
                             this.onClose();
-                            //  Update comments list
+                            this.sharedService.community_comments_updated.next();
                         }
                     })
                 }
@@ -102,31 +106,11 @@ export class CommunityAddCommentDialogComponent {
         });
     }
 
-    // private handleFormValidationErrors()
-    // {
-    //     if(this.community_form.get('community_name')?.hasError('required'))
-    //     {
-    //         this.sharedService.showNotification("Please enter the community name.", "error");
-    //     }
-
-    //     if(this.community_form.get('community_description')?.hasError('required'))
-    //     {
-    //         this.sharedService.showNotification("Please enter the community description.", "error");
-    //     }
-
-    //     if(this.community_form.get('community_rules')?.hasError('required'))
-    //     {
-    //         this.sharedService.showNotification("Please enter the rules for the community.", "error");
-    //     }
-
-    //     if(this.community_form.get('community_location')?.hasError('required'))
-    //     {
-    //         this.sharedService.showNotification("Please enter community location.", "error");
-    //     }
-
-    //     if(this.community_form.get('community_image')?.hasError('required'))
-    //     {
-    //         this.sharedService.showNotification("Please add an image for the community.", "error");
-    //     }
-    // }
+    private handleFormValidationErrors()
+    {
+        if(this.comment_form.get('comment_content')?.hasError('required'))
+        {
+            this.sharedService.showNotification("Please enter comment.", "error");
+        }
+    }
 }
