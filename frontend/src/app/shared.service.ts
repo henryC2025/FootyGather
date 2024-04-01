@@ -21,6 +21,8 @@ export class SharedService
 {
     community_added = new Subject<void>();
     community_comments_updated = new Subject<void>();
+    venue_added = new Subject<void>();
+    game_added = new Subject<void>();
     private is_auth_called = false;
     private user_form_completed = false;
     private user : any;
@@ -82,12 +84,15 @@ export class SharedService
         });
     }
 
-    showAddGameDialog()
+    showAddGameDialog(id : any)
     {
         const dialogRef = this.dialog.open(GamesAddDialogComponent,
         {
             width: '400px',
-            data: this.community_data,
+            data:
+            {
+                community_id : id
+            },
             hasBackdrop: true,
         });
 

@@ -321,4 +321,85 @@ export class WebService
         // http://localhost:5000/api/v1.0/communities/65da3923bdad038c26176f75/comments/sort?sort_option=oldest
         return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/comments/sort?sort_option=${sort_option}`);
     }
+
+    // Profiles
+    getProfileUserDetails(id : any)
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/player-details/${id}`);
+    }
+
+    // Community Games
+    addNewGame(data : any, community_id : any)
+    {
+        this.community_id = community_id;
+        return this.http.post(`http://localhost:5000/api/v1.0/communities/${this.community_id}/games/add_game`, data);
+    }
+
+    updateGameDetails()
+    {
+        // 
+    }
+
+    deleteGame(game_id : any)
+    {
+        this.game_id = game_id;
+        return this.http.delete(`http://localhost:5000/api/v1.0/games/${this.game_id}`)
+    }
+
+    getCommunityGames(community_id : any, page : number)
+    {
+        this.community_id = community_id;
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/games?pn=` + page);
+    }
+
+    getAllGames()
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/games/all_games`);
+    }
+
+    getAllCommunityGames(community_id : any)
+    {
+        this.community_id = community_id;
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/games`)
+    }
+
+    getCountOfAllCommunityGames(community_id : any)
+    {
+        this.community_id = community_id;
+        return this.http.get(`/api/v1.0/communities/${this.community_id}/games/count`);
+    }
+
+    getCountOfCurrentCommunityGames(community_id : any)
+    {
+        this.community_id = community_id;
+        return this.http.get(`/api/v1.0/communities/${this.community_id}/current_games/count`);
+    }
+
+    getCountOfPreviousCommunityGames(community_id : any)
+    {
+        this.community_id = community_id;
+        return this.http.get(`/api/v1.0/communities/${this.community_id}/previous_games/count`);
+    }
+
+    getCurrentCommunityGames(community_id : any, page : any)
+    {
+        this.community_id = community_id;
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/current_games?pn=` + page);
+    }
+
+    getPreviousCommunityGames(community_id : any, page : any)
+    {
+        this.community_id = community_id;
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/previous_games?pn=` + page);
+    }
+
+    joinGame(game_id : any, user_id : any)
+    {
+
+    }
+
+    leaveGame(game_id : any, user_id : any)
+    {
+
+    }
 }

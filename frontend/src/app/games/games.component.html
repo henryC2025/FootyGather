@@ -3,5 +3,42 @@
     <h2 class="player-list-title">Games</h2>
     <button style="width: 100%;" id="fg-button" (click)="onAddGame()">Create a Game</button>
     <h2 class="player-list-title">Current Games</h2>
+    <div *ngFor="let game of community_game_list | async" class="comment">
+        <div class="player-list" style="display: flex; align-items: center;">
+            <h3>{{game.name}}</h3>
+            <h3>{{game.date}}</h3>
+            <h3>{{game.time}}</h3>
+            <!-- <p style="margin: 0; flex-grow: 1; cursor: pointer;" [routerLink]="['/profile', player.user_id]">{{player.nickname + " | " + player.email}}</p> -->
+        </div>
+        <!-- Current Games Pagination -->
+        <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation">
+            <ul class="pagination">
+
+                <li class="page-item">
+                    <button class="page-link" (click)="firstPage()">First</button>
+                </li>
+
+                <li class="page-item">
+                    <button class="page-link" (click)="previousPage()" [disabled]="page === 1">{{"\<"}}</button>
+                </li>
+                
+                <ng-container *ngFor="let pageNum of [page - 2, page - 1, page, page + 1, page + 2]">
+                    <li class="page-item" *ngIf="pageNum > 0 && pageNum <= total_pages" [class.active]="pageNum === page">
+                        <button class="page-link" (click)="goToPage(pageNum)">{{pageNum}}</button>
+                    </li>
+                </ng-container>                  
+
+                <li class="page-item">
+                    <button class="page-link" (click)="nextPage()" [disabled]="page === total_pages">{{"\>"}}</button>
+                </li>
+
+                <li class="page-item">
+                    <button class="page-link" (click)="lastPage()">Last</button>
+                </li>
+            </ul>
+        </nav>
+        <!-- End of Current Games Pagination -->
+    </div>
+
     <h2 class="player-list-title">Previous Games</h2>
 </div>

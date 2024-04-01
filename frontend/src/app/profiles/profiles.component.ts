@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { SharedService } from '../shared.service';
 import { WebService } from '../web.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -15,7 +15,8 @@ export class ProfilesComponent {
     constructor(public authService : AuthService,
                 public webService : WebService,
                 public sharedService : SharedService,
-                public router : Router) {}
+                public router : Router,
+                public route : ActivatedRoute) {}
 
     user : any;
     user_details : any = [];
@@ -37,12 +38,7 @@ export class ProfilesComponent {
 
                     if(this.user)
                     {
-                        const form_data =
-                        {
-                            oauth_id : this.user?.sub,
-                        }
-
-                        this.webService.getUserDetails(form_data).subscribe(
+                        this.webService.getProfileUserDetails(this.route.snapshot.params['id']).subscribe(
                         {
                             next : (data : any) =>
                             {

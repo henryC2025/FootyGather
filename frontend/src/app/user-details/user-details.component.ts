@@ -186,6 +186,7 @@ export class UserDetailsComponent {
         {
             user_name : this.user.nickname,
             oauth_id : this.user.sub,
+            email : this.user.email,
             first_name : this.details_form.get('firstName')?.value,
             last_name : this.details_form.get('lastName')?.value,
             description : this.details_form.get('description')?.value,

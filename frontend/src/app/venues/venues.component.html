@@ -6,7 +6,7 @@
         </div>
 
             <div *ngIf="is_admin" class="input-group mb-3" id="admin-add-venue">
-                <button id="fg-button" (click)="onAddVenue()">Add Venue (Admin Only)</button>
+                <button id="fg-button" style="width: 100%;" (click)="onAddVenue()">Add Venue (Admin Only)</button>
             </div>
 
             <!-- Display search results -->
@@ -34,10 +34,6 @@
                         <p>Location: {{venue.address}}</p>
                     </div>
 
-                    <div class="col-md-12" id="venues-details">
-                        <p>Games Played: {{venue.games_played}}</p>
-                    </div>
-                    
                 </div> <!-- End of footer -->
                 </div> <!-- End of card -->
             </div> <!-- End of ng -->

@@ -178,6 +178,7 @@ export class VenuesAddDialogComponent
                 this.sharedService.showNotification("Venue added", "success");
                 this.onClose();
                 this.router.navigate(['/venues']);
+                this.sharedService.venue_added.next();
             }
         })
     }

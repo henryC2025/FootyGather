@@ -38,12 +38,6 @@
                     </div>
 
                     <div class="col-md-12">
-                        <h4>Games Played</h4>
-                        <p id="venue-details">{{venue.games_played}}</p>
-                        <hr>
-                    </div>
-
-                    <div class="col-md-12">
                         <div class="row">
 
                             <div class="col-md-12 text-center">
@@ -71,7 +65,7 @@
 
                     <div *ngIf="is_admin" class="input-group mb-3 d-flex justify-content-center" id="admin-add-venue">
                         <hr>
-                        <button id="fg-button" (click)="onDeleteVenue(venue_id, venue.image[1], venue.image[2])">Delete Venue (Admin Only)</button>
+                        <button id="fg-button-delete" (click)="onDeleteVenue(venue_id, venue.image[1], venue.image[2])">Delete Venue (Admin Only)</button>
                         <hr>
                         <button id="fg-button" (click)="onUpdateVenue()">Update Venue (Admin Only)</button>
                     </div>

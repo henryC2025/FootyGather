@@ -65,6 +65,10 @@ export class VenuesComponent
     onAddVenue()
     {
         this.sharedService.showAddVenueDialog();
+        this.sharedService.venue_added.subscribe(() =>
+        {
+            this.venue_list = this.webService.getVenues(this.page);
+        });
     }
 
     search()

@@ -19,7 +19,7 @@
         <label for="game-venue">Venue:</label>
         <select class="form-control" id="game-venue" formControlName="game_venue">
           <option value="" disabled selected>Select a venue</option>
-          <option *ngFor="let venue of venue_list" [value]="venue.id">{{ venue.name }}</option>
+          <option *ngFor="let venue of venue_list" [value]="venue.id + ',' + venue.name">{{ venue.name }}</option>
         </select>
       </div>
 
@@ -50,13 +50,13 @@
         <label for="game-size">Size:</label>
         <select id="game-size" formControlName="game_size" class="form-control">
             <option value="" disabled selected>Select game size</option>
-            <option value="5">5-a-side</option>
-            <option value="6">6-a-side</option>
-            <option value="7">7-a-side</option>
-            <option value="8">8-a-side</option>
-            <option value="9">9-a-side</option>
-            <option value="10">10-a-side</option>
-            <option value="11">11-a-side</option>
+            <option value="10">5-a-side</option>
+            <option value="12">6-a-side</option>
+            <option value="14">7-a-side</option>
+            <option value="16">8-a-side</option>
+            <option value="18">9-a-side</option>
+            <option value="20">10-a-side</option>
+            <option value="22">11-a-side</option>
         </select>
       </div>
 

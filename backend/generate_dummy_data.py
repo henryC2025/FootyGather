@@ -32,7 +32,6 @@ def generate_sample_venue():
         'name' : 'Sample Venue',
         'address' : '123 Main Street, City A, United Kingdom',
         'description' : 'A fantastic venue for sports and events.',
-        'games_played' : 15,
         'contact_info' : 'https://www.samplevenue.com',
         'image' : ['https://via.placeholder.com/800x600', '000TEST000', 'FILEPATH'],
         'likes_dislikes' : {
