@@ -1141,7 +1141,7 @@ def delete_game_by_id(game_id):
 @app.route('/api/v1.0/communities/<community_id>/current_games', methods=['GET'])
 def get_current_games_for_community(community_id):
     try:
-        page_num, page_size = 1, 10
+        page_num, page_size = 1, 5
         if request.args.get('pn'):
             page_num = int(request.args.get('pn'))
         if request.args.get('ps'):
@@ -1173,7 +1173,7 @@ def get_current_games_for_community(community_id):
 @app.route('/api/v1.0/communities/<community_id>/previous_games', methods=['GET'])
 def get_previous_games_for_community(community_id):
     try:
-        page_num, page_size = 1, 10
+        page_num, page_size = 1, 5
         if request.args.get('pn'):
             page_num = int(request.args.get('pn'))
         if request.args.get('ps'):
@@ -1211,6 +1211,7 @@ def get_current_games_count(community_id):
 
         count_of_current_games = len(community['current_games'])
 
+        # return f"{count_of_current_games}"
         return make_response(jsonify({'count': count_of_current_games}), 200)
 
     except Exception as e:
@@ -1234,6 +1235,29 @@ def get_previous_games_count(community_id):
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 # Move expired games to previous games
+@app.route('/api/v1.0/communities/<community_id>/move_game_to_previous/<game_id>', methods=['POST'])
+def move_game_to_previous(community_id, game_id):
+    try:
+        community_id = ObjectId(community_id)
+        game_id = ObjectId(game_id)
+
+        community = communities.find_one({"_id": community_id, "current_games.game_id": game_id})
+        if not community:
+            return make_response(jsonify({'message': 'Community or game not found'}), 404)
+
+        game_to_move = next((game for game in community['current_games'] if game['game_id'] == game_id), None)
+        if not game_to_move:
+            return make_response(jsonify({'message': 'Game not found in current games list'}), 404)
+
+        communities.update_one({"_id": community_id}, {"$pull": {"current_games": {"game_id": game_id}}})
+
+        communities.update_one({"_id": community_id}, {"$push": {"previous_games": game_to_move}})
+
+        return make_response(jsonify({'message': 'Game moved to previous games list successfully'}), 200)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 # Get all games
 # Edit game details

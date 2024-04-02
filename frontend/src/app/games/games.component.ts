@@ -14,10 +14,12 @@ export class GamesComponent {
     community_list : any;
     community_id : any;
     community_game_list : any;
-    community_current_game_list : any;
-    community_previous_game_list : any;
-    page : number = 1;
-    total_pages : number = 1;
+    community_current_games_list : any;
+    community_previous_games_list : any;
+    current_games_page : number = 1;
+    previous_games_page : number = 1;
+    current_games_total_pages : number = 1;
+    previous_games_total_pages : number = 1;
 
     constructor(public authService : AuthService,
                 public webService : WebService,
@@ -30,19 +32,54 @@ export class GamesComponent {
         this.route.paramMap.subscribe(params =>
         {
             this.community_id = params.get('id');
-            console.log(this.community_id);
         });
 
-        if(sessionStorage['page'])
+        if(sessionStorage['current_games_page'])
         {
-            this.page = Number(sessionStorage['page']);
+            this.current_games_page = Number(sessionStorage['current_games_page']);
+        }
+        if(sessionStorage['previous_games_page'])
+        {
+            this.previous_games_page = Number(sessionStorage['previous_games_page']);
         }
 
-        this.community_game_list = this.webService.getCommunityGames(this.community_id, this.page);
-        this.webService.getCountOfAllCommunityGames(this.community_id).subscribe((data: any) =>
+        this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+        this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+        this.getPaginationSize();
+    }
+
+    getPaginationSize()
+    {
+        this.webService.getCountOfCurrentCommunityGames(this.community_id).subscribe(
         {
-            const count_of_games = parseInt(data);
-            this.total_pages = Math.ceil(count_of_games / 12);
+            next : (data: any) =>
+            {
+                if(data)
+                {
+                    const count_of_games = parseInt(data.count);
+                    this.current_games_total_pages = Math.ceil(count_of_games / 5);
+                }
+            },
+            error : (error) =>
+            {
+                console.error('Error fetching game count:', error)
+            }
+        });
+    
+        this.webService.getCountOfPreviousCommunityGames(this.community_id).subscribe(
+        {
+            next : (data: any) =>
+            {
+                if(data)
+                {
+                    const count_of_games = parseInt(data.count);
+                    this.previous_games_total_pages = Math.ceil(count_of_games / 5);
+                }
+            },
+            error : (error) =>
+            {
+                console.error('Error fetching game count:', error)
+            }
         });
     }
 
@@ -60,47 +97,101 @@ export class GamesComponent {
         });
     }
 
-    firstPage()
+    firstGamesPage(game_status : any)
     {
-        if(this.page > 1)
+        if(game_status === "current")
         {
-            this.page = 1;
-            sessionStorage['page'] = this.page;
-            this.community_list = this.webService.getCommunities(this.page);
+            if(this.current_games_page > 1)
+            {
+                this.current_games_page = 1;
+                sessionStorage['current_games_page'] = this.current_games_page;
+                this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+            }
+        }
+        else
+        {
+            if(this.previous_games_page > 1)
+            {
+                this.previous_games_page = 1;
+                sessionStorage['previous_games_page'] = this.previous_games_page;
+                this.community_current_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+            }
         }
     }
 
-    lastPage()
+    lastGamesPage(game_status : any)
     {
-        if(this.page < this.total_pages)
+        if(game_status === "current")
         {
-            this.page = this.total_pages;
-            sessionStorage['page'] = this.page;
-            this.community_list = this.webService.getCommunities(this.page);
+            if(this.current_games_page < this.current_games_total_pages)
+            {
+                this.current_games_page = this.current_games_total_pages;
+                sessionStorage['current_games_page'] = this.current_games_page;
+                this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+            }
+        }
+        else
+        {
+            if(this.previous_games_page < this.previous_games_total_pages)
+            {
+                this.previous_games_page = this.previous_games_total_pages;
+                sessionStorage['previous_games_page'] = this.previous_games_page;
+                this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+            }
         }
     }
 
-    previousPage()
+    previousGamesPage(game_status : any)
     {
-        if(this.page > 1)
+        if(game_status === "current")
         {
-            this.page = this.page - 1;
-            sessionStorage['page'] = this.page;
-            this.community_list = this.webService.getCommunities(this.page);
+            if(this.current_games_page > 1)
+            {
+                this.current_games_page = this.current_games_page - 1;
+                sessionStorage['current_games_page'] = this.current_games_page;
+                this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+            }
+        }
+        else
+        {
+            if(this.previous_games_page > 1)
+            {
+                this.previous_games_page = this.previous_games_page - 1;
+                sessionStorage['previous_games_page'] = this.previous_games_page;
+                this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+            }
         }
     }
 
-    nextPage()
+    nextGamesPage(game_status : any)
     {
-        this.page = this.page + 1;
-        sessionStorage['page'] = this.page;
-        this.community_list = this.webService.getCommunities(this.page);
+        if(game_status === "current")
+        {
+            this.current_games_page = this.current_games_page + 1;
+            sessionStorage['current_games_page'] = this.current_games_page;
+            this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+        }
+        else
+        {
+            this.previous_games_page = this.previous_games_page + 1;
+            sessionStorage['previous_games_page'] = this.previous_games_page;
+            this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+        }
     }
 
-    goToPage(pageNum: number) 
+    goToGamesPage(game_status : any, page_num: number) 
     {
-        this.page = pageNum;
-        sessionStorage['page'] = this.page;
-        this.community_list = this.webService.getCommunities(this.page);
+        if(game_status === "current")
+        {
+            this.current_games_page = page_num;
+            sessionStorage['current_games_page'] = this.current_games_page;
+            this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+        }
+        else
+        {
+            this.previous_games_page = page_num;
+            sessionStorage['previous_games_page'] = this.previous_games_page;
+            this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+        }
     }
 }

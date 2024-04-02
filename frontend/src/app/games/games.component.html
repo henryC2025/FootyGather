@@ -2,43 +2,80 @@
 
     <h2 class="player-list-title">Games</h2>
     <button style="width: 100%;" id="fg-button" (click)="onAddGame()">Create a Game</button>
+
     <h2 class="player-list-title">Current Games</h2>
-    <div *ngFor="let game of community_game_list | async" class="comment">
+    <div *ngFor="let game of community_current_games_list | async" class="comment">
+        <div class="player-list" style="display: flex; align-items: center; cursor: pointer;" [routerLink]="['/games', game._id]">
+            <h3>{{game.name}}</h3>
+            <h3>{{game.date}}</h3>
+            <h3>{{game.time}}</h3>
+            <!-- <p style="margin: 0; flex-grow: 1; cursor: pointer;" [routerLink]="['/profile', player.user_id]">{{player.nickname + " | " + player.email}}</p> -->
+        </div>
+    </div>
+     <!-- Current Games Pagination -->
+     <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation">
+        <ul class="pagination">
+
+            <li class="page-item">
+                <button class="page-link" (click)="firstGamesPage('current')">First</button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" (click)="previousGamesPage('current')" [disabled]="current_games_page === 1">{{"\<"}}</button>
+            </li>
+            
+            <ng-container *ngFor="let pageNum of [current_games_page - 2, current_games_page - 1, current_games_page, current_games_page + 1, current_games_page + 2]">
+                <li class="page-item" *ngIf="pageNum > 0 && pageNum <= current_games_total_pages" [class.active]="pageNum === current_games_page">
+                    <button class="page-link" (click)="goToGamesPage('current', pageNum)">{{pageNum}}</button>
+                </li>
+            </ng-container>                  
+
+            <li class="page-item">
+                <button class="page-link" (click)="nextGamesPage('current')" [disabled]="current_games_page === current_games_total_pages">{{"\>"}}</button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" (click)="lastGamesPage('current')">Last</button>
+            </li>
+        </ul>
+    </nav>
+    <!-- End of Current Games Pagination -->
+
+    <h2 class="player-list-title">Previous Games</h2>
+    <div *ngFor="let game of community_previous_games_list | async" class="comment">
         <div class="player-list" style="display: flex; align-items: center;">
             <h3>{{game.name}}</h3>
             <h3>{{game.date}}</h3>
             <h3>{{game.time}}</h3>
             <!-- <p style="margin: 0; flex-grow: 1; cursor: pointer;" [routerLink]="['/profile', player.user_id]">{{player.nickname + " | " + player.email}}</p> -->
         </div>
-        <!-- Current Games Pagination -->
-        <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation">
-            <ul class="pagination">
-
-                <li class="page-item">
-                    <button class="page-link" (click)="firstPage()">First</button>
-                </li>
-
-                <li class="page-item">
-                    <button class="page-link" (click)="previousPage()" [disabled]="page === 1">{{"\<"}}</button>
-                </li>
-                
-                <ng-container *ngFor="let pageNum of [page - 2, page - 1, page, page + 1, page + 2]">
-                    <li class="page-item" *ngIf="pageNum > 0 && pageNum <= total_pages" [class.active]="pageNum === page">
-                        <button class="page-link" (click)="goToPage(pageNum)">{{pageNum}}</button>
-                    </li>
-                </ng-container>                  
-
-                <li class="page-item">
-                    <button class="page-link" (click)="nextPage()" [disabled]="page === total_pages">{{"\>"}}</button>
-                </li>
-
-                <li class="page-item">
-                    <button class="page-link" (click)="lastPage()">Last</button>
-                </li>
-            </ul>
-        </nav>
-        <!-- End of Current Games Pagination -->
     </div>
+     <!-- Previous Games Pagination -->
+     <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation">
+        <ul class="pagination">
 
-    <h2 class="player-list-title">Previous Games</h2>
+            <li class="page-item">
+                <button class="page-link" (click)="firstGamesPage('previous')">First</button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" (click)="previousGamesPage('previous')" [disabled]="current_games_page === 1">{{"\<"}}</button>
+            </li>
+            
+            <ng-container *ngFor="let pageNum of [previous_games_page - 2, previous_games_page - 1, previous_games_page, previous_games_page + 1, previous_games_page + 2]">
+                <li class="page-item" *ngIf="pageNum > 0 && pageNum <= previous_games_total_pages" [class.active]="pageNum === previous_games_page">
+                    <button class="page-link" (click)="goToGamesPage('previous', pageNum)">{{pageNum}}</button>
+                </li>
+            </ng-container>                  
+
+            <li class="page-item">
+                <button class="page-link" (click)="nextGamesPage('previous')" [disabled]="previous_games_page === previous_games_total_pages">{{"\>"}}</button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" (click)="lastGamesPage('previous')">Last</button>
+            </li>
+        </ul>
+    </nav>
+    <!-- End of Previous Games Pagination -->
 </div>

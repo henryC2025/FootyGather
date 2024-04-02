@@ -60,7 +60,7 @@ var routes : any = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'communities/:c_id/games/:g_id',
+    path: 'games/:id',
     component: GameComponent,
     canActivate: [AuthGuard]
   },

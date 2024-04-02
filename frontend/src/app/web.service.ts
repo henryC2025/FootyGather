@@ -366,19 +366,19 @@ export class WebService
     getCountOfAllCommunityGames(community_id : any)
     {
         this.community_id = community_id;
-        return this.http.get(`/api/v1.0/communities/${this.community_id}/games/count`);
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/games/count`);
     }
 
     getCountOfCurrentCommunityGames(community_id : any)
     {
         this.community_id = community_id;
-        return this.http.get(`/api/v1.0/communities/${this.community_id}/current_games/count`);
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/current_games/count`);
     }
 
     getCountOfPreviousCommunityGames(community_id : any)
     {
         this.community_id = community_id;
-        return this.http.get(`/api/v1.0/communities/${this.community_id}/previous_games/count`);
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/previous_games/count`);
     }
 
     getCurrentCommunityGames(community_id : any, page : any)
@@ -391,6 +391,12 @@ export class WebService
     {
         this.community_id = community_id;
         return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/previous_games?pn=` + page);
+    }
+
+    // move current game to previous game
+    moveCurrentToPreviousGames()
+    {
+        // return this.http.post
     }
 
     joinGame(game_id : any, user_id : any)
