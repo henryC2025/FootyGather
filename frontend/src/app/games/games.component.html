@@ -6,10 +6,13 @@
     <h2 class="player-list-title">Current Games</h2>
     <div *ngFor="let game of community_current_games_list | async" class="comment">
         <div class="player-list" style="display: flex; align-items: center; cursor: pointer;" [routerLink]="['/games', game._id]">
-            <h3>{{game.name}}</h3>
-            <h3>{{game.date}}</h3>
-            <h3>{{game.time}}</h3>
-            <!-- <p style="margin: 0; flex-grow: 1; cursor: pointer;" [routerLink]="['/profile', player.user_id]">{{player.nickname + " | " + player.email}}</p> -->
+            <div class="games-details">
+                <h1 class="games-name">{{game.name}}</h1>
+                <div class="games-datetime">
+                    <h2 class="games-date">{{game.date}}</h2>
+                    <h2 class="games-time">{{game.time}}</h2>
+                </div>
+            </div>
         </div>
     </div>
      <!-- Current Games Pagination -->
@@ -44,10 +47,13 @@
     <h2 class="player-list-title">Previous Games</h2>
     <div *ngFor="let game of community_previous_games_list | async" class="comment">
         <div class="player-list" style="display: flex; align-items: center;">
-            <h3>{{game.name}}</h3>
-            <h3>{{game.date}}</h3>
-            <h3>{{game.time}}</h3>
-            <!-- <p style="margin: 0; flex-grow: 1; cursor: pointer;" [routerLink]="['/profile', player.user_id]">{{player.nickname + " | " + player.email}}</p> -->
+            <div class="games-details">
+                <h1 class="games-name">{{game.name}}</h1>
+                <div class="games-datetime">
+                    <h2 class="games-date">{{game.date}}</h2>
+                    <h2 class="games-time">{{game.time}}</h2>
+                </div>
+            </div>
         </div>
     </div>
      <!-- Previous Games Pagination -->

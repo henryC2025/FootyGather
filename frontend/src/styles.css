@@ -21,6 +21,7 @@
     width: 50%;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
 }
 
 #page-body
@@ -33,12 +34,17 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    overflow: auto;
+    /* overflow: auto; */
     font-weight: 300;
     background-image: url('assets/footy_pitch.jpg');
     background-size: cover;
+    /* background-position: center center; */
+    /* position: relative; */
+
+    background-size: cover;
     background-position: center center;
     position: relative;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 #content-container
@@ -62,7 +68,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease; 
     font-size: 14px;
-    z-index: 999;
+    /* z-index: 999 !important; */
 }
 
 #fg-button-delete
@@ -75,7 +81,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease; 
     font-size: 14px;
-    z-index: 999;
+    /* z-index: 999 !important; */
 }
 
 #fg-button:hover
@@ -141,7 +147,7 @@
 
 app-nav
 {
-    z-index: 1;
+    /* z-index: 1 !important; */
     background-color: #333;
     color: white;
 }
@@ -328,7 +334,7 @@ textarea, input[type="text"], select, input[type="file"]
     color: white;
     margin-top: 5px;
     font-weight: 500;
-    font-size: larger;
+    font-size: small;
     background-color: #272727b3;
     padding: 10px;
     border-radius: 8px;
@@ -494,7 +500,7 @@ hr
 #admin-add-venue
 {
     position: relative;
-    z-index: 2;
+    /* z-index: 2; */
 }
 
 .styled-form
@@ -561,43 +567,6 @@ hr
     border-radius: 8px;
 }
 
-/* MEDIA */
-@media screen and (max-width: 768px)
-{
-    #page-content
-    {
-        height: 50%;
-        width: auto;
-    }
-
-    .venue-image
-    {
-        object-fit: contain;
-        background-color: #272727 !important;
-    }
-}
-
-/* SCREEN */
-
-::-webkit-scrollbar
-{
-    width: 10px;
-}
-  
-::-webkit-scrollbar-thumb
-{
-    background-color: #2c972c; /* Color of the thumb */
-    border-radius: 6px; /* Rounded corners of the thumb */
-}
-
-.cdk-global-scrollblock
-{
-    position: fixed;
-    width: 100%;
-    overflow-y: auto;
-}
-
-
 #welcome-container
 {
     text-align: center;
@@ -627,6 +596,14 @@ hr
     font-size: 20px;
     font-weight: 600;
     text-transform: uppercase;
+}
+
+#details-text
+{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 /* COMMUNITY */
@@ -740,8 +717,220 @@ hr
 
 .player-list
 {
-    background-color: #f9f9f970;
-    color: #272727;
+    background-color: #f9f9f936;
+    color: white;
     padding: 5px;
     border-radius: 8px;
+}
+
+.games-list
+{
+    background-color: #f9f9f916;
+    padding: 5px;
+    border-radius: 8px;
+}
+
+/* GAMES */
+
+.games-details
+{
+    text-align: center;
+    background-color: #272727;
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 600px; 
+    margin: 10px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.games-name
+{
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    color: #2c972c;
+}
+
+.games-datetime
+{
+    background-color: #333;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.games-date, .games-time
+{
+    font-size: 1.4em;
+    font-weight: normal;
+    margin: 0;
+    padding: 5px 0;
+    color: white;
+}
+
+/* GAME */
+.players-container
+{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.player-card
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f5f5f5;
+    border: 1px solid #d4d4d4;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    width: 220px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.player-card:hover
+{
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.player-info
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.player-name
+{
+    text-transform: uppercase;
+    color: #2c972c;
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.player-email, .player-username
+{
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.game-details
+{
+    background-color: #fafafa;
+    border-left: 5px solid #2c972c;
+    padding: 20px;
+    margin: 20px auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 100%;
+}
+
+.game-description
+{
+    font-size: 16px;
+    color: #272727;
+    background-color: #e9f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 3px solid #2c972c;
+    margin-bottom: 15px;
+}
+
+.game-stats
+{
+    background: linear-gradient(to right, #f0f8ff, #e0ffe9);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.stat-label
+{
+    font-weight: bold;
+    color: #272727;
+}
+
+.game-stats p
+{
+    margin: 10px 0;
+    font-size: 14px;
+    color: #2c972c
+}
+
+.game-player-count
+{
+
+}
+
+/* MEDIA */
+@media screen and (max-width: 768px)
+{
+    #page-content
+    {
+        height: 50%;
+        width: 100%;
+    }
+
+    .comment-user, .comment-date
+    {
+        font-size: 10px;
+    }
+
+    .comment-title
+    {
+        font-size: 30px;
+    }
+
+    #venue-name
+    {
+        font-size: 30px;
+    }
+
+    #dialog-close
+    {
+        margin-right: 0px;
+    }
+
+    .venue-image
+    {
+        object-fit: contain;
+        background-color: #272727 !important;
+    }
+
+    #profile-details-text
+    {
+        font-size: 12px !important;
+    }
+}
+
+/* SCREEN */
+
+::-webkit-scrollbar
+{
+    width: 10px;
+}
+  
+::-webkit-scrollbar-thumb
+{
+    background-color: #2c972c; /* Color of the thumb */
+    border-radius: 6px; /* Rounded corners of the thumb */
+}
+
+.cdk-global-scrollblock
+{
+    position: fixed;
+    width: 100%;
+    overflow-y: auto;
 }

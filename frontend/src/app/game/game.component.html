@@ -1,1 +1,40 @@
-<p>game works!</p>
+<div class="container" id="content-container">
+
+    
+    <div *ngFor="let game of game_details | async" class="comment">
+        <h2 class="player-list-title">{{game?.name}}</h2>
+        <p class="game-description">{{game?.description}}</p>
+        <button id="fg-button" class="col-md-6">Update Game</button>
+        <button id="fg-button-delete" class="col-md-6">Delete Game</button>
+        
+        <div class="game-details">
+            <div class="game-stats">
+                <p><span class="stat-label">Venue:</span> {{game?.venue_name}}</p>
+                <p><span class="stat-label">Match Length:</span> {{game?.length}} minutes</p>
+                <p><span class="stat-label">Date:</span> {{game?.date}}</p>
+                <p><span class="stat-label">Time:</span> {{game?.time}}</p>
+                <p><span class="stat-label">Price:</span> £{{game?.price}}</p>
+            </div>
+        </div>
+
+        <h2 class="player-list-title">Players Joined</h2>
+        <div class="game-player-count">
+            <h3>Players: {{player_count}} / {{game?.size}}</h3>
+        </div>
+        <button id="fg-button" style="margin: 0 10px;" (click)="onJoinGame()">Join Game</button>
+        <button id="fg-button" style="margin: 0 10px;" (click)="onLeaveGame()">Leave Game</button>
+
+        <div class="players-container">
+            <div *ngFor="let player of player_list | async" class="player-card">
+                <div class="player-info">
+                    <h3 class="player-name">{{player?.first_name}} {{player?.last_name}}</h3>
+                    <p class="player-email">{{player?.email}}</p>
+                    <p class="player-username">{{player?.username}}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <h2 class="player-list-title">Comments</h2>
+</div>

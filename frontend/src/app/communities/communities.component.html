@@ -20,7 +20,6 @@
                 </div>
             </div>
 
-
             <!-- Display search results -->
             <div *ngFor= "let community of (search_query ? search_results : community_list | async)" class="col-md-6 mb-4">
                 <!-- Background colour and link to single community -->
@@ -40,13 +39,13 @@
                 </div>
 
                 <!-- Footer for card -->
-                <div class="card-footer" id="card-footer">
+                <div class="card-footer" id="communities-card-footer">
                     <div class="col-md-12" id="communities-details">
-                        <p>Location: {{community.location}}</p>
+                        <p id="details-text">Location: {{community.location}}</p>
                     </div>
 
                     <div class="col-md-12" id="communities-details">
-                        <p>Distance: {{community.distance_from_user}} miles</p>
+                        <p id="details-text">Distance: {{community.distance_from_user}} miles</p>
                     </div>
 
                 </div> <!-- End of footer -->
