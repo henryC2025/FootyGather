@@ -1000,7 +1000,7 @@ def add_new_game(community_id):
             "price": data.get('game_price'),
             "date": data.get('game_date'),
             "time": data.get('game_time'),
-            "community_id": ObjectId(community_id),  # Ensure this is stored as an ObjectId
+            "community_id": ObjectId(community_id),
             "creator": {
                 "oauth_id": data.get('creator_oauth_id'),
                 "user_id": data.get('creator_user_id'),
@@ -1363,6 +1363,124 @@ def get_player_count(game_id):
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
 
 # Update game details
+@app.route('/api/v1.0/games/<string:game_id>', methods=['PUT'])
+def update_game_details(game_id):
+    try:
+        data = request.get_json()
+
+        update_data = {
+            "$set": {
+                "name": data.get('game_name'),
+                "description": data.get('game_description'),
+                "venue_id": ObjectId(data.get('game_venue_id')),
+                "venue_name": data.get('game_venue_name'),
+                "length": data.get('game_length'),
+                "payment_type": data.get('game_payment_type'),
+                "size": data.get('game_size'),
+                "price": data.get('game_price'),
+                "date": data.get('game_date'),
+                "time": data.get('game_time'),
+            }
+        }
+
+        update_result = games.update_one({"_id": ObjectId(game_id)}, update_data)
+
+        if update_result.modified_count > 0:
+            return make_response(jsonify({"message": "Game updated successfully"}), 200)
+        else:
+            return make_response(jsonify({"error": "No game found with the provided ID or no new data to update"}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
+# Add game comment
+@app.route('/api/v1.0/games/<string:game_id>/add_comment', methods=['POST'])
+def add_game_comment(game_id):
+    try:
+        data = request.get_json()
+
+        new_comment = {
+            "_id": ObjectId(),
+            "description": data.get('comment_description'),
+            "user": data.get('comment_user'),
+            "comment_oauth_id": data.get('comment_oauth_id'),
+            "created_at": datetime.datetime.utcnow(),
+            "timestamp": datetime.datetime.utcnow().timestamp()
+        }
+
+        result = games.update_one(
+            {'_id': ObjectId(game_id)},
+            {'$push': {'comments': new_comment}}
+        )
+
+        if result.modified_count > 0:
+            return make_response(jsonify({'message': 'Comment added successfully'}), 200)
+        else:
+            return make_response(jsonify({'error': 'Failed to add comment'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
+# Delete game comment
+@app.route('/api/v1.0/games/<string:game_id>/delete_comment/<string:comment_id>', methods=['DELETE'])
+def delete_game_comment(game_id, comment_id):
+    try:
+        game = games.find_one({'_id': ObjectId(game_id)})
+
+        if game:
+            comment_exists = any(str(comment['_id']) == comment_id for comment in game.get('comments', []))
+            if comment_exists:
+                result = games.update_one(
+                    {'_id': ObjectId(game_id)},
+                    {'$pull': {'comments': {'_id': ObjectId(comment_id)}}}
+                )
+
+                if result.modified_count > 0:
+                    return make_response(jsonify({'message': 'Comment deleted successfully'}), 200)
+                else:
+                    return make_response(jsonify({'error': 'Failed to delete comment'}), 500)
+            else:
+                return make_response(jsonify({'error': 'Comment not found'}), 404)
+        else:
+            return make_response(jsonify({'error': 'Game not found'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': 'An error occurred while deleting a comment. Please try again later.'}), 500)
+
+# Get all game comments
+@app.route('/api/v1.0/games/<string:game_id>/comments', methods=['GET'])
+def get_game_comments(game_id):
+    try:
+        game = games.find_one({'_id': ObjectId(game_id)})
+        if game:
+            comments_list = game.get('comments', [])
+            for comment in comments_list:
+                comment['_id'] = str(comment['_id'])
+            return make_response(jsonify(comments_list), 200)
+        else:
+            return make_response(jsonify({'error': 'Game not found'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': 'An error occurred while fetching comments. Please try again later.'}), 500)
+
+# Sort community comment
+@app.route('/api/v1.0/games/<string:game_id>/comments/sort', methods=['GET'])
+def sort_game_comments(game_id):
+    try:
+        sort_option = request.args.get('sort_option', default='newest')
+        game = games.find_one({"_id": ObjectId(game_id)})
+
+        if game and 'comments' in game:
+            if sort_option == 'newest':
+                sorted_comments = sorted(game['comments'], key=lambda x: x['timestamp'], reverse=True)
+            else:
+                sorted_comments = sorted(game['comments'], key=lambda x: x['timestamp'])
+            return make_response(jsonify(sorted_comments), 200)
+        else:
+            return make_response(jsonify({'error': 'Game not found or has no comments'}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

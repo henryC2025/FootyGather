@@ -15,6 +15,8 @@ import { CommunitiesAddDialogComponent } from "./communities-add-dialog/communit
 import { CommunityUpdateDialogComponent } from "./community-update-dialog/community-update-dialog.component";
 import { CommunityAddCommentDialogComponent } from "./community-add-comment-dialog/community-add-comment-dialog.component";
 import { GamesAddDialogComponent } from "./games-add-dialog/games-add-dialog.component";
+import { GameUpdateDialogComponent } from "./game-update-dialog/game-update-dialog.component";
+import { GameAddCommentDialogComponent } from "./game-add-comment-dialog/game-add-comment-dialog.component";
 
 @Injectable()
 export class SharedService
@@ -23,6 +25,8 @@ export class SharedService
     community_comments_updated = new Subject<void>();
     venue_added = new Subject<void>();
     game_added = new Subject<void>();
+    game_updated = new Subject<void>();
+    game_comments_updated = new Subject<void>();
     private is_auth_called = false;
     private user_form_completed = false;
     private user : any;
@@ -110,6 +114,42 @@ export class SharedService
             data:
             {
                 venue_id : id
+            },
+            hasBackdrop: true,
+        });
+
+        dialogRef.afterClosed().subscribe((result : any) =>
+        {
+            console.log('The dialog was closed');
+        });
+    }
+
+    showUpdateGameDialog(id : any)
+    {
+        const dialogRef = this.dialog.open(GameUpdateDialogComponent,
+        {
+            width: '400px',
+            data:
+            {
+                game_id : id
+            },
+            hasBackdrop: true,
+        });
+
+        dialogRef.afterClosed().subscribe((result : any) =>
+        {
+            console.log('The dialog was closed');
+        });
+    }
+
+    showAddGameCommentDialog(id : any)
+    {
+        const dialogRef = this.dialog.open(GameAddCommentDialogComponent,
+        {
+            width: '400px',
+            data:
+            {
+                game_id : id
             },
             hasBackdrop: true,
         });

@@ -334,23 +334,6 @@ export class WebService
         return this.http.post(`http://localhost:5000/api/v1.0/communities/${this.community_id}/games/add_game`, data);
     }
 
-    updateGameDetails()
-    {
-        // 
-    }
-
-    deleteGame(game_id : any)
-    {
-        this.game_id = game_id;
-        return this.http.delete(`http://localhost:5000/api/v1.0/games/${this.game_id}`)
-    }
-
-    getGameById(game_id : any)
-    {
-        this.game_id = game_id;
-        return this.http.get(`http://localhost:5000/api/v1.0/games/${this.game_id}`);
-    }
-
     getCommunityGames(community_id : any, page : number)
     {
         this.community_id = community_id;
@@ -406,27 +389,70 @@ export class WebService
         return this.http.post(`http://localhost:5000/api/v1.0/communities/${this.community_id}/move_game_to_previous/${this.game_id}`, {})
     }
 
+    //  Game
+    updateGameDetails(data : any, game_id : any)
+    {
+        this.game_id = game_id;
+        return this.http.put(`http://localhost:5000/api/v1.0/games/${this.game_id}`, data);
+    }
+
+    deleteGame(game_id : any)
+    {
+        this.game_id = game_id;
+        return this.http.delete(`http://localhost:5000/api/v1.0/games/${this.game_id}`);
+    }
+
+    getGameById(game_id : any)
+    {
+        this.game_id = game_id;
+        return this.http.get(`http://localhost:5000/api/v1.0/games/${this.game_id}`);
+    }
+    
     joinGame(game_id : any, data : any)
     {
         this.game_id = game_id;
-        return this.http.post(`http://localhost:5000/api/v1.0/games/${this.game_id}/join`, data)
+        return this.http.post(`http://localhost:5000/api/v1.0/games/${this.game_id}/join`, data);
     }
 
     leaveGame(game_id : any, data : any)
     {
         this.game_id = game_id;
-        return this.http.post(`http://localhost:5000/api/v1.0/games/${this.game_id}/leave`, data)
+        return this.http.post(`http://localhost:5000/api/v1.0/games/${this.game_id}/leave`, data);
     }
 
     getGamePlayerList(game_id : any)
     {
         this.game_id = game_id;
-        return this.http.get(`http://localhost:5000/api/v1.0/games/${this.game_id}/players`)
+        return this.http.get(`http://localhost:5000/api/v1.0/games/${this.game_id}/players`);
     }
 
     getGamePlayerCount(game_id : any)
     {
         this.game_id = game_id;
-        return this.http.get(`http://localhost:5000/api/v1.0/games/${this.game_id}/players/count`)
+        return this.http.get(`http://localhost:5000/api/v1.0/games/${this.game_id}/players/count`);
+    }
+
+    addGameComment(game_id : any, data : any)
+    {
+        this.game_id = game_id;
+        return this.http.post(`http://localhost:5000/api/v1.0/games/${this.game_id}/add_comment`, data)
+    }
+
+    deleteGameComment(game_id : any, comment_id : any)
+    {
+        this.game_id = game_id;
+        return this.http.delete(`http://localhost:5000/api/v1.0/games/${this.game_id}/delete_comment/${comment_id}`)
+    }
+
+    getAllGameComments(game_id : any)
+    {
+        this.game_id = game_id;
+        return this.http.delete(`http://localhost:5000/api/v1.0/games/${this.game_id}/comments`)
+    }
+
+    getSortedGameComments(game_id : any, sort_option : any)
+    {
+        this.game_id = game_id;
+        return this.http.delete(`http://localhost:5000/api/v1.0/games/${this.game_id}/comments/sort?sort_option=${sort_option}`)
     }
 }

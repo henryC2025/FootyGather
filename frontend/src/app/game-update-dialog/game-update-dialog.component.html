@@ -1,0 +1,69 @@
+<div>
+    <div id="dialog-header">
+      <h2 mat-dialog-title>Update Game Details</h2>
+      <mat-icon id="dialog-close" class="close-icon" (click)="onClose()">close</mat-icon>
+    </div>
+
+    <form [formGroup]="game_details_form" class="styled-form">
+
+        <div class="form-group">
+          <input type="text" id="game_name" formControlName="game_name" placeholder="Enter a name for the game"/>
+        </div>
+
+        <div class="form-group">
+          <label for="game-description">Description:</label>
+          <textarea id="game-description" formControlName="game_description" placeholder="Add a description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="game-venue">Venue:</label>
+          <select class="form-control" id="game-venue" formControlName="game_venue">
+            <option value="" disabled selected>Select a venue</option>
+            <option *ngFor="let venue of venue_list" [value]="venue.id + ',' + venue.name">{{ venue.name }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="game-length">Length:</label>
+          <select id="game-length" formControlName="game_length" class="form-control">
+              <option value="" disabled selected>Select game length</option>
+              <option value="30">30 min</option>
+              <option value="60">60 min</option>
+              <option value="90">90 min</option>
+              <option value="120">120 min</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="game-size">Size:</label>
+          <select id="game-size" formControlName="game_size" class="form-control">
+              <option value="" disabled selected>Select game size</option>
+              <option value="10">5-a-side</option>
+              <option value="12">6-a-side</option>
+              <option value="14">7-a-side</option>
+              <option value="16">8-a-side</option>
+              <option value="18">9-a-side</option>
+              <option value="20">10-a-side</option>
+              <option value="22">11-a-side</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="game-price">Price (£):</label>
+          <input type="number" class="form-control" id="game-price" formControlName="game_price" min="0" step="1"/>
+        </div>
+
+        <div class="form-group">
+          <label for="game-date">Date:</label>
+          <input type="date" class="form-control" id="game-date" formControlName="game_date" [min]="minimum_date" />
+        </div>
+
+        <div class="form-group">
+          <label for="game-time">Start Time:</label>
+          <input type="time" class="form-control" id="game-time" formControlName="game_time" />
+        </div>
+        <hr>
+
+        <button id="fg-button" (click)="onSubmit()">Update Game</button>
+      </form>
+  </div>

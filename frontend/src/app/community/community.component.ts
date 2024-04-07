@@ -15,7 +15,6 @@ export class CommunityComponent
     community_id : any; 
     community_list : any = [];
     comments_list : any = [];
-    comment_form : any = [];
     user_name : any;
     email : any;
     user_id : any;

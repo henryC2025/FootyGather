@@ -3,10 +3,9 @@
     
     <div *ngFor="let game of game_details | async" class="comment">
         <h2 class="player-list-title">{{game?.name}}</h2>
-        <p class="game-description">{{game?.description}}</p>
-        <button id="fg-button" class="col-md-6">Update Game</button>
-        <button id="fg-button-delete" class="col-md-6">Delete Game</button>
-        
+        <button *ngIf="is_joined" id="fg-button" style="width: 100%;" (click)="onLeaveGame()">Click To Finish Game</button>
+        <p class="game-description mt-2">{{game?.description}}</p>
+
         <div class="game-details">
             <div class="game-stats">
                 <p><span class="stat-label">Venue:</span> {{game?.venue_name}}</p>
@@ -16,13 +15,17 @@
                 <p><span class="stat-label">Price:</span> £{{game?.price}}</p>
             </div>
         </div>
+        <div *ngIf="is_admin || is_creator">
+            <button id="fg-button" (click)="onUpdateGame()" class="col-md-6">Update Game</button>
+            <button id="fg-button-delete" (click)="onDeleteGame()" class="col-md-6">Delete Game</button>
+        </div>
 
         <h2 class="player-list-title">Players Joined</h2>
+        <button *ngIf="!is_joined" id="fg-button" style="width: 100%;" (click)="onJoinGame()">Join Game</button>
+        <button *ngIf="is_joined" id="fg-button" style="width: 100%;" (click)="onLeaveGame()">Leave Game</button>
         <div class="game-player-count">
             <h3>Players: {{player_count}} / {{game?.size}}</h3>
         </div>
-        <button id="fg-button" style="margin: 0 10px;" (click)="onJoinGame()">Join Game</button>
-        <button id="fg-button" style="margin: 0 10px;" (click)="onLeaveGame()">Leave Game</button>
 
         <div class="players-container">
             <div *ngFor="let player of player_list | async" class="player-card">
@@ -36,5 +39,27 @@
 
     </div>
 
-    <h2 class="player-list-title">Comments</h2>
+    <h2 class="comment-title">Comments</h2>
+
+        <div class="col-md-12 comment-sort">
+            <select class="form-select" [(ngModel)]="selected_sort_option" (change)="onSortCommentChange()">
+              <option value="default">Sort by Default</option>
+              <option value="newest">Sort by Newest</option>
+              <option value="oldest">Sort by Oldest</option>
+            </select>
+        </div>
+
+        <button class="col-md-12" id="fg-button" (click)="onAddGameComment()">Add a Comment</button>
+
+        <div class="comments-section">
+            <div *ngFor="let comment of comments_list | async" class="comment">
+                <div class="comment-header">
+                    <span class="comment-user">{{comment.user}}</span>
+                    <span class="comment-date">{{comment.created_at | date: 'medium'}}</span>
+                    <mat-icon *ngIf="comment.comment_oauth_id === user?.sub" (click)="onDeleteGameComment(comment._id)" id="dialog-close" class="close-icon">close</mat-icon>
+                </div>
+                <p class="comment-body">{{comment.description}}</p>
+            </div>
+        </div>
+    
 </div>

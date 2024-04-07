@@ -37,6 +37,8 @@ import { GameComponent } from './game/game.component';
 import { CommunityAddCommentDialogComponent } from './community-add-comment-dialog/community-add-comment-dialog.component';
 import { ProfilesComponent } from './profiles/profiles.component';
 import { GamesAddDialogComponent } from './games-add-dialog/games-add-dialog.component';
+import { GameUpdateDialogComponent } from './game-update-dialog/game-update-dialog.component';
+import { GameAddCommentDialogComponent } from './game-add-comment-dialog/game-add-comment-dialog.component';
 
 var routes : any = [
   {
@@ -119,6 +121,8 @@ var routes : any = [
     CommunityAddCommentDialogComponent,
     ProfilesComponent,
     GamesAddDialogComponent,
+    GameUpdateDialogComponent,
+    GameAddCommentDialogComponent,
   ],
   imports: [
     BrowserModule,
