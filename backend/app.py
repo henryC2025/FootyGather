@@ -1798,6 +1798,34 @@ def get_user_previous_games_count(user_id):
     except Exception as e:
         return make_response(jsonify({"error": str(e)}), 500)
 
+# Get player communities
+@app.route('/api/v1.0/players/<user_id>/communities', methods=['GET'])
+def get_communities_by_user(user_id):
+    try:
+        communities_cursor = communities.find({"players.user_id": user_id})
+        user_communities = []
+
+        for community in communities_cursor:
+            community["_id"] = str(community["_id"])
+            for comment in community['comments']:
+                comment['_id'] = str(comment['_id'])
+            for game in community.get('current_games', []):
+                if isinstance(game, dict) and 'game_id' in game:
+                    game['game_id'] = str(game['game_id'])
+            for game in community.get('previous_games', []):
+                if isinstance(game, dict) and 'game_id' in game:
+                    game['game_id'] = str(game['game_id'])
+            user_communities.append(community)
+
+        if user_communities:
+            return make_response(jsonify(user_communities), 200)
+        else:
+            return make_response(jsonify({"message": "No communities found for this user"}), 404)
+
+    except Exception as e:
+        return make_response(jsonify({"error": f"An error occurred: {str(e)}"}), 500)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 

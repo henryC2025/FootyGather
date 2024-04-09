@@ -27,6 +27,7 @@ export class ProfileComponent {
     previous_games_total_pages : number = 1;
     user : any;
     user_details : any = [];
+    player_communities : any = [];
 
     ngOnInit()
     {
@@ -49,18 +50,13 @@ export class ProfileComponent {
                         {
                             oauth_id : this.user?.sub,
                         }
-                        console.log(form_data)
                         this.webService.getUserDetails(form_data).subscribe(
                         {
                             next : (data : any) =>
                             {
                                 this.user_details = data;
                                 this.getPlayerGames(this.user_details._id);
-                                console.log(this.user_details);
                                 this.initProfile();
-                                console.log(sessionStorage['user_current_games_page'])
-                                console.log(sessionStorage['user_previous_games_page'])
-
                             }
                         })
                     }
@@ -84,6 +80,8 @@ export class ProfileComponent {
         this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
             this.user_details._id, "closest_date", this.previous_games_page);
         this.getPaginationSize();
+        this.player_communities = this.webService.getPlayerCommunities(this.user_details._id);
+        console.log(this.player_communities)
     }
 
     getPaginationSize()

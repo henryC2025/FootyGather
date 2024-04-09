@@ -182,9 +182,21 @@
   </nav>
   <!-- End of Previous Games Pagination -->
 
-  <h2 class="heading-title">Player Communities</h2>
-
+  
   </ng-container>
+  <!-- <h2 class="heading-title">Player Communities</h2>
+  <div *ngIf="player_communities">
+    <div *ngFor="let community of player_communities" class="comment">
+      <div class="player-list" style="display: flex; align-items: center; cursor: pointer;" [routerLink]="['/communities', community._id]">
+          <div class="games-details">
+              <h1 class="games-name">{{community.name}}</h1>
+              <div class="games-datetime">
+                  <h2 class="games-date">{{community.location}}</h2>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div> -->
 
   <!-- Display a message and sign-in link when not authenticated -->
   <ng-template #notAuthenticated>

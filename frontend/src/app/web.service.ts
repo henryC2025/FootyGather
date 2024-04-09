@@ -512,4 +512,10 @@ export class WebService
         const query = `?sort_option=${sort_option}&pn=${page_number}`
         return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/previous_games/sort${query}`)
     }
+
+    getPlayerCommunities(user_id : any)
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/communities`)
+        // http://localhost:5000/api/v1.0/players/6611d40d8d5c2af9fa72bb1f/communities
+    }
 }
