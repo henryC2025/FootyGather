@@ -1,9 +1,20 @@
 <div class="container" id="content-container">
 
-    <h2 class="player-list-title">Games</h2>
+    <h2 class="heading-title">Games</h2>
     <button style="width: 100%;" id="fg-button" (click)="onAddGame()">Create a Game</button>
 
-    <h2 class="player-list-title">Current Games</h2>
+    <!-- CURRENT GAMES -->
+    <h2 class="heading-title">Current Games</h2>
+
+    <!-- SORTING CURRNET GAMES -->
+    <div class="col-md-12 comment-sort">
+        <select class="form-select" [(ngModel)]="selected_current_sort_option" (change)="onSortCurrentGamesChange()">
+          <option value="default">Sort by Default</option>
+          <option value="closest_date">Sort by Closest Date and Time</option>
+          <option value="furthest_date">Sort by Furthest Date and Time</option>
+        </select>
+    </div>
+
     <div *ngFor="let game of community_current_games_list | async" class="comment">
         <div class="player-list" style="display: flex; align-items: center; cursor: pointer;" [routerLink]="['/games', game._id]">
             <div class="games-details">
@@ -43,8 +54,18 @@
         </ul>
     </nav>
     <!-- End of Current Games Pagination -->
+    
+    <!-- PREVIOUS GAMES -->
+    <h2 class="heading-title">Previous Games</h2>
+    <!-- SORTING PREVIOUS GAMES -->
+    <div class="col-md-12 comment-sort">
+        <select class="form-select" [(ngModel)]="selected_current_sort_option" (change)="onSortPreviousGamesChange()">
+        <option value="default">Sort by Default</option>
+        <option value="closest_date">Sort by Closest Date and Time</option>
+        <option value="furthest_date">Sort by Furthest Date and Time</option>
+        </select>
+    </div>
 
-    <h2 class="player-list-title">Previous Games</h2>
     <div *ngFor="let game of community_previous_games_list | async" class="comment">
         <div class="player-list" style="display: flex; align-items: center;">
             <div class="games-details">
@@ -56,8 +77,9 @@
             </div>
         </div>
     </div>
-     <!-- Previous Games Pagination -->
-     <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation">
+
+    <!-- Previous Games Pagination -->
+    <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation">
         <ul class="pagination">
 
             <li class="page-item">

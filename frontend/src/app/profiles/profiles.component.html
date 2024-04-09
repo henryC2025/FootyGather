@@ -1,85 +1,56 @@
 <div class="container" id="content-container">
-    <h1 id="home-heading">Profile</h1>
+    <h2 class="heading-title">PLAYER PROFILE</h2>
     <hr>
   
       <div *ngIf="user_details" class="user-profile">
-        <div class="profile-header">
-          <!-- <h2>Welcome, {{ user_details.user_name }}</h2> -->
-          <img *ngIf="user_details.profile_image" [src]="user_details.profile_image[0]" alt="Profile Image">
-        </div>
-  
-        <div class="profile-details">
-          <div class="profile-row">
-            <label>Email</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.email }}
-            </h3>
+        <div class="profile-container">
+          <div class="profile-header">
+            <img *ngIf="user_details.profile_image" [src]="user_details.profile_image[0]" alt="Profile Image">
           </div>
-          <div class="profile-row">
-            <label>Username</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.user_name }}
-            </h3>
-          </div>
-          <div class="profile-row">
-            <label>Full Name</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.first_name }} {{ user_details.last_name }}
-            </h3>
-          </div>
-          <div class="profile-row">
-            <label>Description</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.description }}
-            </h3>
-          </div>
-          <div class="profile-row">
-            <label>Experience</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.experience }}
-            </h3>
-          </div>
-          <div class="profile-row">
-            <label>Location</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.location }}
-            </h3>
-          </div>
-          <div class="profile-row">
-            <label>Games Joined</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.games_joined }}
-            </h3>
-          </div>
-          <div class="profile-row">
-            <label>Games Attended</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.games_attended }}
-            </h3>
-          </div>
-          <div class="profile-row">
-            <label>Created At</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.create_at | date}}
-            </h3>
-          </div>
-          <div class="profile-row">
-            <label>Last Updated</label>
-            <hr id="profile-hr">
-            <h3>
-              {{ user_details.updated_at | date }}
-            </h3>
+        
+          <div class="profile-details">
+            <div class="profile-row">
+              <div class="profile-label">Email</div>
+              <div class="profile-content">{{ user_details.email }}</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-label">Username</div>
+              <div class="profile-content">{{ user_details.user_name }}</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-label">Full Name</div>
+              <div class="profile-content">{{ user_details.first_name }} {{ user_details.last_name }}</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-label">Description</div>
+              <div class="profile-content">{{ user_details.description }}</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-label">Experience</div>
+              <div class="profile-content">{{ user_details.experience }}</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-label">Location</div>
+              <div class="profile-content">{{ user_details.location }}</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-label">Games Joined</div>
+              <div class="profile-content">{{ user_details.games_joined }}</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-label">Games Attended</div>
+              <div class="profile-content">{{ user_details.games_attended }}</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-label">Created At</div>
+              <div class="profile-content">{{ user_details.create_at | date }}</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-label">Last Updated</div>
+              <div class="profile-content">{{ user_details.updated_at | date }}</div>
+            </div>
           </div>
         </div>
-      </div>  
+      </div>
 </div>
   

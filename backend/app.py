@@ -6,6 +6,7 @@ import uuid
 import jwt
 from flask_cors import CORS
 import requests
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -20,6 +21,10 @@ games = db['games']
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
+
+def parse_game_datetime(date_str, time_str):
+    datetime_str = f"{date_str} {time_str}"
+    return datetime.strptime(datetime_str, "%Y-%m-%d %H:%M")
 
 # Route to check if user is in the database
 @app.route('/api/v1.0/user', methods=['POST'])
@@ -82,7 +87,7 @@ def add_user_details():
             "games_attended": games_attended,
             "balance": balance,
             "is_admin": is_admin,
-            "create_at": datetime.datetime.utcnow()
+            "create_at": datetime.utcnow()
         }
 
         result = users.insert_one(new_user)
@@ -178,7 +183,7 @@ def update_user_details():
             "games_attended": games_attended,
             "balance": balance,
             "is_admin": is_admin,
-            "updated_at": datetime.datetime.utcnow()
+            "updated_at": datetime.utcnow()
         })
 
         result = users.update_one({"oauth_id": oauth_id}, {"$set": existing_user})
@@ -320,7 +325,7 @@ def add_community_details():
             "players": [],
             "current_games" : [],
             "previous_games" : [],
-            "created_at": datetime.datetime.utcnow()
+            "created_at": datetime.utcnow()
         }
 
         # Insert data into MongoDB
@@ -513,7 +518,7 @@ def add_venue_details():
                 "user_likes": [],
                 "user_dislikes": []
             },
-            "created_at": datetime.datetime.utcnow()
+            "created_at": datetime.utcnow()
         }
 
         # Insert data into MongoDB
@@ -874,8 +879,8 @@ def add_community_comment(community_id):
             "description": comment_description,
             "user": comment_user,
             "comment_oauth_id": comment_oauth_id,
-            "created_at": datetime.datetime.utcnow(),
-            "timestamp" : datetime.datetime.utcnow().timestamp()
+            "created_at": datetime.utcnow(),
+            "timestamp" : datetime.utcnow().timestamp()
         }
 
         result = communities.update_one(
@@ -988,6 +993,8 @@ def get_profile_details(id):
 def add_new_game(community_id):
     try:
         data = request.get_json()
+        created_at = datetime.utcnow()
+        timestamp = datetime.utcnow().timestamp()
 
         new_game = {
             "name": data.get('game_name'),
@@ -1007,20 +1014,26 @@ def add_new_game(community_id):
                 "username": data.get('creator_user_name'),
                 "email": data.get('creator_email')
             },
+            "comments" : [],
             "player_list": [{
                 "oauth_id": data.get('creator_oauth_id'),
                 "user_id": data.get('creator_user_id'),
                 "username": data.get('creator_user_name'),
                 "email": data.get('creator_email')
             }],
-            "created_at": datetime.datetime.utcnow(),
-            "timestamp": datetime.datetime.utcnow().timestamp()
+            "status" : "current",
+            "created_at": created_at,
+            "created_at_timestamp": timestamp
         }
         game_insert_result = games.insert_one(new_game)
 
         game_details = {
             "game_id": game_insert_result.inserted_id,
-            "game_name": data.get('game_name')
+            "game_name": data.get('game_name'),
+            "created_at": created_at,
+            "timestamp": timestamp,
+            "date" : data.get('game_date'),
+            "time" : data.get('game_time')
         }
 
         community_update_result = communities.update_one(
@@ -1054,6 +1067,9 @@ def get_community_games(community_id):
             game['_id'] = str(game['_id'])
             game['venue_id'] = str(game.get('venue_id', ''))
             game['community_id'] = str(game['community_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
             games_list.append(game)
 
         return make_response(jsonify(games_list), 200)
@@ -1073,6 +1089,9 @@ def get_all_games():
             if 'community_id' in game:
                 game['community_id'] = str(game['community_id'])
                 game['venue_id'] = str(game['venue_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
             games_list.append(game)
 
         return make_response(jsonify(games_list), 200)
@@ -1105,6 +1124,9 @@ def get_games_for_community(community_id):
             if 'community_id' in game:
                 game['community_id'] = str(game['community_id'])
                 game['venue_id'] = str(game['venue_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
             games_list.append(game)
 
         return make_response(jsonify(games_list), 200)
@@ -1123,6 +1145,9 @@ def get_game_by_id(game_id):
             game['_id'] = str(game['_id'])
             game['community_id'] = str(game['community_id'])
             game['venue_id'] = str(game['venue_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
             return make_response(jsonify([game]), 200)
         else:
             return make_response(jsonify({'message': 'Game not found'}), 404)
@@ -1179,6 +1204,9 @@ def get_current_games_for_community(community_id):
             game['_id'] = str(game['_id'])
             game['community_id'] = str(game['community_id'])
             game['venue_id'] = str(game['venue_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
 
         return make_response(jsonify(games_list), 200)
 
@@ -1211,12 +1239,85 @@ def get_previous_games_for_community(community_id):
             game['_id'] = str(game['_id'])
             game['community_id'] = str(game['community_id'])
             game['venue_id'] = str(game['venue_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
 
         return make_response(jsonify(games_list), 200)
 
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Sort current games
+@app.route('/api/v1.0/communities/<community_id>/current_games/sort', methods=['GET'])
+def sort_current_games_by_date_with_pagination(community_id):
+    sort_option = request.args.get('sort_option', 'closest_date')
+    page_num = int(request.args.get('pn', 1))
+    page_size = int(request.args.get('ps', 5))
+    try:
+        community = communities.find_one({"_id": ObjectId(community_id)})
+        if not community or 'current_games' not in community:
+            return make_response(jsonify({'error': 'Community not found'}), 404)
+
+        games_details = []
+        for game_ref in community['current_games']:
+            game = games.find_one({"_id": game_ref['game_id']})
+            if game:
+                game['_id'] = str(game['_id'])
+                games_details.append(game)
+
+        if sort_option == 'closest_date':
+            games_details.sort(key=lambda x: datetime.strptime(f"{x['date']} {x['time']}", "%Y-%m-%d %H:%M"))
+        elif sort_option == 'furthest_date':
+            games_details.sort(key=lambda x: datetime.strptime(f"{x['date']} {x['time']}", "%Y-%m-%d %H:%M"), reverse=True)
+
+        start = (page_num - 1) * page_size
+        end = start + page_size
+        paginated_games_details = games_details[start:end]
+
+        for game in paginated_games_details:
+            game['community_id'] = str(game['community_id'])
+            if 'venue_id' in game: game['venue_id'] = str(game['venue_id'])
+
+        return make_response(jsonify(paginated_games_details), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+# Sort previous games
+@app.route('/api/v1.0/communities/<community_id>/previous_games/sort', methods=['GET'])
+def sort_previous_games_by_date_with_pagination(community_id):
+    sort_option = request.args.get('sort_option', 'closest_date')
+    page_num = int(request.args.get('pn', 1))
+    page_size = int(request.args.get('ps', 5))
+    try:
+        community = communities.find_one({"_id": ObjectId(community_id)})
+        if not community or 'previous_games' not in community:
+            return make_response(jsonify({'error': 'Community not found'}), 404)
+
+        games_details = []
+        for game_ref in community['previous_games']:
+            game = games.find_one({"_id": game_ref['game_id']})
+            if game:
+                game['_id'] = str(game['_id'])
+                games_details.append(game)
+
+        if sort_option == 'closest_date':
+            games_details.sort(key=lambda x: datetime.strptime(f"{x['date']} {x['time']}", "%Y-%m-%d %H:%M"))
+        elif sort_option == 'furthest_date':
+            games_details.sort(key=lambda x: datetime.strptime(f"{x['date']} {x['time']}", "%Y-%m-%d %H:%M"), reverse=True)
+
+        start = (page_num - 1) * page_size
+        end = start + page_size
+        paginated_games_details = games_details[start:end]
+
+        for game in paginated_games_details:
+            game['community_id'] = str(game['community_id'])
+            if 'venue_id' in game: game['venue_id'] = str(game['venue_id'])
+
+        return make_response(jsonify(paginated_games_details), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
  
 # Get count of commuity current games
 @app.route('/api/v1.0/communities/<community_id>/current_games/count', methods=['GET'])
@@ -1368,6 +1469,7 @@ def update_game_details(game_id):
     try:
         data = request.get_json()
 
+        # Update the game details in the games collection
         update_data = {
             "$set": {
                 "name": data.get('game_name'),
@@ -1382,16 +1484,37 @@ def update_game_details(game_id):
                 "time": data.get('game_time'),
             }
         }
-
         update_result = games.update_one({"_id": ObjectId(game_id)}, update_data)
 
+        # If game update is successful, update the game details in the community document
         if update_result.modified_count > 0:
+            game_details = {
+                "game_id": ObjectId(game_id),
+                "game_name": data.get('game_name'),
+                "created_at": datetime.utcnow().isoformat(),
+                "date": data.get('game_date'),
+                "time": data.get('game_time')
+            }
+            
+            # Update current_games array in community document
+            communities.update_one(
+                {"current_games.game_id": ObjectId(game_id)},
+                {"$set": {"current_games.$": game_details}}
+            )
+            
+            # Optionally, update previous_games if applicable
+            communities.update_one(
+                {"previous_games.game_id": ObjectId(game_id)},
+                {"$set": {"previous_games.$": game_details}}
+            )
+
             return make_response(jsonify({"message": "Game updated successfully"}), 200)
         else:
             return make_response(jsonify({"error": "No game found with the provided ID or no new data to update"}), 404)
 
     except Exception as e:
-        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+        print(f"Error during update: {e}")  # This will print the error message to the console
+        return make_response(jsonify({'error': f'An error occurred: {e}'}), 500)
 
 # Add game comment
 @app.route('/api/v1.0/games/<string:game_id>/add_comment', methods=['POST'])
@@ -1404,8 +1527,8 @@ def add_game_comment(game_id):
             "description": data.get('comment_description'),
             "user": data.get('comment_user'),
             "comment_oauth_id": data.get('comment_oauth_id'),
-            "created_at": datetime.datetime.utcnow(),
-            "timestamp": datetime.datetime.utcnow().timestamp()
+            "created_at": datetime.utcnow(),
+            "timestamp": datetime.utcnow().timestamp()
         }
 
         result = games.update_one(
@@ -1471,6 +1594,9 @@ def sort_game_comments(game_id):
         game = games.find_one({"_id": ObjectId(game_id)})
 
         if game and 'comments' in game:
+            game['_id'] = str(game['_id'])
+            for comment in game['comments']:
+                comment['_id'] = str(comment['_id'])
             if sort_option == 'newest':
                 sorted_comments = sorted(game['comments'], key=lambda x: x['timestamp'], reverse=True)
             else:
@@ -1481,6 +1607,196 @@ def sort_game_comments(game_id):
 
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/v1.0/games/<string:game_id>/update_status', methods=['POST'])
+def update_game_status(game_id):
+    try:
+        data = request.get_json()
+        new_status = data.get('status')
+
+        if new_status not in ['current', 'previous']:
+            return make_response(jsonify({'error': 'Invalid status value'}), 400)
+
+        result = games.update_one(
+            {"_id": ObjectId(game_id)},
+            {"$set": {"status": new_status}}
+        )
+
+        if result.modified_count == 0:
+            return make_response(jsonify({'error': 'Game not found or status is the same'}), 404)
+
+        return make_response(jsonify({'message': 'Game status updated successfully'}), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/v1.0/games/<string:game_id>/remove_player', methods=['POST'])
+def remove_player_from_game(game_id):
+    try:
+        data = request.get_json()
+        player_user_id = data.get('user_id')
+        
+        update_result = games.update_one(
+            {"_id": ObjectId(game_id)},
+            {"$pull": {"player_list": {"user_id": player_user_id}}}
+        )
+
+        if update_result.modified_count > 0:
+            return make_response(jsonify({"message": "Player removed from game successfully"}), 200)
+        else:
+            return make_response(jsonify({"error": "Failed to remove player from the game"}), 404)
+    
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
+# Get players current games
+@app.route('/api/v1.0/players/<player_user_id>/current_games', methods=['GET'])
+def get_current_games_for_player(player_user_id):
+    try:
+        current_games = games.find({"player_list.user_id": player_user_id, "status": "current"})
+        
+        games_list = []
+        for game in current_games:
+            game['_id'] = str(game['_id'])
+            if 'community_id' in game:
+                game['community_id'] = str(game['community_id'])
+                game['venue_id'] = str(game['venue_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
+            games_list.append(game)
+        
+        return make_response(jsonify(games_list), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+# Get players previous games
+@app.route('/api/v1.0/players/<player_user_id>/previous_games', methods=['GET'])
+def get_previous_games_for_player(player_user_id):
+    try:
+        previous_games = games.find({"player_list.user_id": player_user_id, "status": "previous"})
+        
+        games_list = []
+        for game in previous_games:
+            game['_id'] = str(game['_id'])
+            if 'community_id' in game:
+                game['community_id'] = str(game['community_id'])
+                game['venue_id'] = str(game['venue_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
+            games_list.append(game)
+        
+        return make_response(jsonify(games_list), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+# Get players current games with pagination and sorting
+@app.route('/api/v1.0/players/<player_user_id>/current_games/sort', methods=['GET'])
+def sort_and_paginate_player_current_games(player_user_id):
+    try:
+        page_num = int(request.args.get('pn', 1))
+        page_size = int(request.args.get('ps', 5))
+        sort_option = request.args.get('sort_option', 'closest_date')
+        now = datetime.now()
+
+        skip_amount = (page_num - 1) * page_size
+
+        current_games_cursor = games.find({
+            "player_list.user_id": player_user_id,
+            "status": "current"
+        }).skip(skip_amount).limit(page_size)
+
+        games_list = list(current_games_cursor)
+
+        for game in games_list:
+            game['_id'] = str(game['_id'])
+            if 'community_id' in game:
+                game['community_id'] = str(game['community_id'])
+                game['venue_id'] = str(game['venue_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
+            game['datetime'] = datetime.strptime(f"{game['date']} {game['time']}", "%Y-%m-%d %H:%M")
+
+        if sort_option == 'closest_date':
+            games_list.sort(key=lambda x: abs(x['datetime'] - now))
+        elif sort_option == 'furthest_date':
+            games_list.sort(key=lambda x: abs(x['datetime'] - now), reverse=True)
+
+        for game in games_list:
+            del game['datetime']
+
+        return make_response(jsonify(games_list), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+# Get players previous games with pagination and sorting
+@app.route('/api/v1.0/players/<player_user_id>/previous_games/sort', methods=['GET'])
+def sort_and_paginate_player_previous_games(player_user_id):
+    try:
+        page_num = int(request.args.get('pn', 1))
+        page_size = int(request.args.get('ps', 5))
+        sort_option = request.args.get('sort_option', 'closest_date')
+        now = datetime.now()
+
+        skip_amount = (page_num - 1) * page_size
+
+        previous_games_cursor = games.find({
+            "player_list.user_id": player_user_id,
+            "status": "previous"
+        }).skip(skip_amount).limit(page_size)
+
+        games_list = list(previous_games_cursor)
+
+        for game in games_list:
+            game['_id'] = str(game['_id'])
+            if 'community_id' in game:
+                game['community_id'] = str(game['community_id'])
+                game['venue_id'] = str(game['venue_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
+            game['datetime'] = datetime.strptime(f"{game['date']} {game['time']}", "%Y-%m-%d %H:%M")
+
+        if sort_option == 'closest_date':
+            games_list.sort(key=lambda x: abs(x['datetime'] - now))
+        elif sort_option == 'furthest_date':
+            games_list.sort(key=lambda x: abs(x['datetime'] - now), reverse=True)
+
+        for game in games_list:
+            del game['datetime']
+
+        return make_response(jsonify(games_list), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+# Get current game count for player
+@app.route('/api/v1.0/players/<user_id>/current_games/count', methods=['GET'])
+def get_user_current_games_count(user_id):
+    try:
+        count = db.games.count_documents({"player_list.user_id": user_id, "status": "current"})
+        
+        response = {
+            "user_id": user_id,
+            "current_games_count": count
+        }
+        return make_response(jsonify(response), 200)
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}), 500)
+
+# Get previous game count for player
+@app.route('/api/v1.0/players/<user_id>/previous_games/count', methods=['GET'])
+def get_user_previous_games_count(user_id):
+    try:
+        count = db.games.count_documents({"player_list.user_id": user_id, "status": "previous"})
+        
+        response = {
+            "user_id": user_id,
+            "previous_games_count": count
+        }
+        return make_response(jsonify(response), 200)
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

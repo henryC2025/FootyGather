@@ -25,10 +25,10 @@
 
             <h2 class="community-details">Created At: {{community.created_at}}</h2>
 
-            <h2 class="player-list-title">Games</h2>
+            <h2 class="heading-title">Games</h2>
             <button class="col-md-12 mb-2" id="fg-button" click="" [routerLink]="['games']">Go to Community Games</button>
 
-            <h2 class="player-list-title">Player List</h2>
+            <h2 class="heading-title">Player List</h2>
             <div *ngFor="let player of player_list" class="comment">
                 <div class="player-list" style="display: flex; align-items: center;">
                     <p style="margin: 0; flex-grow: 1; cursor: pointer;" [routerLink]="['/profile', player.user_id]">{{player.nickname + " | " + player.email}}</p>

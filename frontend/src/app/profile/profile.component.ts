@@ -17,6 +17,14 @@ export class ProfileComponent {
                 public sharedService : SharedService,
                 public router : Router) {}
 
+    selected_current_sort_option: string = "default";
+    selected_previous_sort_option: string = "default";
+    user_current_games_list : any;
+    user_previous_games_list : any;
+    current_games_page : number = 1;
+    previous_games_page : number = 1;
+    current_games_total_pages : number = 1;
+    previous_games_total_pages : number = 1;
     user : any;
     user_details : any = [];
 
@@ -47,13 +55,76 @@ export class ProfileComponent {
                             next : (data : any) =>
                             {
                                 this.user_details = data;
+                                this.getPlayerGames(this.user_details._id);
                                 console.log(this.user_details);
+                                this.initProfile();
+                                console.log(sessionStorage['user_current_games_page'])
+                                console.log(sessionStorage['user_previous_games_page'])
+
                             }
                         })
                     }
                 }
             });
         });
+    }
+
+    initProfile()
+    {
+        if(sessionStorage['user_current_games_page'])
+        {
+            this.current_games_page = Number(sessionStorage['user_current_games_page']);
+        }
+        if(sessionStorage['user_previous_games_page'])
+        {
+            this.previous_games_page = Number(sessionStorage['user_previous_games_page']);
+        }
+        this.user_current_games_list = this.webService.getSortedPlayerCurrentGames(
+            this.user_details._id, "closest_date", this.current_games_page);
+        this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
+            this.user_details._id, "closest_date", this.previous_games_page);
+        this.getPaginationSize();
+    }
+
+    getPaginationSize()
+    {
+        this.webService.getPlayerCurrentGamesCount(this.user_details._id).subscribe(
+        {
+            next : (data: any) =>
+            {
+                if(data)
+                {
+                    const count_of_games = parseInt(data.current_games_count);
+                    this.current_games_total_pages = Math.ceil(count_of_games / 5);
+                }
+            },
+            error : (error) =>
+            {
+                console.error('Error fetching game count:', error)
+            }
+        });
+    
+        this.webService.getPlayerPreviousGamesCount(this.user_details._id).subscribe(
+        {
+            next : (data: any) =>
+            {
+                if(data)
+                {
+                    const count_of_games = parseInt(data.previous_games_count);
+                    this.previous_games_total_pages = Math.ceil(count_of_games / 5);
+                }
+            },
+            error : (error) =>
+            {
+                console.error('Error fetching game count:', error)
+            }
+        });
+    }
+
+    getPlayerGames(user_id : any)
+    {
+        this.user_current_games_list = this.webService.getCurrentGamesOfPlayer(user_id);
+        this.user_previous_games_list = this.webService.getPreviousGamesOfPlayer(user_id);
     }
 
     onUpdateUserDetails()
@@ -88,6 +159,152 @@ export class ProfileComponent {
                     this.sharedService.showNotification("Something went wrong when deleting user image!", "error");
                 }
             })
+        }
+    }
+
+    firstGamesPage(game_status : any)
+    {
+        if(game_status === "current")
+        {
+            if(this.current_games_page > 1)
+            {
+                this.current_games_page = 1;
+                sessionStorage['user_current_games_page'] = this.current_games_page;
+                this.user_current_games_list = this.webService.getSortedPlayerCurrentGames(
+                    this.user_details._id, this.selected_current_sort_option, this.current_games_page);
+            }
+        }
+        else
+        {
+            if(this.previous_games_page > 1)
+            {
+                this.previous_games_page = 1;
+                sessionStorage['user_previous_games_page'] = this.previous_games_page;
+                this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
+                    this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+            }
+        }
+    }
+
+    lastGamesPage(game_status : any)
+    {
+        if(game_status === "current")
+        {
+            if(this.current_games_page < this.current_games_total_pages)
+            {
+                this.current_games_page = this.current_games_total_pages;
+                sessionStorage['user_current_games_page'] = this.current_games_page;
+                this.user_current_games_list = this.webService.getSortedPlayerCurrentGames(
+                    this.user_details._id, this.selected_current_sort_option, this.current_games_page);
+            }
+        }
+        else
+        {
+            if(this.previous_games_page < this.previous_games_total_pages)
+            {
+                this.previous_games_page = this.previous_games_total_pages;
+                sessionStorage['user_previous_games_page'] = this.previous_games_page;
+                this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
+                    this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+            }
+        }
+    }
+
+    previousGamesPage(game_status : any)
+    {
+        if(game_status === "current")
+        {
+            if(this.current_games_page > 1)
+            {
+                this.current_games_page = this.current_games_page - 1;
+                sessionStorage['user_current_games_page'] = this.current_games_page;
+                this.user_current_games_list = this.webService.getSortedPlayerCurrentGames(
+                    this.user_details._id, this.selected_current_sort_option, this.current_games_page);
+            }
+        }
+        else
+        {
+            if(this.previous_games_page > 1)
+            {
+                this.previous_games_page = this.previous_games_page - 1;
+                sessionStorage['user_previous_games_page'] = this.previous_games_page;
+                this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
+                    this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+            }
+        }
+    }
+
+    nextGamesPage(game_status : any)
+    {
+        if(game_status === "current")
+        {
+            this.current_games_page = this.current_games_page + 1;
+            sessionStorage['user_current_games_page'] = this.current_games_page;
+            this.user_current_games_list = this.webService.getSortedPlayerCurrentGames(
+                this.user_details._id, this.selected_current_sort_option, this.current_games_page);
+        }
+        else
+        {
+            this.previous_games_page = this.previous_games_page + 1;
+            sessionStorage['user_previous_games_page'] = this.previous_games_page;
+            this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
+                this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+        }
+    }
+
+    goToGamesPage(game_status : any, page_num: number) 
+    {
+        if(game_status === "current")
+        {
+            this.current_games_page = page_num;
+            sessionStorage['user_current_games_page'] = this.current_games_page;
+            this.user_current_games_list = this.webService.getSortedPlayerCurrentGames(
+                this.user_details._id, this.selected_current_sort_option, this.current_games_page);
+        }
+        else
+        {
+            this.previous_games_page = page_num;
+            sessionStorage['user_previous_games_page'] = this.previous_games_page;
+            this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
+                this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+        }
+    }
+
+    onSortCurrentGamesChange()
+    {
+        if (this.selected_current_sort_option === 'closest_date')
+        {
+            this.user_current_games_list = this.webService.getSortedPlayerCurrentGames(
+                this.user_details._id, "closest_date", this.current_games_page);
+        }
+        else if (this.selected_current_sort_option === 'furthest_date')
+        {
+            this.user_current_games_list = this.webService.getSortedPlayerCurrentGames(
+                this.user_details._id, "furthest_date", this.current_games_page);
+        }
+        else if (this.selected_current_sort_option === 'default')
+        {
+            this.user_current_games_list = this.webService.getSortedPlayerCurrentGames(
+                this.user_details._id, "closest_date", this.current_games_page);
+        }
+    }
+
+    onSortPreviousGamesChange()
+    {
+        if (this.selected_previous_sort_option === 'closest_date')
+        {
+            this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
+                this.user_details._id, "closest_date", this.previous_games_page);
+        }
+        else if (this.selected_previous_sort_option === 'furthest_date')
+        {
+            this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
+                this.user_details._id, "furthest_date", this.previous_games_page);
+        }
+        else if (this.selected_previous_sort_option === 'default')
+        {
+            this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
+                this.user_details._id, "closest_date", this.previous_games_page);
         }
     }
 }

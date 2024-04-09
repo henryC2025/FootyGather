@@ -1,9 +1,12 @@
 <div class="container" id="content-container">
 
-    
+    <div class="game-status">
+        <h1>GAME STATUS: <span [ngClass]="{'current': game_status === 'current', 'previous': game_status === 'previous'}">{{ game_status | uppercase }}</span></h1>
+    </div>
+
     <div *ngFor="let game of game_details | async" class="comment">
-        <h2 class="player-list-title">{{game?.name}}</h2>
-        <button *ngIf="is_joined" id="fg-button" style="width: 100%;" (click)="onLeaveGame()">Click To Finish Game</button>
+        <h2 class="heading-title">{{game?.name}}</h2>
+        <button *ngIf="is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onFinishGame()">Click To Finish Game</button>
         <p class="game-description mt-2">{{game?.description}}</p>
 
         <div class="game-details">
@@ -16,27 +19,34 @@
             </div>
         </div>
         <div *ngIf="is_admin || is_creator">
-            <button id="fg-button" (click)="onUpdateGame()" class="col-md-6">Update Game</button>
-            <button id="fg-button-delete" (click)="onDeleteGame()" class="col-md-6">Delete Game</button>
+            <button *ngIf="game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onUpdateGame()" class="mb-2">Update Game</button>
+            <button id="fg-button-delete" style="width: 100%;" (click)="onDeleteGame()">Delete Game</button>
         </div>
 
-        <h2 class="player-list-title">Players Joined</h2>
-        <button *ngIf="!is_joined" id="fg-button" style="width: 100%;" (click)="onJoinGame()">Join Game</button>
-        <button *ngIf="is_joined" id="fg-button" style="width: 100%;" (click)="onLeaveGame()">Leave Game</button>
+        <h2 class="heading-title">Players Joined</h2>
+        <button *ngIf="!is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onJoinGame()">Join Game</button>
+        <button *ngIf="is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onLeaveGame()">Leave Game</button>
         <div class="game-player-count">
             <h3>Players: {{player_count}} / {{game?.size}}</h3>
         </div>
 
         <div class="players-container">
             <div *ngFor="let player of player_list | async" class="player-card">
+                <div class="player-action">
+                    <h3 class="player-name" style="cursor: pointer;" [routerLink]="['/profile', player.user_id]">
+                        {{player?.first_name}} {{player?.last_name}}
+                    </h3>
+                </div>
                 <div class="player-info">
-                    <h3 class="player-name">{{player?.first_name}} {{player?.last_name}}</h3>
                     <p class="player-email">{{player?.email}}</p>
                     <p class="player-username">{{player?.username}}</p>
                 </div>
+                <button mat-icon-button class="remove-player-button" (click)="onRemovePlayer(player.user_id)">
+                    <mat-icon>close</mat-icon>
+                </button>
             </div>
         </div>
-
+        
     </div>
 
     <h2 class="comment-title">Comments</h2>
@@ -49,7 +59,7 @@
             </select>
         </div>
 
-        <button class="col-md-12" id="fg-button" (click)="onAddGameComment()">Add a Comment</button>
+        <button *ngIf="game_status === 'current'" class="col-md-12" id="fg-button" (click)="onAddGameComment()">Add a Comment</button>
 
         <div class="comments-section">
             <div *ngFor="let comment of comments_list | async" class="comment">

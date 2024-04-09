@@ -9,10 +9,11 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
-export class GameComponent {
-
+export class GameComponent
+{
     game_id : any;
     game_details : any = [];
+    game_status : any;
     user_details : any;
     community_id : any;
     comments_list : any;
@@ -38,21 +39,22 @@ export class GameComponent {
         });
 
         this.initGame();
-        // this.route.paramMap.subscribe(params =>
-        //     {
-        //         this.community_id = params.get('id');
-        //         this.comments_list = this.webService.getSortedCommunityComments(this.community_id, "newest");
-        //     });
     }
     
     initGame()
     {
-        this.getGameDetails()
+        this.getGameDetails();
         this.getUserDetails();
         this.getPlayerList();
         this.getPlayerCount();
         this.checkIsPlayerJoined();
-        this.checkCreatorId();
+        this.checkGameDetails();
+        this.getGameComments();
+    }
+
+    getGameComments()
+    {
+        this.comments_list = this.webService.getSortedGameComments(this.game_id, "newest");
     }
 
     getGameDetails()
@@ -96,16 +98,18 @@ export class GameComponent {
         });
     }
 
-    checkCreatorId()
+    checkGameDetails()
     {
         this.webService.getGameById(this.game_id).subscribe(
         {
             next: (data: any) =>
             {
+                this.community_id = data[0].community_id;
+                console.log("CommunityID: " + this.community_id)
                 if(this.user)
                 {
+                    this.game_status = (data[0].status);
                     this.is_creator = (data[0].creator.oauth_id == this.user?.sub)
-                    this.community_id = data[0].community_id;
                 }
             },
             error: (error) =>
@@ -280,37 +284,9 @@ export class GameComponent {
         });
     }
 
-    getCommunityDetails()
-    {
-        this.webService.getCommunityByID(this.community_id).subscribe(
-        {
-            next: (data: any) =>
-            {
-                this.player_list = data[0].players;
-                const user_oauth_id = this.user?.sub;
-                if (user_oauth_id)
-                {
-                    this.is_player_in_community = this.player_list.some((player : any) => player.oauth_id === user_oauth_id);
-                }
-                else
-                {
-                    this.is_player_in_community = false;
-                }
-            },
-            error: () =>
-            {
-                console.log("Something went wrong retrieving community creator ID!");
-            },
-            complete: () =>
-            {
-                console.log(this.is_player_in_community)
-            }
-        });
-    }
-
     onAddGameComment()
     {
-        if(this.is_player_in_community)
+        if(this.is_joined || this.is_creator)
         {
             this.sharedService.showAddGameCommentDialog(this.game_id);
             this.sharedService.game_comments_updated.subscribe(() =>
@@ -320,7 +296,8 @@ export class GameComponent {
         }
         else
         {
-            this.sharedService.showNotification("Please join the community to enter a comment", "error");
+            console.log(this.is_player_in_community)
+            this.sharedService.showNotification("Please join the game to enter a comment", "error");
         }
     }
 
@@ -345,6 +322,44 @@ export class GameComponent {
         }
     }
 
+    onFinishGame()
+    {
+        const prompt = window.confirm("Are you sure you want to finish this game (this can't be reverted)?");
+        if (!prompt)
+        {
+            return;
+        }
+    
+        const update_data =
+        {
+            'status': 'previous'
+        };
+        this.webService.updateGameStatus(this.game_id, update_data).subscribe(
+        {
+            next: () =>
+            {
+                this.webService.moveCurrentToPreviousGames(this.community_id, this.game_id).subscribe(
+                {
+                    next: () =>
+                    {
+                        this.sharedService.showNotification("Game has been moved to previous games", "success");
+                        this.router.navigate([`/communities/${this.community_id}/games`]);
+                    },
+                    error: error =>
+                    {
+                        console.error(error);
+                        this.sharedService.showNotification("An error occurred while moving the game to previous games!", "error");
+                    }
+                });
+            },
+            error: error =>
+            {
+                console.error(error);
+                this.sharedService.showNotification("An error occurred updating the game status!", "error");
+            }
+        });
+    }
+
     onSortCommentChange()
     {
         if (this.selected_sort_option === 'newest')
@@ -361,5 +376,29 @@ export class GameComponent {
         }
     }
 
+    onRemovePlayer(user_id : any)
+    {
+        const prompt = window.confirm("Are you sure you want to remove this player?");
+        if(prompt)
+        {
+            const user_data =
+            {
+                user_id : user_id
+            }
+            this.webService.removePlayerFromGame(this.game_id, user_data).subscribe(
+            {
+                complete : () =>
+                {
+                    this.sharedService.showNotification("Player has been removed from the game", "success");
+                    this.initGame();
+                },
+                error : (error) =>
+                {
+                    console.log(error);
+                    this.sharedService.showNotification("An error occured when removing player!", "error");
+                }
+            })
+        }
+    }
     // NOTIFICATIONS
 }

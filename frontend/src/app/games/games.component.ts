@@ -9,8 +9,10 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './games.component.html',
   styleUrl: './games.component.css'
 })
-export class GamesComponent {
-
+export class GamesComponent
+{
+    selected_current_sort_option: string = "default";
+    selected_previous_sort_option: string = "default";
     community_list : any;
     community_id : any;
     community_game_list : any;
@@ -94,6 +96,8 @@ export class GamesComponent {
         this.sharedService.game_added.subscribe(() =>
         {
             this.community_game_list = this.webService.getAllCommunityGames(this.community_id);
+            this.community_current_games_list = this.webService.getSortedCurrentCommunityGames(
+                this.community_id, this.selected_current_sort_option, this.current_games_page);
         });
     }
 
@@ -105,7 +109,8 @@ export class GamesComponent {
             {
                 this.current_games_page = 1;
                 sessionStorage['current_games_page'] = this.current_games_page;
-                this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+                this.community_current_games_list = this.webService.getSortedCurrentCommunityGames(
+                    this.community_id, this.selected_current_sort_option, this.current_games_page)
             }
         }
         else
@@ -114,7 +119,8 @@ export class GamesComponent {
             {
                 this.previous_games_page = 1;
                 sessionStorage['previous_games_page'] = this.previous_games_page;
-                this.community_current_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+                this.community_previous_games_list = this.webService.getSortedPreviousCommunityGames(
+                    this.community_id, this.selected_previous_sort_option, this.current_games_page)
             }
         }
     }
@@ -127,7 +133,8 @@ export class GamesComponent {
             {
                 this.current_games_page = this.current_games_total_pages;
                 sessionStorage['current_games_page'] = this.current_games_page;
-                this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+                this.community_current_games_list = this.webService.getSortedCurrentCommunityGames(
+                    this.community_id, this.selected_current_sort_option, this.current_games_page)
             }
         }
         else
@@ -136,7 +143,8 @@ export class GamesComponent {
             {
                 this.previous_games_page = this.previous_games_total_pages;
                 sessionStorage['previous_games_page'] = this.previous_games_page;
-                this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+                this.community_previous_games_list = this.webService.getSortedPreviousCommunityGames(
+                    this.community_id, this.selected_previous_sort_option, this.current_games_page)
             }
         }
     }
@@ -149,7 +157,8 @@ export class GamesComponent {
             {
                 this.current_games_page = this.current_games_page - 1;
                 sessionStorage['current_games_page'] = this.current_games_page;
-                this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+                this.community_current_games_list = this.webService.getSortedCurrentCommunityGames(
+                    this.community_id, this.selected_current_sort_option, this.current_games_page)
             }
         }
         else
@@ -158,7 +167,8 @@ export class GamesComponent {
             {
                 this.previous_games_page = this.previous_games_page - 1;
                 sessionStorage['previous_games_page'] = this.previous_games_page;
-                this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+                this.community_previous_games_list = this.webService.getSortedPreviousCommunityGames(
+                    this.community_id, this.selected_previous_sort_option, this.current_games_page)
             }
         }
     }
@@ -169,13 +179,15 @@ export class GamesComponent {
         {
             this.current_games_page = this.current_games_page + 1;
             sessionStorage['current_games_page'] = this.current_games_page;
-            this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+            this.community_current_games_list = this.webService.getSortedCurrentCommunityGames(
+                this.community_id, this.selected_current_sort_option, this.current_games_page)
         }
         else
         {
             this.previous_games_page = this.previous_games_page + 1;
             sessionStorage['previous_games_page'] = this.previous_games_page;
-            this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+            this.community_previous_games_list = this.webService.getSortedPreviousCommunityGames(
+                this.community_id, this.selected_previous_sort_option, this.current_games_page)
         }
     }
 
@@ -185,13 +197,53 @@ export class GamesComponent {
         {
             this.current_games_page = page_num;
             sessionStorage['current_games_page'] = this.current_games_page;
-            this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
+            this.community_current_games_list = this.webService.getSortedCurrentCommunityGames(
+                this.community_id, this.selected_current_sort_option, this.current_games_page)
         }
         else
         {
             this.previous_games_page = page_num;
             sessionStorage['previous_games_page'] = this.previous_games_page;
-            this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
+            this.community_previous_games_list = this.webService.getSortedPreviousCommunityGames(
+                this.community_id, this.selected_previous_sort_option, this.current_games_page)
+        }
+    }
+
+    onSortCurrentGamesChange()
+    {
+        if (this.selected_current_sort_option === 'closest_date')
+        {
+            this.community_current_games_list = this.webService.getSortedCurrentCommunityGames(
+                this.community_id, "closest_date", this.current_games_page);
+        }
+        else if (this.selected_current_sort_option === 'furthest_date')
+        {
+            this.community_current_games_list = this.webService.getSortedCurrentCommunityGames(
+                this.community_id, "furthest_date", this.current_games_page);
+        }
+        else if (this.selected_current_sort_option === 'default')
+        {
+            this.community_current_games_list = this.webService.getSortedCurrentCommunityGames(
+                this.community_id, "closest_date", this.current_games_page);
+        }
+    }
+
+    onSortPreviousGamesChange()
+    {
+        if (this.selected_previous_sort_option === 'closest_date')
+        {
+            this.community_previous_games_list = this.webService.getSortedPreviousCommunityGames(
+                this.community_id, "closest_date", this.previous_games_page);
+        }
+        else if (this.selected_previous_sort_option === 'furthest_date')
+        {
+            this.community_previous_games_list = this.webService.getSortedPreviousCommunityGames(
+                this.community_id, "furthest_date", this.previous_games_page);
+        }
+        else if (this.selected_previous_sort_option === 'default')
+        {
+            this.community_previous_games_list = this.webService.getSortedPreviousCommunityGames(
+                this.community_id, "closest_date", this.previous_games_page);
         }
     }
 }

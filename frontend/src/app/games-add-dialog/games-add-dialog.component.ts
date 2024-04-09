@@ -145,8 +145,8 @@ export class GamesAddDialogComponent {
             complete : () =>
             {
                 this.sharedService.showNotification("Game added", "success");
-                this.onClose();
                 this.sharedService.game_added.next();
+                this.onClose();
             }
         })
     }

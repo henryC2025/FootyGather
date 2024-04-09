@@ -518,55 +518,62 @@ hr
 }
 
 /* PROFILE */
-#profile-hr
+.profile-container
 {
-    margin: 5px;
+    max-width: 800px;
+    margin: auto;
 }
-
-.profile-actions
-{
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
+  
 .profile-header
 {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
-
-.profile-header h2
-{
-    margin-right: 10px;
-}
-
+  
 .profile-header img
 {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     object-fit: cover;
-    border: solid 3px #2c972c;
+    border: 4px solid #2c972c;
 }
-
+  
 .profile-details
 {
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 20px;
+    background: #f9f9f9;
 }
-
+  
 .profile-row
 {
-    margin-bottom: 10px;
-    padding: 5px;
-    background: #272727;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    background: #ffffff;
     border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 10px 15px;
 }
-
+  
+.profile-label
+{
+    font-weight: bold;
+    margin-right: 10px;
+    color: #333;
+    width: 30%;
+}
+  
+.profile-content
+{
+    color: #555;
+}
+  
+/* HOME */
 #welcome-container
 {
     text-align: center;
@@ -631,7 +638,7 @@ hr
 }
 
 /* COMMUNITY PLAYERS LIST */
-.player-list-title
+.heading-title
 {
     text-transform: uppercase;
     font-weight: 600;
@@ -643,7 +650,6 @@ hr
     letter-spacing: 5px;
     margin-top: 10px;
 }
-
 
 /* COMMUNITY COMMENTS */
 .comments-section
@@ -774,6 +780,33 @@ hr
 }
 
 /* GAME */
+.game-status h1
+{
+    font-size: 24px;
+    text-align: center;
+    margin: 20px 0;
+    font-weight: 600;
+}
+
+.game-status span
+{
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+}
+
+.current
+{
+    background-color: #4CAF50;
+}
+
+.previous
+{
+    background-color: #F44336;
+}
+
+
 .players-container
 {
     display: flex;
@@ -781,6 +814,13 @@ hr
     gap: 20px;
     justify-content: center;
     margin-top: 20px;
+}
+
+.remove-player-button
+{
+    border-radius: 8px;
+    margin: 5px;
+    background-color: #ff3838;
 }
 
 .player-card
@@ -795,12 +835,6 @@ hr
     padding: 20px;
     width: 220px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.player-card:hover
-{
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .player-info
@@ -818,6 +852,11 @@ hr
     font-size: 20px;
     font-weight: 800;
     margin: 0;
+}
+
+.player-name:hover
+{
+    color: #272727;
 }
 
 .player-email, .player-username

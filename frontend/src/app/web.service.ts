@@ -381,7 +381,20 @@ export class WebService
         return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/previous_games?pn=` + page);
     }
 
-    // move current game to previous game
+    getSortedCurrentCommunityGames(community_id: any, sort_option: any, page_number : any)
+    {
+        this.community_id = community_id;
+        const query = `?sort_option=${sort_option}&pn=${page_number}`
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/current_games/sort${query}`);
+    }
+
+    getSortedPreviousCommunityGames(community_id: any, sort_option: any, page_number : any)
+    {
+        this.community_id = community_id;
+        const query = `?sort_option=${sort_option}&pn=${page_number}`
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/previous_games/sort${query}`);
+    }
+
     moveCurrentToPreviousGames(community_id : any, game_id : any)
     {
         this.community_id = community_id;
@@ -447,12 +460,56 @@ export class WebService
     getAllGameComments(game_id : any)
     {
         this.game_id = game_id;
-        return this.http.delete(`http://localhost:5000/api/v1.0/games/${this.game_id}/comments`)
+        return this.http.get(`http://localhost:5000/api/v1.0/games/${this.game_id}/comments`)
     }
 
     getSortedGameComments(game_id : any, sort_option : any)
     {
         this.game_id = game_id;
-        return this.http.delete(`http://localhost:5000/api/v1.0/games/${this.game_id}/comments/sort?sort_option=${sort_option}`)
+        return this.http.get(`http://localhost:5000/api/v1.0/games/${this.game_id}/comments/sort?sort_option=${sort_option}`)
+    }
+
+    updateGameStatus(game_id : any, data : any)
+    {
+        this.game_id = game_id;
+        return this.http.post(`http://localhost:5000/api/v1.0/games/${this.game_id}/update_status`, data);
+    }
+
+    removePlayerFromGame(game_id : any, data : any)
+    {
+        this.game_id = game_id;
+        return this.http.post(`http://localhost:5000/api/v1.0/games/${this.game_id}/remove_player`, data);
+    }
+
+    getCurrentGamesOfPlayer(user_id : any)
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/current_games`);
+    }
+
+    getPreviousGamesOfPlayer(user_id : any)
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/previous_games`);
+    }
+
+    getPlayerCurrentGamesCount(user_id : any)
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/current_games/count`);
+    }
+
+    getPlayerPreviousGamesCount(user_id : any)
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/previous_games/count`);
+    }
+
+    getSortedPlayerCurrentGames(user_id : any, sort_option: any, page_number : any)
+    {
+        const query = `?sort_option=${sort_option}&pn=${page_number}`
+        return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/current_games/sort${query}`)
+    }
+
+    getSortedPlayerPreviousGames(user_id : any, sort_option: any, page_number : any)
+    {
+        const query = `?sort_option=${sort_option}&pn=${page_number}`
+        return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/previous_games/sort${query}`)
     }
 }
