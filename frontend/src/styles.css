@@ -67,8 +67,11 @@
     padding: 8px 16px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease; 
-    font-size: 14px;
-    /* z-index: 999 !important; */
+    width: 100%;
+    font-size: 15px;
+    border-radius: 8px !important;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 #fg-button-delete
@@ -80,8 +83,11 @@
     padding: 8px 16px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease; 
-    font-size: 14px;
-    /* z-index: 999 !important; */
+    font-size: 15px;
+    width: 100%;
+    border-radius: 8px !important;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 #fg-button:hover
@@ -345,8 +351,8 @@ textarea, input[type="text"], select, input[type="file"]
 {
     width: 800px !important;
     height: 400px !important;
-    object-fit: contain;
-    background-color: #272727 !important;
+    object-fit: cover;
+    background-color: #27272760 !important;
 }
 
 .page-item.active .page-link 
@@ -405,7 +411,7 @@ textarea, input[type="text"], select, input[type="file"]
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-    background: #272727;
+    background: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     padding: 10px 15px;
@@ -415,13 +421,13 @@ textarea, input[type="text"], select, input[type="file"]
 {
     font-weight: bold;
     margin-right: 10px;
-    color: white;
+    color: #333;
     width: 30%;
 }
   
 .venues-content
 {
-    color: white;
+    color: #555;
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 100%;
@@ -716,7 +722,7 @@ hr
 
 /* COMMUNITIES */
 
-#communities-name
+.communities-name
 {
     color: #ffffff;
     font-size: 20px;
@@ -805,8 +811,6 @@ hr
     color: #555;
 }
 
-
-
 /* COMMUNITY PLAYERS LIST */
 .heading-title
 {
@@ -819,6 +823,7 @@ hr
     font-size: 35px;
     letter-spacing: 5px;
     margin-top: 10px;
+    border: 1px solid #164d16;
 }
 
 /* COMMUNITY COMMENTS */
@@ -950,6 +955,19 @@ hr
 }
 
 /* GAME */
+
+.game-player-count h3
+{
+    margin-top: 5px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    padding: 20px;
+    border: solid 1px #2c972c;
+    background: rgba(255, 255, 255, 0.418);
+    color: #ffffff;
+    font-weight: 900;
+}
+
 .game-status h1
 {
     font-size: 24px;
@@ -1153,20 +1171,21 @@ textarea
 {
     background-color: #272727;
     border-radius: 8px;
-    border: 1px solid #2c972c;
+    border: 1px solid white;
 }
 
 .all-games-card-header
 {
     padding: 0.75rem 1.25rem;
-    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 8px 8px 0px 0px;
+    background-color: #2c972c;
     border-bottom: 1px solid rgba(255, 255, 255, 0.125);
 }
 
 .all-games-name
 {
     font-size: xx-large;
-    color: #2c972c;
+    color: white;
     font-weight: 700;
     text-transform: uppercase;
 }

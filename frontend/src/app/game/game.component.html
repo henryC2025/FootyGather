@@ -2,17 +2,23 @@
 
     <div *ngFor="let game of game_details | async">
         <h2 class="heading-title">{{game?.name}}</h2>
+        <div class="game-status">
+            <h1>GAME STATUS: <span [ngClass]="{'current': game_status === 'current', 'previous': game_status === 'previous'}">{{ game_status | uppercase }}</span></h1>
+        </div>
         <div class="game-community-header" style="cursor: pointer;" [routerLink]="['/communities', game.community.community_id]">
             <h1 class="game-community-name">
                 Community: <span>{{ game.community.community_name }}</span>
             </h1>
         </div>
-        <div class="game-status">
-            <h1>GAME STATUS: <span [ngClass]="{'current': game_status === 'current', 'previous': game_status === 'previous'}">{{ game_status | uppercase }}</span></h1>
-        </div>
         
-        <button *ngIf="is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onFinishGame()">Click To Finish Game</button>
-        <p class="game-description mt-2">{{game?.description}}</p>
+        <button *ngIf="is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onFinishGame()" class="mb-2">Finish Game</button>
+        <div *ngIf="is_admin || is_creator">
+            <button *ngIf="game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onUpdateGame()" class="mb-2">Update Game</button>
+            <button id="fg-button-delete" style="width: 100%;" (click)="onDeleteGame()" class="mb-2">Delete Game</button>
+        </div>
+        <div>
+            <p class="game-description mt-2">{{game?.description}}</p>
+        </div>
 
         <div class="game-details">
             <div class="game-stats">
@@ -23,14 +29,11 @@
                 <p><span class="stat-label">Price:</span> £{{game?.price}}</p>
             </div>
         </div>
-        <div *ngIf="is_admin || is_creator">
-            <button *ngIf="game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onUpdateGame()" class="mb-2">Update Game</button>
-            <button id="fg-button-delete" style="width: 100%;" (click)="onDeleteGame()">Delete Game</button>
-        </div>
+
+        <button *ngIf="!is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onJoinGame()">Join Game</button>
+        <button *ngIf="is_joined && game_status === 'current'" id="fg-button-delete" style="width: 100%;" (click)="onLeaveGame()">Leave Game</button>
 
         <h2 class="heading-title">Players Joined</h2>
-        <button *ngIf="!is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onJoinGame()">Join Game</button>
-        <button *ngIf="is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onLeaveGame()">Leave Game</button>
         <div class="game-player-count">
             <h3>Players: {{player_count}} / {{game?.size}}</h3>
         </div>

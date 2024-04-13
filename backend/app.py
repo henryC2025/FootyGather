@@ -968,9 +968,9 @@ def add_new_game(community_id):
             "price": data.get('game_price'),
             "date": data.get('game_date'),
             "time": data.get('game_time'),
-            "community" : {
-                "community_id" : ObjectId(community_id),
-                "community_name" : data.get('community_name')
+            "community": {
+                "community_id": ObjectId(community_id),
+                "community_name": data.get('community_name')
             },
             "creator": {
                 "oauth_id": data.get('creator_oauth_id'),
@@ -978,37 +978,33 @@ def add_new_game(community_id):
                 "username": data.get('creator_user_name'),
                 "email": data.get('creator_email')
             },
-            "comments" : [],
+            "comments": [],
             "player_list": [{
                 "oauth_id": data.get('creator_oauth_id'),
                 "user_id": data.get('creator_user_id'),
                 "username": data.get('creator_user_name'),
                 "email": data.get('creator_email')
             }],
-            "status" : "current",
+            "status": "current",
             "created_at": created_at,
             "created_at_timestamp": timestamp
         }
         game_insert_result = games.insert_one(new_game)
 
-        game_details = {
-            "game_id": game_insert_result.inserted_id,
-            "game_name": data.get('game_name'),
-            "created_at": created_at,
-            "timestamp": timestamp,
-            "date" : data.get('game_date'),
-            "time" : data.get('game_time')
-        }
+        users.update_one(
+            {"_id": ObjectId(data.get('creator_user_id'))},
+            {"$inc": {"games_joined": 1}}
+        )
 
         community_update_result = communities.update_one(
             {"_id": ObjectId(community_id)},
-            {"$push": {"current_games": game_details}}
+            {"$push": {"current_games": {"game_id": game_insert_result.inserted_id, "game_name": data.get('game_name')}}}
         )
 
         if community_update_result.modified_count > 0:
             return make_response(jsonify({'message': 'Game added to community successfully'}), 200)
         else:
-            return make_response(jsonify({'error': 'Failed to add game ID to community'}), 500)
+            return make_response(jsonify({'error': 'Failed to add game to community'}), 500)
 
     except Exception as e:
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
