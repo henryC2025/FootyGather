@@ -1,11 +1,16 @@
 <div class="container" id="content-container">
 
-    <div class="game-status">
-        <h1>GAME STATUS: <span [ngClass]="{'current': game_status === 'current', 'previous': game_status === 'previous'}">{{ game_status | uppercase }}</span></h1>
-    </div>
-
-    <div *ngFor="let game of game_details | async" class="comment">
+    <div *ngFor="let game of game_details | async">
         <h2 class="heading-title">{{game?.name}}</h2>
+        <div class="game-community-header" style="cursor: pointer;" [routerLink]="['/communities', game.community.community_id]">
+            <h1 class="game-community-name">
+                Community: <span>{{ game.community.community_name }}</span>
+            </h1>
+        </div>
+        <div class="game-status">
+            <h1>GAME STATUS: <span [ngClass]="{'current': game_status === 'current', 'previous': game_status === 'previous'}">{{ game_status | uppercase }}</span></h1>
+        </div>
+        
         <button *ngIf="is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onFinishGame()">Click To Finish Game</button>
         <p class="game-description mt-2">{{game?.description}}</p>
 
@@ -41,9 +46,11 @@
                     <p class="player-email">{{player?.email}}</p>
                     <p class="player-username">{{player?.username}}</p>
                 </div>
-                <button mat-icon-button class="remove-player-button" (click)="onRemovePlayer(player.user_id)">
-                    <mat-icon>close</mat-icon>
-                </button>
+                <div *ngIf="game_status === 'current'">
+                    <button mat-icon-button class="remove-player-button" (click)="onRemovePlayer(player.user_id)">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
             </div>
         </div>
         

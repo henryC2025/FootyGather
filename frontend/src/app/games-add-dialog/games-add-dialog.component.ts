@@ -15,6 +15,7 @@ import { map } from 'rxjs';
 export class GamesAddDialogComponent {
     game_form : any;
     community_id : any;
+    community_name : any;
     user : any;
     user_details : any;
     user_id : any;
@@ -51,6 +52,20 @@ export class GamesAddDialogComponent {
 
     ngOnInit()
     {
+        this.getAllVenues();
+        this.getDateDetails();
+        this.getCommunityDetails();
+        this.initUser();
+    }
+
+    getCommunityDetails()
+    {
+        this.community_id = this.data.community_id;
+        this.community_name = this.data.community_name;
+    }
+
+    getAllVenues()
+    {
         this.webService.getAllVenues().subscribe((venues: any) =>
         {
             this.venue_list = venues.map((venue: any) => (
@@ -59,11 +74,12 @@ export class GamesAddDialogComponent {
                 name: venue.name
             }));
         });
+    }
+
+    getDateDetails()
+    {
         const today = new Date();
         this.minimum_date = today.toISOString().split('T')[0];
-
-        this.initUser();
-        this.community_id = this.data.community_id;
     }
 
     private initUser()
@@ -129,13 +145,12 @@ export class GamesAddDialogComponent {
             game_date : this.game_form.get('game_date')?.value,
             game_time : this.game_form.get('game_time')?.value,
             community_id : this.community_id,
+            community_name : this.community_name,
             creator_oauth_id : this.user_details.oauth_id,
             creator_user_id : this.user_details._id,
             creator_user_name : this.user_details.user_name,
             creator_email : this.user_details.email
         }
-        console.log(form_data)
-        // CALL ADD GAME API
         this.webService.addNewGame(form_data, this.community_id).subscribe(
         {
             error : () =>

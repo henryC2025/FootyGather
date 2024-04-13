@@ -104,7 +104,7 @@ export class GameComponent
         {
             next: (data: any) =>
             {
-                this.community_id = data[0].community_id;
+                this.community_id = data[0].community.community_id;
                 console.log("CommunityID: " + this.community_id)
                 if(this.user)
                 {
@@ -170,9 +170,10 @@ export class GameComponent
                     "user_name": this.user?.nickname,
                     "email": this.user?.email
                 }
+                console.log(data)
                 this.webService.joinGame(this.game_id, data).subscribe(
                 {
-                    next : (data : any) =>
+                    next : () =>
                     {
                         this.sharedService.showNotification("You have joined the game.", "success");
                     },
@@ -260,7 +261,7 @@ export class GameComponent
                     complete : () =>
                     {
                         this.sharedService.showNotification("Game deleted", "success");
-                        this.router.navigate(['/']);
+                        this.router.navigate([`/communities/${this.community_id}/games`]);
                     },
                     error : (error) =>
                     {

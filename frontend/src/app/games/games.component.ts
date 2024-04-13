@@ -13,6 +13,7 @@ export class GamesComponent
 {
     selected_current_sort_option: string = "default";
     selected_previous_sort_option: string = "default";
+    community_name : any;
     community_list : any;
     community_id : any;
     community_game_list : any;
@@ -48,6 +49,24 @@ export class GamesComponent
         this.community_current_games_list = this.webService.getCurrentCommunityGames(this.community_id, this.current_games_page);
         this.community_previous_games_list = this.webService.getPreviousCommunityGames(this.community_id, this.previous_games_page);
         this.getPaginationSize();
+        this.getCommunityName();
+    }
+
+    getCommunityName()
+    {
+        this.webService.getCommunityByID(this.community_id).subscribe(
+        {
+            next : (data : any) =>
+            {   
+                this.community_name = data[0].name;
+                console.log(this.community_name)
+            },
+            error : (error) =>
+            {
+                console.log(error);
+                this.sharedService.showNotification("Something went wrong getting community name!", "error");
+            }
+        })
     }
 
     getPaginationSize()
@@ -58,7 +77,7 @@ export class GamesComponent
             {
                 if(data)
                 {
-                    const count_of_games = parseInt(data.count);
+                    const count_of_games = data.count_of_current_games;
                     this.current_games_total_pages = Math.ceil(count_of_games / 5);
                 }
             },
@@ -74,7 +93,7 @@ export class GamesComponent
             {
                 if(data)
                 {
-                    const count_of_games = parseInt(data.count);
+                    const count_of_games = data.count_of_previous_games;
                     this.previous_games_total_pages = Math.ceil(count_of_games / 5);
                 }
             },
@@ -92,7 +111,7 @@ export class GamesComponent
 
     onAddGame()
     {
-        this.sharedService.showAddGameDialog(this.community_id);
+        this.sharedService.showAddGameDialog(this.community_id, this.community_name);
         this.sharedService.game_added.subscribe(() =>
         {
             this.community_game_list = this.webService.getAllCommunityGames(this.community_id);

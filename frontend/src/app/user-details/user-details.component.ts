@@ -195,7 +195,6 @@ export class UserDetailsComponent {
             sub_notifications : this.details_form.get('subscribeToNotifications')?.value,
             profile_image : this.profile_image,
             games_joined : 0,
-            games_attended : 0,
             balance : 0,
             is_admin : "false"
         };

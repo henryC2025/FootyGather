@@ -1,6 +1,6 @@
 <div class="container" id="content-container">
 
-    <h2 class="heading-title">Games</h2>
+    <h2 class="heading-title">{{community_name}} Games</h2>
     <button style="width: 100%;" id="fg-button" (click)="onAddGame()">Create a Game</button>
 
     <!-- CURRENT GAMES -->
@@ -15,7 +15,7 @@
         </select>
     </div>
 
-    <div *ngFor="let game of community_current_games_list | async" class="comment">
+    <div *ngFor="let game of community_current_games_list | async">
         <div class="player-list" style="display: flex; align-items: center; cursor: pointer;" [routerLink]="['/games', game._id]">
             <div class="games-details">
                 <h1 class="games-name">{{game.name}}</h1>
@@ -25,6 +25,7 @@
                 </div>
             </div>
         </div>
+        <hr>
     </div>
      <!-- Current Games Pagination -->
      <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation">
@@ -66,8 +67,8 @@
         </select>
     </div>
 
-    <div *ngFor="let game of community_previous_games_list | async" class="comment">
-        <div class="player-list" style="display: flex; align-items: center;">
+    <div *ngFor="let game of community_previous_games_list | async">
+        <div class="player-list" style="display: flex; align-items: center; cursor: pointer;" [routerLink]="['/games', game._id]">
             <div class="games-details">
                 <h1 class="games-name">{{game.name}}</h1>
                 <div class="games-datetime">
@@ -76,6 +77,7 @@
                 </div>
             </div>
         </div>
+        <hr>
     </div>
 
     <!-- Previous Games Pagination -->

@@ -152,7 +152,8 @@ export class VenueComponent
 
         if(venue_id && oauth_id)
         {
-            this.webService.addDislike(venue_id, oauth_id).subscribe({
+            this.webService.addDislike(venue_id, oauth_id).subscribe(
+            {
                 next: (response : any) =>
                 {
                     console.log(response)
@@ -174,7 +175,8 @@ export class VenueComponent
 
     getLikesDislikes(venue_id : any)
     {
-        this.webService.getLikesDislikesFromVenue(venue_id).subscribe({
+        this.webService.getLikesDislikesFromVenue(venue_id).subscribe(
+        {
             next: (response : any) =>
             {
                 const likes = response.likes_dislikes.liked_users.length;

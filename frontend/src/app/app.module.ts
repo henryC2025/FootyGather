@@ -39,6 +39,8 @@ import { ProfilesComponent } from './profiles/profiles.component';
 import { GamesAddDialogComponent } from './games-add-dialog/games-add-dialog.component';
 import { GameUpdateDialogComponent } from './game-update-dialog/game-update-dialog.component';
 import { GameAddCommentDialogComponent } from './game-add-comment-dialog/game-add-comment-dialog.component';
+import { PlayersComponent } from './players/players.component';
+import { AllGamesComponent } from './all-games/all-games.component';
 
 var routes : any = [
   {
@@ -95,6 +97,14 @@ var routes : any = [
     path: 'user-details',
     component: UserDetailsComponent
   },
+  {
+    path: 'players',
+    component: PlayersComponent
+  },
+  {
+    path: 'all-games',
+    component: AllGamesComponent
+  },
 ]
 
 @NgModule({
@@ -123,6 +133,8 @@ var routes : any = [
     GamesAddDialogComponent,
     GameUpdateDialogComponent,
     GameAddCommentDialogComponent,
+    PlayersComponent,
+    AllGamesComponent,
   ],
   imports: [
     BrowserModule,

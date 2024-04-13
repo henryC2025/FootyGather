@@ -1,0 +1,72 @@
+<div class="container" id="content-container">
+
+    <h2 class="heading-title">All Current Games</h2>
+
+    <div class="input-group mb-2" id="search-button">
+        <input type="text" class="form-control" placeholder="Search for games by name" [(ngModel)]="search_query" (input)="search()">
+    </div>
+
+        <div class="mb-2">                    
+              <div style="width: 100%;">
+                <select class="form-select" [(ngModel)]="selected_sort_option" (change)="onSortChange()">
+                  <option value="default">Sort by Default Date</option>
+                  <option value="closest">Sort by Closest Date</option>
+                  <option value="furthest">Sort by Furthest Date</option>
+                </select>
+              </div>
+        </div>
+
+    <div class="row">
+        <!-- Display search results -->
+        <div *ngFor= "let game of (search_query ? search_results : all_games_list | async)" class="col-md-6 mb-2">
+            <!-- Background colour and link to single community -->
+            <div class="all-games-card text-white custom-bg-color mb-3"
+                style="cursor: pointer;" [routerLink]="['/games', game._id]">
+
+            <!-- Header for card -->
+            <div class="all-games-card-header">
+                <div class="truncate-text">
+                  <p class="all-games-name">{{game.name}}</p>
+                  <p class="all-games-community">{{game.community.community_name}}</p>
+                </div>
+            </div>
+
+            <div class="all-games-card-body">
+                <p class="all-games-date">{{game.date | date:'mediumDate'}}</p>
+                <p class="all-games-time">{{game.time}}</p>
+            </div>
+            <hr>
+            </div> <!-- End of card -->
+        </div> <!-- End of ng -->
+    </div> <!-- End of row -->
+
+<!-- Pagination -->
+<nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation" *ngIf="!search_query">
+    <ul class="pagination">
+
+        <li class="page-item">
+            <button class="page-link" (click)="firstPage()">First</button>
+        </li>
+
+        <li class="page-item">
+            <button class="page-link" (click)="previousPage()" [disabled]="page === 1">{{"\<"}}</button>
+        </li>
+
+        <ng-container *ngFor="let pageNum of [page - 2, page - 1, page, page + 1, page + 2]">
+            <li class="page-item" *ngIf="pageNum > 0 && pageNum <= total_pages" [class.active]="pageNum === page">
+                <button class="page-link" (click)="goToPage(pageNum)">{{pageNum}}</button>
+            </li>
+        </ng-container>
+
+        <li class="page-item">
+            <button class="page-link" (click)="nextPage()" [disabled]="page === total_pages">{{"\>"}}</button>
+        </li>
+
+        <li class="page-item">
+            <button class="page-link" (click)="lastPage()">Last</button>
+        </li>
+    </ul>
+</nav>
+<!-- End of Pagination -->
+
+</div> <!-- End of container -->

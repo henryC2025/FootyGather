@@ -40,6 +40,7 @@ export class SharedService
                 public authService : AuthService,
                 public webService : WebService,
                 public router : Router) {}
+
     showAddVenueDialog()
     {
         const dialogRef = this.dialog.open(VenuesAddDialogComponent,
@@ -88,14 +89,15 @@ export class SharedService
         });
     }
 
-    showAddGameDialog(id : any)
+    showAddGameDialog(id : any, community_name : any)
     {
         const dialogRef = this.dialog.open(GamesAddDialogComponent,
         {
             width: '400px',
             data:
             {
-                community_id : id
+                community_id : id,
+                community_name : community_name,
             },
             hasBackdrop: true,
         });
@@ -251,7 +253,7 @@ export class SharedService
                 else
                 {
                     console.log("Not authenticated");
-                    return EMPTY; // Return an empty observable if not authenticated
+                    return EMPTY;
                 }
             }),
             switchMap((user) =>
@@ -271,7 +273,7 @@ export class SharedService
                 else
                 {
                     console.log("Auth already called!");
-                    return EMPTY; // Return an empty observable if auth is already called
+                    return EMPTY;
                 }
             })
         ).subscribe(
@@ -282,16 +284,11 @@ export class SharedService
 
                 if(response.code === "ASK_FOR_DETAILS")
                 {
-                    // window.alert("More Details Needed!");
                     this.router.navigate(['/user-details']);
-                    // ONLY UPON SUCESSFULL REGISTRATION
-                    // SET AUTHCALLED TO TRUE
                 }
                 else
                 {
-                    // TO DO: CARRY ON
                     this.setAuthCalled(true);
-                    console.log("AUTH IS SET TO TRUE - INSIDE ELSE BLOCK");
                 }
             },
             error: (error) =>

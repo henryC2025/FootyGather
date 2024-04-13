@@ -3,30 +3,53 @@
     <div *ngFor = "let community of community_list | async">
 
         <div>
-            <h1 class="community-heading">{{community.name}}</h1>
-            <button class="col-md-12 mb-2" id="fg-button" (click)="onJoinCommunity()" *ngIf="!is_player_joined">Join Community</button>
-            <button class="col-md-12 mb-2" id="fg-button" (click)="onLeaveCommunity()" *ngIf="is_player_joined">Leave Community</button>
+            <h1 class="heading-title">{{community.name}}</h1>
+
+            <button class="col-md-12 mb-2" style="text-transform: uppercase; font-weight: 900; font-size: xx-large;" id="fg-button" click="" [routerLink]="['games']">Go to Community Games</button>
+
+            <div class="image-container mb-2">
+                <img [src]="community.image[0]" class="img-thumbnail venue-image" alt="{{community.name}}">
+            </div>
+            <button class="col-md-12 mb-2" id="fg-button" style="width: 100%;" (click)="onJoinCommunity()" *ngIf="!is_player_joined">Join Community</button>
+            <button class="col-md-12 mb-2" id="fg-button" style="width: 100%;" (click)="onLeaveCommunity()" *ngIf="is_player_joined">Leave Community</button>
             <div *ngIf="is_admin || is_creator" class="input-group mb-3 d-flex justify-content-center" id="admin-add-venue">
                 <hr>
-                <button class="col-md-6" id="fg-button-delete" (click)="onDeleteCommunity(community_id, community.image[1], community.image[2])">Delete Community (Admin Only)</button>
+                <button class="mb-2" style="width: 100%;" id="fg-button-delete" (click)="onDeleteCommunity(community_id, community.image[1], community.image[2])">Delete Community (Admin Only)</button>
                 <hr>
-                <button class="col-md-6" id="fg-button" (click)="onUpdateCommunity()">Update Community (Admin Only)</button>
+                <button style="width: 100%;" id="fg-button" (click)="onUpdateCommunity()">Update Community (Admin Only)</button>
             </div>
 
-            <h2 class="community-details">Total Players: {{this.total_players}}</h2>
+            <div class="community-details">
+                <div class="community-details-row col-md-12">
+                    <div class="community-label col-md-3">Total Players:</div>
+                    <div class="community-content col-md-9">{{this.total_players}}</div>
+                </div>
 
-            <h2 class="community-details">Description: {{community.description}}</h2>
+                <div class="community-details-row col-md-12">
+                    <div class="community-label col-md-3">Description:</div>
+                    <div class="community-content col-md-9">{{community.description}}</div>
+                </div>
 
-            <h2 class="community-details">Rules: {{community.rules}}</h2>
+                <div class="community-details-row col-md-12">
+                    <div class="community-label col-md-3">Rules:</div>
+                    <div class="community-content col-md-9">{{community.rules}}</div>
+                </div>
 
-            <h2 class="community-details">Location: {{community.location}}</h2>
+                <div class="community-details-row col-md-12">
+                    <div class="community-label col-md-3">Location:</div>
+                    <div class="community-content col-md-9">{{community.location}}</div>
+                </div>
 
-            <h2 class="community-details">Creator: {{community.creator_nickname}}</h2>
+                <div class="community-details-row col-md-12">
+                    <div class="community-label col-md-3">Creator:</div>
+                    <div class="community-content col-md-9">{{community.creator_nickname}}</div>
+                </div>
 
-            <h2 class="community-details">Created At: {{community.created_at}}</h2>
-
-            <h2 class="heading-title">Games</h2>
-            <button class="col-md-12 mb-2" id="fg-button" click="" [routerLink]="['games']">Go to Community Games</button>
+                <div class="community-details-row col-md-12">
+                    <div class="community-label col-md-3">Created At:</div>
+                    <div class="community-content col-md-9">{{community.created_at}}</div>
+                </div>
+            </div>
 
             <h2 class="heading-title">Player List</h2>
             <div *ngFor="let player of player_list" class="comment">
@@ -35,10 +58,6 @@
                     <mat-icon *ngIf="is_admin || is_creator" id="dialog-close" (click)="onRemoveFromCommunity(player.oauth_id)" class="close-icon">close</mat-icon>
                 </div>
             </div>
-        </div>
-
-        <div class="image-container">
-            <img [src]="community.image[0]" class="img-thumbnail rounded-0 venue-image" alt="{{community.name}}">
         </div>
 
         <div *ngFor="let community of community_list | async">

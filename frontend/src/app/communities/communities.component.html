@@ -1,25 +1,25 @@
 <div class="container" id="content-container">
-    <div class="row">
 
-        <div class="input-group mb-3" id="search-button">
+        <h2 class="heading-title">Communities</h2>
+
+        <div class="input-group mb-2" id="search-button">
             <input type="text" class="form-control" placeholder="Search for communities by name" [(ngModel)]="search_query" (input)="search()">
         </div>
 
-            <div class="container mb-3">
-                <div class="row">
-                  <div class="col-md-3" style="text-align: left;">
+            <div class="mb-2">                    
+                  <div class="mb-2">
                     <button id="fg-button" style="width: 100%;" (click)="onAddCommunity()">Add Community</button>
                   </div>
-                  <div class="col-md-9">
+                  <div style="width: 100%;">
                     <select class="form-select" [(ngModel)]="selected_sort_option" (change)="onSortChange()">
                       <option value="default">Sort by Default Distance</option>
                       <option value="closest">Sort by Closest Distance</option>
                       <option value="furthest">Sort by Furthest Distance</option>
                     </select>
                   </div>
-                </div>
             </div>
 
+        <div class="row">
             <!-- Display search results -->
             <div *ngFor= "let community of (search_query ? search_results : community_list | async)" class="col-md-6 mb-4">
                 <!-- Background colour and link to single community -->
@@ -28,7 +28,7 @@
 
                 <!-- Header for card -->
                 <div class="card-header">
-                    <div id="communities-name" class="truncate-text">
+                    <div id="heading-title" class="truncate-text">
                       {{community.name}}
                     </div>
                 </div>
@@ -38,20 +38,20 @@
                     <img [src]="community.image[0]" class="img-thumbnail rounded-0 communities-image" alt="{{community.name}}">
                 </div>
 
-                <!-- Footer for card -->
-                <div class="card-footer" id="communities-card-footer">
-                    <div class="col-md-12" id="communities-details">
-                        <p id="details-text">Location: {{community.location}}</p>
+                <div class="communities-details">
+                    <div class="communities-details-row col-md-12">
+                        <p class="communities-label col-md-4">Location:</p>
+                        <p class="communities-content col-md-8">{{community.location}}</p>
                     </div>
-
-                    <div class="col-md-12" id="communities-details">
-                        <p id="details-text">Distance: {{community.distance_from_user}} miles</p>
+                    <div class="communities-details-row col-md-12">
+                        <p class="communities-label col-md-4">Distance: </p>
+                        <p class="communities-content col-md-8">{{community.distance_from_user}}</p>
                     </div>
+                </div>
 
-                </div> <!-- End of footer -->
                 </div> <!-- End of card -->
             </div> <!-- End of ng -->
-    </div> <!-- End of row -->
+        </div> <!-- End of row -->
 
     <!-- Pagination -->
     <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation" *ngIf="!search_query">

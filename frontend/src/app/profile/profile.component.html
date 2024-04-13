@@ -14,58 +14,50 @@
 
     <div *ngIf="user_details" class="user-profile">
       <div class="profile-container">
-        <div class="profile-header">
-          <img *ngIf="user_details.profile_image" [src]="user_details.profile_image[0]" alt="Profile Image">
-        </div>
-      
+        
         <div class="profile-details">
-          <div class="profile-row">
-            <div class="profile-label">Email</div>
-            <div class="profile-content">{{ user?.email }}</div>
+          <div class="profile-header">
+            <img *ngIf="user_details.profile_image" [src]="user_details.profile_image[0]" alt="Profile Image">
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Username</div>
-            <div class="profile-content">{{ user?.nickname }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Email</div>
+            <div class="profile-content col-md-9">{{ user?.email }}</div>
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Full Name</div>
-            <div class="profile-content">{{ user_details.first_name }} {{ user_details.last_name }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Username</div>
+            <div class="profile-content col-md-9">{{ user?.nickname }}</div>
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Description</div>
-            <div class="profile-content">{{ user_details.description }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Full Name</div>
+            <div class="profile-content col-md-9">{{ user_details.first_name }} {{ user_details.last_name }}</div>
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Experience</div>
-            <div class="profile-content">{{ user_details.experience }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Description</div>
+            <div class="profile-content col-md-9">{{ user_details.description }}</div>
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Location</div>
-            <div class="profile-content">{{ user_details.location }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Experience</div>
+            <div class="profile-content col-md-9">{{ user_details.experience }}</div>
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Games Joined</div>
-            <div class="profile-content">{{ user_details.games_joined }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Location</div>
+            <div class="profile-content col-md-9">{{ user_details.location }}</div>
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Games Attended</div>
-            <div class="profile-content">{{ user_details.games_attended }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Games Joined</div>
+            <div class="profile-content col-md-9">{{ user_details.games_joined }}</div>
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Balance</div>
-            <div class="profile-content">{{ user_details.balance }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Subscribed to Notifications</div>
+            <div class="profile-content col-md-9">{{ user_details.sub_notifications ? 'Yes' : 'No' }}</div>
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Subscribed to Notifications</div>
-            <div class="profile-content">{{ user_details.sub_notifications ? 'Yes' : 'No' }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Created At</div>
+            <div class="profile-content col-md-9">{{ user_details.create_at | date }}</div>
           </div>
-          <div class="profile-row">
-            <div class="profile-label">Created At</div>
-            <div class="profile-content">{{ user_details.create_at | date }}</div>
-          </div>
-          <div class="profile-row">
-            <div class="profile-label">Last Updated</div>
-            <div class="profile-content">{{ user_details.updated_at | date }}</div>
+          <div class="profile-row col-md-12">
+            <div class="profile-label col-md-3">Last Updated</div>
+            <div class="profile-content col-md-9">{{ user_details.updated_at | date }}</div>
           </div>
         </div>
       </div>
@@ -132,7 +124,7 @@
 
   <!-- SORTING GAMES -->
   <div class="col-md-12 comment-sort">
-    <select class="form-select" [(ngModel)]="selected_current_sort_option" (change)="onSortPreviousGamesChange()">
+    <select class="form-select" [(ngModel)]="selected_previous_sort_option" (change)="onSortPreviousGamesChange()">
       <option value="default">Sort by Default</option>
       <option value="closest_date">Sort by Closest Date and Time</option>
       <option value="furthest_date">Sort by Furthest Date and Time</option>
@@ -141,7 +133,7 @@
 
   <div *ngIf="user_previous_games_list">
     <div *ngFor="let game of user_previous_games_list | async" class="comment">
-        <div class="player-list" style="display: flex; align-items: center;">
+        <div class="player-list" style="display: flex; align-items: center; cursor: pointer;" [routerLink]="['/games', game._id]">
             <div class="games-details">
                 <h1 class="games-name">{{game.name}}</h1>
                 <div class="games-datetime">
@@ -182,21 +174,23 @@
   </nav>
   <!-- End of Previous Games Pagination -->
 
-  
+  <!-- PLAYER COMMUNITIES -->
+  <h2 class="heading-title">PLAYER COMMUNITIES</h2>
+  <div *ngIf="player_communities" class="player-communities-container">
+    <ng-container *ngFor="let community of player_communities">
+      <a [routerLink]="['/communities', community._id]" class="player-community-card">
+        <div class="player-community-image-container">
+          <img *ngIf="community.image && community.image.length > 0" [src]="community.image[0]" alt="{{ community.name }}" class="player-community-image">
+        </div>
+        <div class="player-community-info">
+          <h3 class="player-community-name">{{ community.name }}</h3>
+          <p class="player-community-location">{{ community.location }}</p>
+        </div>
+      </a>
+    </ng-container>
+  </div>
+
   </ng-container>
-  <!-- <h2 class="heading-title">Player Communities</h2>
-  <div *ngIf="player_communities">
-    <div *ngFor="let community of player_communities" class="comment">
-      <div class="player-list" style="display: flex; align-items: center; cursor: pointer;" [routerLink]="['/communities', community._id]">
-          <div class="games-details">
-              <h1 class="games-name">{{community.name}}</h1>
-              <div class="games-datetime">
-                  <h2 class="games-date">{{community.location}}</h2>
-              </div>
-          </div>
-      </div>
-    </div>
-  </div> -->
 
   <!-- Display a message and sign-in link when not authenticated -->
   <ng-template #notAuthenticated>

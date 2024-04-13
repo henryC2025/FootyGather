@@ -1,4 +1,27 @@
 <div class="container" id="content-container">
-    <h1 id="home-heading">Contact</h1>
-</div>
-  
+    <h1 class="heading-title">Contact</h1>
+
+        <p>If you have any questions, please do not hesitate to reach out to us.</p>
+    
+        <!-- Contact Information -->
+        <div class="contact-info">
+            <h2>Contact Information</h2>
+            <p><strong>Email:</strong> henrychan997gmail.com</p>
+            <p><strong>Phone:</strong> 07934839969</p>
+            <p><strong>Address:</strong> 123 Example Street, Ballymena, Northern Ireland</p>
+        </div>
+    
+        <!-- Contact Form -->
+        <div class="contact-form">
+            <h2>Send Us a Message</h2>
+            <form action="/submit-contact-form" method="post">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>

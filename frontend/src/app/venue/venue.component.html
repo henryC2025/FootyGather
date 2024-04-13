@@ -65,9 +65,9 @@
 
                     <div *ngIf="is_admin" class="input-group mb-3 d-flex justify-content-center" id="admin-add-venue">
                         <hr>
-                        <button id="fg-button-delete" (click)="onDeleteVenue(venue_id, venue.image[1], venue.image[2])">Delete Venue (Admin Only)</button>
-                        <hr>
-                        <button id="fg-button" (click)="onUpdateVenue()">Update Venue (Admin Only)</button>
+                        <button style="width: 100%;" class="mb-2" id="fg-button-delete" (click)="onDeleteVenue(venue_id, venue.image[1], venue.image[2])">Delete Venue (Admin Only)</button>
+                        <br>
+                        <button style="width: 100%" id="fg-button" (click)="onUpdateVenue()">Update Venue (Admin Only)</button>
                     </div>
 
                     <!-- Large Image -->

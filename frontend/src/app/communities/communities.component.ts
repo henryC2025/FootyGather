@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { WebService } from '../web.service';
 import { SharedService } from '../shared.service';
-import { Observable, catchError, concatMap, map, of, tap, throwError } from 'rxjs';
+import { catchError, map, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-communities',
@@ -42,8 +42,8 @@ export class CommunitiesComponent
         this.community_list = this.webService.getAllCommunities();
         this.webService.getCountOfCommunities().subscribe((data: any) =>
         {
-            const count_of_venues = parseInt(data);
-            this.total_pages = Math.ceil(count_of_venues / 12);
+            const count_of_communities = parseInt(data);
+            this.total_pages = Math.ceil(count_of_communities / 12);
         });
 
         if (navigator.geolocation)

@@ -3,6 +3,7 @@ import { AuthService } from '@auth0/auth0-angular';
 import { SharedService } from '../shared.service';
 import { WebService } from '../web.service';
 import { Router } from '@angular/router';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -31,37 +32,32 @@ export class ProfileComponent {
 
     ngOnInit()
     {
-        this.authService.user$.subscribe(user =>
+        this.authService.user$.pipe(switchMap(user =>
         {
-            this.user = user;
-            this.authService.isAuthenticated$.subscribe(
+            if (!user)
             {
-                next : (response : any) =>
-                {
-                    if(response === false)
-                    {
-                        this.sharedService.showNotification("Please sign in to access the profile page.", "error");
-                        this.router.navigate(['/']);
-                    }
-
-                    if(this.user)
-                    {
-                        const form_data =
-                        {
-                            oauth_id : this.user?.sub,
-                        }
-                        this.webService.getUserDetails(form_data).subscribe(
-                        {
-                            next : (data : any) =>
-                            {
-                                this.user_details = data;
-                                this.getPlayerGames(this.user_details._id);
-                                this.initProfile();
-                            }
-                        })
-                    }
-                }
-            });
+                this.sharedService.showNotification("Please sign in to access the profile page.", "error");
+                this.router.navigate(['/']);
+                throw new Error('User not authenticated');
+            }
+            this.user = user;
+            const form_data = { oauth_id: user.sub };
+            return this.webService.getUserDetails(form_data);
+        }),
+        switchMap((userDetails : any) =>
+        {
+            this.user_details = userDetails;
+            this.initProfile();
+            return this.webService.getPlayerCommunities(userDetails?._id);
+        }))
+        .subscribe(
+        {
+            next: (communities) =>
+            {
+                this.player_communities = communities;
+                console.log(this.player_communities);
+            },
+            error: (error) => console.error(error)
         });
     }
 
@@ -80,8 +76,6 @@ export class ProfileComponent {
         this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
             this.user_details._id, "closest_date", this.previous_games_page);
         this.getPaginationSize();
-        this.player_communities = this.webService.getPlayerCommunities(this.user_details._id);
-        console.log(this.player_communities)
     }
 
     getPaginationSize()

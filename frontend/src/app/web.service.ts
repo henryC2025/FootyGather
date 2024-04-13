@@ -128,7 +128,7 @@ export class WebService
 
     searchVenue(query : any)
     {
-        this.query = query
+        this.query = query;
         
         return this.http.get(
             'http://localhost:5000/api/v1.0/venues/search?query=' + query
@@ -516,6 +516,39 @@ export class WebService
     getPlayerCommunities(user_id : any)
     {
         return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/communities`)
-        // http://localhost:5000/api/v1.0/players/6611d40d8d5c2af9fa72bb1f/communities
+    }
+
+    getAllPlayers(page_number : any)
+    {
+        const query = `?pn=${page_number}`
+        return this.http.get(`http://localhost:5000/api/v1.0/players${query}`)
+    }
+
+    getCountOfPlayers()
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/players/count`)
+    }
+
+    searchPlayers(query : any)
+    {
+        this.query = query
+        return this.http.get(`http://localhost:5000/api/v1.0/players/search?query=${this.query}`);
+    }
+
+    getAllCurrentGames(sort_option : any, pn : any)
+    {
+        const query = `?sort_option=${sort_option}&pn=${pn}`
+        return this.http.get(`http://localhost:5000/api/v1.0/games/all_current_games/sort${query}`);
+    }
+
+    getCountOfAllCurrentGames()
+    {
+        return this.http.get(`http://localhost:5000/api/v1.0/games/all_current_games/count`);
+    }
+
+    searchAllCurrentGames(search : any)
+    {
+        const query = `/search?query=${search}`;
+        return this.http.get(`http://localhost:5000/api/v1.0/games/all_current_games${query}`);
     }
 }

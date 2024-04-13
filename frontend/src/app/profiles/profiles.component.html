@@ -4,11 +4,11 @@
   
       <div *ngIf="user_details" class="user-profile">
         <div class="profile-container">
-          <div class="profile-header">
-            <img *ngIf="user_details.profile_image" [src]="user_details.profile_image[0]" alt="Profile Image">
-          </div>
-        
+          
           <div class="profile-details">
+            <div class="profile-header">
+              <img *ngIf="user_details.profile_image" [src]="user_details.profile_image[0]" alt="Profile Image">
+            </div>
             <div class="profile-row">
               <div class="profile-label">Email</div>
               <div class="profile-content">{{ user_details.email }}</div>
@@ -38,10 +38,6 @@
               <div class="profile-content">{{ user_details.games_joined }}</div>
             </div>
             <div class="profile-row">
-              <div class="profile-label">Games Attended</div>
-              <div class="profile-content">{{ user_details.games_attended }}</div>
-            </div>
-            <div class="profile-row">
               <div class="profile-label">Created At</div>
               <div class="profile-content">{{ user_details.create_at | date }}</div>
             </div>
@@ -53,4 +49,3 @@
         </div>
       </div>
 </div>
-  

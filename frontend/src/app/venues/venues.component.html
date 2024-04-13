@@ -1,6 +1,6 @@
 <div class="container" id="content-container">
-    <div class="row">
 
+        <h2 class="heading-title">Venues</h2>
         <div class="input-group mb-3" id="search-button">
             <input type="text" class="form-control" placeholder="Search for venues" [(ngModel)]="search_query" (input)="search()">
         </div>
@@ -8,6 +8,8 @@
             <div *ngIf="is_admin" class="input-group mb-3" id="admin-add-venue">
                 <button id="fg-button" style="width: 100%;" (click)="onAddVenue()">Add Venue (Admin Only)</button>
             </div>
+        
+        <div class="row">
 
             <!-- Display search results -->
             <div *ngFor= "let venue of (search_query ? search_results : venue_list | async)" class="col-md-6 mb-4">
@@ -25,19 +27,31 @@
 
                 <!-- Large Image -->
                 <div class="image-container">
-                    <img [src]="venue.image[0]" class="img-thumbnail rounded-0 venues-image" alt="{{venue.name}}">
+                    <img src="{{ venue.image[0] }}" class="img-thumbnail rounded-0 venues-image" alt="{{ venue.name }}">
                 </div>
 
-                <!-- Footer for card -->
-                <div class="card-footer" id="card-footer">
-                    <div class="col-md-12" id="venues-details">
-                        <p id="details-text">Location: {{venue.address}}</p>
+                <div class="venues-details">
+                    <div class="venues-details-row col-md-12">
+                        <div class="venues-label col-md-3">Location:</div>
+                        <div class="venues-content col-md-9">{{venue.address}}</div>
                     </div>
+                </div>
+                
+                <!-- Likes and Dislikes Display -->
+                <div class="likes-dislikes-container" style="text-align: center;">
+                    <div class="likes" style="display: inline-block; margin-right: 20px;">
+                        <i class="fas fa-thumbs-up" style="color: green;"></i>
+                        <span class="likes-count" style="font-size: 20px; color: black;">{{ venue.likes_dislikes.user_likes.length }}</span>
+                    </div>
+                    <div class="dislikes" style="display: inline-block;">
+                        <i class="fas fa-thumbs-down" style="color: red;"></i>
+                        <span class="dislikes-count" style="font-size: 20px; color: black;">{{ venue.likes_dislikes.user_dislikes.length }}</span>
+                    </div>
+                </div>
 
-                </div> <!-- End of footer -->
                 </div> <!-- End of card -->
             </div> <!-- End of ng -->
-    </div> <!-- End of row -->
+        </div> <!-- End of row -->
 
     <!-- Pagination -->
     <nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation" *ngIf="!search_query">

@@ -1,9 +1,7 @@
 from flask import Flask, request, jsonify, make_response
-from pymongo import MongoClient
+from pymongo import ASCENDING, DESCENDING, MongoClient
 from bson import ObjectId
 import datetime
-import uuid
-import jwt
 from flask_cors import CORS
 import requests
 from datetime import datetime
@@ -66,7 +64,6 @@ def add_user_details():
         sub_notifications = data.get('sub_notifications')
         profile_image = data.get('profile_image')
         games_joined = data.get('games_joined')
-        games_attended = data.get('games_attended')
         balance = data.get('balance')
         is_admin = data.get('is_admin')
         email = data.get('email')
@@ -84,7 +81,6 @@ def add_user_details():
             "sub_notifications": sub_notifications,
             "profile_image": profile_image,
             "games_joined": games_joined,
-            "games_attended": games_attended,
             "balance": balance,
             "is_admin": is_admin,
             "create_at": datetime.utcnow()
@@ -100,18 +96,7 @@ def add_user_details():
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
-# @app.route('/api/v1.0/user/delete/<string:id>', methods=['DELETE'])
-# def delete_user(id):
-#     try:
-#         user = users.find_one({"oauth_id": id})
-#         if user:
-#             users.delete_one({"oauth_id": id})
-#             return make_response(jsonify({'message': 'User deleted successfully'}), 200)
-#         else:
-#             return make_response(jsonify({'error': 'User not found'}), 404)
-#     except Exception as e:
-#         print(e)
-#         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+# Delete a user
 @app.route('/api/v1.0/user/delete/<string:id>', methods=['DELETE'])
 def delete_user(id):
     try:
@@ -158,18 +143,14 @@ def update_user_details():
         data = request.get_json()
 
         oauth_id = data.get('oauth_id')
-        # Check if a user with the given oauth_id already exists
         existing_user = users.find_one({"oauth_id": oauth_id})
         if not existing_user:
             return jsonify({'error': 'User not found'}), 404
 
-        # These fields won't be updated
         games_joined = existing_user.get('games_joined')
-        games_attended = existing_user.get('games_attended')
         balance = existing_user.get('balance')
         is_admin = existing_user.get('is_admin')
 
-        # Update user details
         existing_user.update({
             "user_name": data.get('user_name', existing_user.get('user_name')),
             "first_name": data.get('first_name', existing_user.get('first_name')),
@@ -180,7 +161,6 @@ def update_user_details():
             "sub_notifications": data.get('sub_notifications', existing_user.get('sub_notifications')),
             "profile_image": data.get('profile_image', existing_user.get('profile_image')),
             "games_joined": games_joined,
-            "games_attended": games_attended,
             "balance": balance,
             "is_admin": is_admin,
             "updated_at": datetime.utcnow()
@@ -211,8 +191,6 @@ def get_all_users():
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
-
-######################################################################
 
 # Get communities
 @app.route('/api/v1.0/communities', methods=['GET'])
@@ -328,10 +306,8 @@ def add_community_details():
             "created_at": datetime.utcnow()
         }
 
-        # Insert data into MongoDB
         result = communities.insert_one(new_community)
 
-        # Handle result and return response
         if result.inserted_id:
             return make_response(jsonify({'message': 'Community details added successfully'}), 200)
         else:
@@ -363,10 +339,8 @@ def update_community_details(community_id):
             }
         }
 
-        # Update the community details
         result = communities.update_one({"_id": ObjectId(community_id)}, update_query)
 
-        # Handle the result and return response
         if result.modified_count > 0:
             return make_response(jsonify({'message': 'Community details updated successfully'}), 200)
         else:
@@ -414,7 +388,6 @@ def join_community(community_id):
     try:
         data = request.get_json()
 
-        # Extract player information from the request
         player_info = {
             "oauth_id": data.get('user_oauth_id'),
             "user_id": data.get("user_id"),
@@ -422,13 +395,10 @@ def join_community(community_id):
             "email": data.get("user_email")
         }
 
-        # Find the community by its ID
         community = communities.find_one({'_id': ObjectId(community_id)})
 
         if community:
-            # Check if the user is not already in the community
             if not any(player['oauth_id'] == player_info['oauth_id'] for player in community['players']):
-                # Add the user to the community
                 communities.update_one(
                     {'_id': ObjectId(community_id)},
                     {'$push': {'players': player_info}}
@@ -449,16 +419,12 @@ def leave_community(community_id):
     try:
         data = request.get_json()
 
-        # Assuming you have some form of authentication to identify the user
         user_oauth_id = data.get('user_oauth_id')
 
-        # Find the community by its ID
         community = communities.find_one({'_id': ObjectId(community_id)})
 
         if community:
-            # Check if the user is in the community
             if any(player['oauth_id'] == user_oauth_id for player in community['players']):
-                # Remove the user from the community
                 communities.update_one(
                     {'_id': ObjectId(community_id)},
                     {'$pull': {'players': {'oauth_id': user_oauth_id}}}
@@ -521,10 +487,8 @@ def add_venue_details():
             "created_at": datetime.utcnow()
         }
 
-        # Insert data into MongoDB
         result = venues.insert_one(new_venue)
 
-        # Handle result and return response
         if result.inserted_id:
             return make_response(jsonify({'message': 'Venue details added successfully'}), 200)
         else:
@@ -592,7 +556,6 @@ def get_venues():
 def get_all_venues():
     try:
         venues_list = db.venues.find()
-        # Convert the Cursor object to a list, and then use dumps to convert the list to a JSON string
         return make_response(jsonify(venues_list), 200)
     except Exception as e:
         print(e)
@@ -955,15 +918,13 @@ def sort_community_comments(community_id):
         community = communities.find_one({"_id": ObjectId(community_id)})
 
         if community and 'comments' in community:
-            # Convert '_id' of the document and comments from ObjectId to str for JSON serialization
             community['_id'] = str(community['_id'])
             for comment in community['comments']:
                 comment['_id'] = str(comment['_id'])
 
-            # Sorting comments within the community based on 'timestamp'
             if sort_option == 'newest':
                 sorted_comments = sorted(community['comments'], key=lambda x: x['timestamp'], reverse=True)
-            else:  # Default to oldest if sort_option is not 'newest'
+            else:
                 sorted_comments = sorted(community['comments'], key=lambda x: x['timestamp'])
 
             return make_response(jsonify(sorted_comments), 200)
@@ -1007,7 +968,10 @@ def add_new_game(community_id):
             "price": data.get('game_price'),
             "date": data.get('game_date'),
             "time": data.get('game_time'),
-            "community_id": ObjectId(community_id),
+            "community" : {
+                "community_id" : ObjectId(community_id),
+                "community_name" : data.get('community_name')
+            },
             "creator": {
                 "oauth_id": data.get('creator_oauth_id'),
                 "user_id": data.get('creator_user_id'),
@@ -1049,7 +1013,7 @@ def add_new_game(community_id):
     except Exception as e:
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
 
-# Get games
+# Get community games paginated
 @app.route('/api/v1.0/communities/<community_id>/games', methods=['GET'])
 def get_community_games(community_id):
     try:
@@ -1060,13 +1024,15 @@ def get_community_games(community_id):
             page_size = int(request.args.get('ps'))
         page_start = (page_size * (page_num - 1))
 
-        community_games = games.find({"community_id": ObjectId(community_id)}).skip(page_start).limit(page_size)
+        community_games = games.find({"community.community_id": ObjectId(community_id)}).skip(page_start).limit(page_size)
 
         games_list = []
         for game in community_games:
             game['_id'] = str(game['_id'])
-            game['venue_id'] = str(game.get('venue_id', ''))
-            game['community_id'] = str(game['community_id'])
+            if 'venue_id' in game:
+                game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
@@ -1078,6 +1044,7 @@ def get_community_games(community_id):
         print(f"Error: {e}")
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
+
 #  Get all games
 @app.route('/api/v1.0/games/all_games', methods=['GET'])
 def get_all_games():
@@ -1086,9 +1053,9 @@ def get_all_games():
         games_list = []
         for game in all_games:
             game['_id'] = str(game['_id'])
-            if 'community_id' in game:
-                game['community_id'] = str(game['community_id'])
-                game['venue_id'] = str(game['venue_id'])
+            game['venue_id'] = str(game['venue_id'])
+            if 'community' in game:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
@@ -1098,6 +1065,72 @@ def get_all_games():
 
     except Exception as e:
         print(e)
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+    
+# Get all games with pagination
+@app.route('/api/v1.0/games/all_current_games/sort', methods=['GET'])
+def get_all_current_games_sorted():
+    sort_option = request.args.get('sort_option', 'closest')
+    page_num = int(request.args.get('pn', 1))
+    page_size = int(request.args.get('ps', 12))
+    
+    try:
+        sort_order = ASCENDING if sort_option == 'closest' else DESCENDING
+
+        games_cursor = games.find({"status": "current"}).sort("date", sort_order).skip((page_num - 1) * page_size).limit(page_size)
+        games_list = list(games_cursor)
+
+        for game in games_list:
+            game['_id'] = str(game['_id'])
+            if 'venue_id' in game:
+                game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
+
+        return make_response(jsonify(games_list), 200)
+    except Exception as e:
+        return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
+
+# Get count of all current games
+@app.route('/api/v1.0/games/all_current_games/count', methods=['GET'])
+def count_current_games():
+    try:
+        count_of_current_games = games.count_documents({"status": "current"})
+
+        return jsonify({'count_of_all_current_games': count_of_current_games})
+    except Exception as e:
+        print(f"Error counting current games: {e}")
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Search all current games by name
+@app.route('/api/v1.0/games/all_current_games/search', methods=['GET'])
+def search_all_current_games():
+    try:
+        game_name = request.args.get('query', '')
+
+        regex_pattern = f'.*{game_name}.*'
+        query_filter = {
+            'name': {'$regex': regex_pattern, '$options': 'i'},
+            'status': 'current'
+        }
+
+        matching_games = games.find(query_filter).sort('name', ASCENDING)
+        games_list = []
+        for game in matching_games:
+            game['_id'] = str(game['_id'])
+            if 'venue_id' in game:
+                game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
+            games_list.append(game)
+
+        return make_response(jsonify(games_list), 200)
+
+    except Exception as e:
+        print(f"Error searching current games by name: {e}")
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 # Get count of games for community
@@ -1116,14 +1149,15 @@ def get_count_of_games_in_community(community_id):
 @app.route('/api/v1.0/communities/<community_id>/games', methods=['GET'])
 def get_games_for_community(community_id):
     try:
-        community_games = games.find({"community_id": ObjectId(community_id)})
+        community_games = games.find({"community.community_id": ObjectId(community_id)})
 
         games_list = []
         for game in community_games:
             game['_id'] = str(game['_id'])
-            if 'community_id' in game:
-                game['community_id'] = str(game['community_id'])
+            if 'venue_id' in game:
                 game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
@@ -1143,8 +1177,9 @@ def get_game_by_id(game_id):
 
         if game:
             game['_id'] = str(game['_id'])
-            game['community_id'] = str(game['community_id'])
             game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
@@ -1193,17 +1228,18 @@ def get_current_games_for_community(community_id):
         if not community:
             return make_response(jsonify({'message': 'Community not found'}), 404)
 
-        game_ids = [game if isinstance(game, ObjectId) else game['game_id'] for game in community['current_games']]
+        game_ids = [game['game_id'] if isinstance(game, dict) and 'game_id' in game else game for game in community['current_games']]
 
         skip = (page_num - 1) * page_size
-
         games_cursor = games.find({"_id": {"$in": game_ids}}).skip(skip).limit(page_size)
         games_list = list(games_cursor)
 
         for game in games_list:
             game['_id'] = str(game['_id'])
-            game['community_id'] = str(game['community_id'])
-            game['venue_id'] = str(game['venue_id'])
+            if 'venue_id' in game:
+                game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
@@ -1213,6 +1249,7 @@ def get_current_games_for_community(community_id):
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
 
 # Get previous games
 @app.route('/api/v1.0/communities/<community_id>/previous_games', methods=['GET'])
@@ -1228,17 +1265,18 @@ def get_previous_games_for_community(community_id):
         if not community:
             return make_response(jsonify({'message': 'Community not found'}), 404)
 
-        game_ids = [game if isinstance(game, ObjectId) else game['game_id'] for game in community['previous_games']]
+        game_ids = [game['game_id'] if isinstance(game, dict) and 'game_id' in game else game for game in community['previous_games']]
 
         skip = (page_num - 1) * page_size
-
         games_cursor = games.find({"_id": {"$in": game_ids}}).skip(skip).limit(page_size)
         games_list = list(games_cursor)
 
         for game in games_list:
             game['_id'] = str(game['_id'])
-            game['community_id'] = str(game['community_id'])
-            game['venue_id'] = str(game['venue_id'])
+            if 'venue_id' in game:
+                game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
@@ -1249,7 +1287,7 @@ def get_previous_games_for_community(community_id):
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
-# Sort current games
+# Sort Current Games
 @app.route('/api/v1.0/communities/<community_id>/current_games/sort', methods=['GET'])
 def sort_current_games_by_date_with_pagination(community_id):
     sort_option = request.args.get('sort_option', 'closest_date')
@@ -1260,27 +1298,24 @@ def sort_current_games_by_date_with_pagination(community_id):
         if not community or 'current_games' not in community:
             return make_response(jsonify({'error': 'Community not found'}), 404)
 
-        games_details = []
-        for game_ref in community['current_games']:
-            game = games.find_one({"_id": game_ref['game_id']})
-            if game:
-                game['_id'] = str(game['_id'])
-                games_details.append(game)
+        game_ids = [game_ref['game_id'] for game_ref in community['current_games']]
 
-        if sort_option == 'closest_date':
-            games_details.sort(key=lambda x: datetime.strptime(f"{x['date']} {x['time']}", "%Y-%m-%d %H:%M"))
-        elif sort_option == 'furthest_date':
-            games_details.sort(key=lambda x: datetime.strptime(f"{x['date']} {x['time']}", "%Y-%m-%d %H:%M"), reverse=True)
+        sort_order = DESCENDING if sort_option == 'furthest_date' else ASCENDING
+        
+        games_cursor = games.find({"_id": {"$in": game_ids}}).sort("date", sort_order).skip((page_num - 1) * page_size).limit(page_size)
+        games_list = list(games_cursor)
 
-        start = (page_num - 1) * page_size
-        end = start + page_size
-        paginated_games_details = games_details[start:end]
+        for game in games_list:
+            game['_id'] = str(game['_id'])
+            if 'venue_id' in game:
+                game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
 
-        for game in paginated_games_details:
-            game['community_id'] = str(game['community_id'])
-            if 'venue_id' in game: game['venue_id'] = str(game['venue_id'])
-
-        return make_response(jsonify(paginated_games_details), 200)
+        return make_response(jsonify(games_list), 200)
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 500)
 
@@ -1295,31 +1330,28 @@ def sort_previous_games_by_date_with_pagination(community_id):
         if not community or 'previous_games' not in community:
             return make_response(jsonify({'error': 'Community not found'}), 404)
 
-        games_details = []
-        for game_ref in community['previous_games']:
-            game = games.find_one({"_id": game_ref['game_id']})
-            if game:
-                game['_id'] = str(game['_id'])
-                games_details.append(game)
+        game_ids = [game_ref['game_id'] for game_ref in community['previous_games']]
 
-        if sort_option == 'closest_date':
-            games_details.sort(key=lambda x: datetime.strptime(f"{x['date']} {x['time']}", "%Y-%m-%d %H:%M"))
-        elif sort_option == 'furthest_date':
-            games_details.sort(key=lambda x: datetime.strptime(f"{x['date']} {x['time']}", "%Y-%m-%d %H:%M"), reverse=True)
+        sort_order = DESCENDING if sort_option == 'furthest_date' else ASCENDING
+        
+        games_cursor = games.find({"_id": {"$in": game_ids}}).sort("date", sort_order).skip((page_num - 1) * page_size).limit(page_size)
+        games_list = list(games_cursor)
 
-        start = (page_num - 1) * page_size
-        end = start + page_size
-        paginated_games_details = games_details[start:end]
+        for game in games_list:
+            game['_id'] = str(game['_id'])
+            if 'venue_id' in game:
+                game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
 
-        for game in paginated_games_details:
-            game['community_id'] = str(game['community_id'])
-            if 'venue_id' in game: game['venue_id'] = str(game['venue_id'])
-
-        return make_response(jsonify(paginated_games_details), 200)
+        return make_response(jsonify(games_list), 200)
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 500)
- 
-# Get count of commuity current games
+
+# Get count of community current games
 @app.route('/api/v1.0/communities/<community_id>/current_games/count', methods=['GET'])
 def get_current_games_count(community_id):
     try:
@@ -1329,8 +1361,7 @@ def get_current_games_count(community_id):
 
         count_of_current_games = len(community['current_games'])
 
-        # return f"{count_of_current_games}"
-        return make_response(jsonify({'count': count_of_current_games}), 200)
+        return make_response(jsonify({'count_of_current_games': count_of_current_games}), 200)
 
     except Exception as e:
         print(f"Error: {e}")
@@ -1346,7 +1377,7 @@ def get_previous_games_count(community_id):
 
         count_of_previous_games = len(community['previous_games'])
 
-        return make_response(jsonify({'count': count_of_previous_games}), 200)
+        return make_response(jsonify({'count_of_previous_games': count_of_previous_games}), 200)
 
     except Exception as e:
         print(f"Error: {e}")
@@ -1367,9 +1398,16 @@ def move_game_to_previous(community_id, game_id):
         if not game_to_move:
             return make_response(jsonify({'message': 'Game not found in current games list'}), 404)
 
-        communities.update_one({"_id": community_id}, {"$pull": {"current_games": {"game_id": game_id}}})
+        result = communities.update_one(
+            {"_id": community_id},
+            {
+                "$pull": {"current_games": {"game_id": game_id}},
+                "$push": {"previous_games": game_to_move}
+            }
+        )
 
-        communities.update_one({"_id": community_id}, {"$push": {"previous_games": game_to_move}})
+        if result.modified_count == 0:
+            return make_response(jsonify({'message': 'No changes made, update failed'}), 500)
 
         return make_response(jsonify({'message': 'Game moved to previous games list successfully'}), 200)
 
@@ -1387,31 +1425,39 @@ def join_game(game_id):
         game = games.find_one({"_id": ObjectId(game_id)})
         if not game:
             return make_response(jsonify({'error': 'Game not found'}), 404)
-        
-        community_id = game['community_id']
+
+        community_id = game['community']['community_id']
         is_member = communities.find_one({"_id": community_id, "players.oauth_id": user_oauth_id})
         if not is_member:
             return make_response(jsonify({'error': 'User is not a member of the community'}), 403)
-        
-        if len(game['player_list']) >= game['size']:
+
+        try:
+            max_size = int(game.get('size', float('inf')))
+        except ValueError:
+            return make_response(jsonify({'error': 'Invalid game size configuration'}), 500)
+
+        if len(game.get('player_list', [])) >= max_size:
             return make_response(jsonify({'error': 'The game is already full'}), 422)
 
-        if any(player['oauth_id'] == user_oauth_id for player in game['player_list']):
+        if any(player['oauth_id'] == user_oauth_id for player in game.get('player_list', [])):
             return make_response(jsonify({'error': 'User is already part of the game'}), 409)
-        
+
         player_details = {
             "oauth_id": user_oauth_id,
             "user_id": data.get('user_id'),
-            "user_name": data.get('user_name'),
+            "username": data.get('user_name'),
             "email": data.get('email'),
             "first_name" : data.get('first_name'),
             "last_name" : data.get('last_name')
         }
         games.update_one({"_id": ObjectId(game_id)}, {"$push": {"player_list": player_details}})
         
+        users.update_one({"oauth_id": user_oauth_id}, {"$inc": {"games_joined": 1}})
+
         return make_response(jsonify({'message': 'User added to the game successfully'}), 200)
 
     except Exception as e:
+        print(f"Error while joining game: {e}")
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
 
 # Leave a game
@@ -1427,11 +1473,16 @@ def leave_game(game_id):
         )
         
         if game_update_result.modified_count > 0:
+            users.update_one(
+                {"oauth_id": user_oauth_id, "games_joined": {"$gt": 0}},
+                {"$inc": {"games_joined": -1}}
+            )
             return make_response(jsonify({'message': 'User removed from the game successfully'}), 200)
         else:
-            return make_response(jsonify({'error': 'Failed to remove user from the game or user was not part of the game'}), 500)
+            return make_response(jsonify({'error': 'Failed to remove user from the game or user was not part of the game'}), 404)
     
     except Exception as e:
+        print(f"Error while leaving game: {e}")
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
 
 # Get game player list
@@ -1469,7 +1520,6 @@ def update_game_details(game_id):
     try:
         data = request.get_json()
 
-        # Update the game details in the games collection
         update_data = {
             "$set": {
                 "name": data.get('game_name'),
@@ -1486,7 +1536,6 @@ def update_game_details(game_id):
         }
         update_result = games.update_one({"_id": ObjectId(game_id)}, update_data)
 
-        # If game update is successful, update the game details in the community document
         if update_result.modified_count > 0:
             game_details = {
                 "game_id": ObjectId(game_id),
@@ -1496,13 +1545,11 @@ def update_game_details(game_id):
                 "time": data.get('game_time')
             }
             
-            # Update current_games array in community document
             communities.update_one(
                 {"current_games.game_id": ObjectId(game_id)},
                 {"$set": {"current_games.$": game_details}}
             )
             
-            # Optionally, update previous_games if applicable
             communities.update_one(
                 {"previous_games.game_id": ObjectId(game_id)},
                 {"$set": {"previous_games.$": game_details}}
@@ -1513,7 +1560,7 @@ def update_game_details(game_id):
             return make_response(jsonify({"error": "No game found with the provided ID or no new data to update"}), 404)
 
     except Exception as e:
-        print(f"Error during update: {e}")  # This will print the error message to the console
+        print(f"Error during update: {e}")
         return make_response(jsonify({'error': f'An error occurred: {e}'}), 500)
 
 # Add game comment
@@ -1608,6 +1655,7 @@ def sort_game_comments(game_id):
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 500)
 
+# Update a game status
 @app.route('/api/v1.0/games/<string:game_id>/update_status', methods=['POST'])
 def update_game_status(game_id):
     try:
@@ -1629,6 +1677,7 @@ def update_game_status(game_id):
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 500)
 
+# Remove player from game
 @app.route('/api/v1.0/games/<string:game_id>/remove_player', methods=['POST'])
 def remove_player_from_game(game_id):
     try:
@@ -1641,11 +1690,16 @@ def remove_player_from_game(game_id):
         )
 
         if update_result.modified_count > 0:
+            users.update_one(
+                {"user_id": player_user_id, "games_joined": {"$gt": 0}},
+                {"$inc": {"games_joined": -1}}
+            )
             return make_response(jsonify({"message": "Player removed from game successfully"}), 200)
         else:
             return make_response(jsonify({"error": "Failed to remove player from the game"}), 404)
     
     except Exception as e:
+        print(f"Error while removing player from game: {str(e)}")
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
 
 # Get players current games
@@ -1653,42 +1707,46 @@ def remove_player_from_game(game_id):
 def get_current_games_for_player(player_user_id):
     try:
         current_games = games.find({"player_list.user_id": player_user_id, "status": "current"})
-        
+
         games_list = []
         for game in current_games:
             game['_id'] = str(game['_id'])
-            if 'community_id' in game:
-                game['community_id'] = str(game['community_id'])
+            if 'venue_id' in game:
                 game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
             games_list.append(game)
-        
+
         return make_response(jsonify(games_list), 200)
     except Exception as e:
-        return make_response(jsonify({'error': str(e)}), 500)
+        print(f"Error retrieving current games for player {player_user_id}: {e}")
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 # Get players previous games
 @app.route('/api/v1.0/players/<player_user_id>/previous_games', methods=['GET'])
 def get_previous_games_for_player(player_user_id):
     try:
         previous_games = games.find({"player_list.user_id": player_user_id, "status": "previous"})
-        
+
         games_list = []
         for game in previous_games:
             game['_id'] = str(game['_id'])
-            if 'community_id' in game:
-                game['community_id'] = str(game['community_id'])
+            if 'venue_id' in game:
                 game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
             games_list.append(game)
-        
+
         return make_response(jsonify(games_list), 200)
     except Exception as e:
-        return make_response(jsonify({'error': str(e)}), 500)
+        print(f"Error retrieving previous games for player {player_user_id}: {e}")
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 # Get players current games with pagination and sorting
 @app.route('/api/v1.0/players/<player_user_id>/current_games/sort', methods=['GET'])
@@ -1697,37 +1755,30 @@ def sort_and_paginate_player_current_games(player_user_id):
         page_num = int(request.args.get('pn', 1))
         page_size = int(request.args.get('ps', 5))
         sort_option = request.args.get('sort_option', 'closest_date')
-        now = datetime.now()
 
+        sort_direction = 1 if sort_option == 'closest_date' else -1
         skip_amount = (page_num - 1) * page_size
 
         current_games_cursor = games.find({
             "player_list.user_id": player_user_id,
             "status": "current"
-        }).skip(skip_amount).limit(page_size)
+        }).sort("date", sort_direction).skip(skip_amount).limit(page_size)
 
         games_list = list(current_games_cursor)
 
         for game in games_list:
             game['_id'] = str(game['_id'])
-            if 'community_id' in game:
-                game['community_id'] = str(game['community_id'])
+            if 'venue_id' in game:
                 game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
-            game['datetime'] = datetime.strptime(f"{game['date']} {game['time']}", "%Y-%m-%d %H:%M")
-
-        if sort_option == 'closest_date':
-            games_list.sort(key=lambda x: abs(x['datetime'] - now))
-        elif sort_option == 'furthest_date':
-            games_list.sort(key=lambda x: abs(x['datetime'] - now), reverse=True)
-
-        for game in games_list:
-            del game['datetime']
 
         return make_response(jsonify(games_list), 200)
     except Exception as e:
+        print(f"Error retrieving and sorting current games for player {player_user_id}: {e}")
         return make_response(jsonify({'error': str(e)}), 500)
 
 # Get players previous games with pagination and sorting
@@ -1737,38 +1788,34 @@ def sort_and_paginate_player_previous_games(player_user_id):
         page_num = int(request.args.get('pn', 1))
         page_size = int(request.args.get('ps', 5))
         sort_option = request.args.get('sort_option', 'closest_date')
-        now = datetime.now()
 
+        sort_direction = 1 if sort_option == 'closest_date' else -1
         skip_amount = (page_num - 1) * page_size
 
+        print(f"Sorting {sort_option} with direction {sort_direction}")
         previous_games_cursor = games.find({
             "player_list.user_id": player_user_id,
             "status": "previous"
-        }).skip(skip_amount).limit(page_size)
+        }).sort("date", sort_direction).skip(skip_amount).limit(page_size)
 
         games_list = list(previous_games_cursor)
+        if not games_list:
+            print("No games found with the given criteria.")
 
         for game in games_list:
             game['_id'] = str(game['_id'])
-            if 'community_id' in game:
-                game['community_id'] = str(game['community_id'])
+            if 'venue_id' in game:
                 game['venue_id'] = str(game['venue_id'])
+            if 'community' in game and 'community_id' in game['community']:
+                game['community']['community_id'] = str(game['community']['community_id'])
             if 'comments' in game:
                 for comment in game['comments']:
                     comment['_id'] = str(comment['_id'])
-            game['datetime'] = datetime.strptime(f"{game['date']} {game['time']}", "%Y-%m-%d %H:%M")
-
-        if sort_option == 'closest_date':
-            games_list.sort(key=lambda x: abs(x['datetime'] - now))
-        elif sort_option == 'furthest_date':
-            games_list.sort(key=lambda x: abs(x['datetime'] - now), reverse=True)
-
-        for game in games_list:
-            del game['datetime']
 
         return make_response(jsonify(games_list), 200)
     except Exception as e:
-        return make_response(jsonify({'error': str(e)}), 500)
+        print(f"Error retrieving and sorting previous games for player {player_user_id}: {e}")
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 # Get current game count for player
 @app.route('/api/v1.0/players/<user_id>/current_games/count', methods=['GET'])
@@ -1825,6 +1872,69 @@ def get_communities_by_user(user_id):
     except Exception as e:
         return make_response(jsonify({"error": f"An error occurred: {str(e)}"}), 500)
 
+# Get all players
+@app.route('/api/v1.0/players', methods=['GET'])
+def get_players():
+    try:
+        page_num = int(request.args.get('pn', 1))
+        page_size = int(request.args.get('ps', 12))
+        skip_amount = (page_num - 1) * page_size
+
+        users_list = []
+        for user in users.find().skip(skip_amount).limit(page_size):
+            user['_id'] = str(user['_id'])
+            if 'profile_image' in user and isinstance(user['profile_image'], list):
+                user['profile_image'] = [str(img) for img in user['profile_image']]
+
+            if 'comments' in user:
+                for comment in user['comments']:
+                    comment['_id'] = str(comment['_id'])
+
+            users_list.append(user)
+
+        return make_response(jsonify(users_list), 200)
+    except Exception as e:
+        print(f"Error retrieving users: {e}")
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Get count of players
+@app.route('/api/v1.0/players/count', methods=['GET'])
+def get_count_of_players():
+    try:
+        count_of_players = db.users.count_documents({})
+
+        return jsonify({'count_of_players': count_of_players})
+    except Exception as e:
+        print(f"Error counting players: {e}")
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
+
+# Search players
+@app.route('/api/v1.0/players/search', methods=['GET'])
+def search_players():
+    try:
+        query = request.args.get('query', '')
+        
+        regex_pattern = f'.*{query}.*'
+        query_filter = {
+            '$or': [
+                {'first_name': {'$regex': regex_pattern, '$options': 'i'}},
+                {'last_name': {'$regex': regex_pattern, '$options': 'i'}}
+            ]
+        }
+
+        matching_users = db.users.find(query_filter)
+
+        matching_users_list = []
+        for user in matching_users:
+            user['_id'] = str(user['_id'])
+            if 'profile_image' in user and isinstance(user['profile_image'], list):
+                user['profile_image'] = [str(img) for img in user['profile_image']]
+            matching_users_list.append(user)
+
+        return make_response(jsonify(matching_users_list), 200)
+    except Exception as e:
+        print(f"Error searching users: {e}")
+        return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

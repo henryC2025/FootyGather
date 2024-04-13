@@ -1,0 +1,60 @@
+<div class="container" id="content-container">
+
+    <h2 class="heading-title">Players</h2>
+
+    <div class="input-group mb-2" id="search-button">
+        <input type="text" class="form-control" placeholder="Search for players by name" [(ngModel)]="search_query" (input)="search()">
+    </div>
+
+    <div class="row">
+        <!-- Display search results -->
+        <div *ngFor= "let player of (search_query ? search_player_results : player_list | async)" class="col-md-6 mb-4">
+            <div class="card text-white custom-bg-color mb-3 venue-card"
+                style="cursor: pointer;" [routerLink]="['/profile', player._id]">
+
+            <!-- Header for card -->
+            <div class="card-header">
+                <div id="heading-title" class="truncate-text players-name">
+                  {{player.first_name + " " + player.last_name}}
+                </div>
+            </div>
+
+            <!-- Large Image -->
+            <div class="image-container">
+                <img [src]="player.profile_image[0]" class="img-thumbnail communities-image players-image" alt="{{player.user_name}}">
+            </div>
+
+            </div> <!-- End of card -->
+        </div> <!-- End of ng -->
+    </div> <!-- End of row -->
+
+<!-- Pagination -->
+<nav aria-label="Page navigation" class="d-flex justify-content-center" id="page-navigation" *ngIf="!search_query">
+    <ul class="pagination">
+
+        <li class="page-item">
+            <button class="page-link" (click)="firstPage()">First</button>
+        </li>
+
+        <li class="page-item">
+            <button class="page-link" (click)="previousPage()" [disabled]="page === 1">{{"\<"}}</button>
+        </li>
+
+        <ng-container *ngFor="let pageNum of [page - 2, page - 1, page, page + 1, page + 2]">
+            <li class="page-item" *ngIf="pageNum > 0 && pageNum <= total_pages" [class.active]="pageNum === page">
+                <button class="page-link" (click)="goToPage(pageNum)">{{pageNum}}</button>
+            </li>
+        </ng-container>
+
+        <li class="page-item">
+            <button class="page-link" (click)="nextPage()" [disabled]="page === total_pages">{{"\>"}}</button>
+        </li>
+
+        <li class="page-item">
+            <button class="page-link" (click)="lastPage()">Last</button>
+        </li>
+    </ul>
+</nav>
+<!-- End of Pagination -->
+
+</div> <!-- End of container -->
