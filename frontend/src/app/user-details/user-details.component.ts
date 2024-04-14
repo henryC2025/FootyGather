@@ -137,7 +137,7 @@ export class UserDetailsComponent {
                     {
                         console.error('Form submission failed', error);
                         this.sharedService.showNotification("An error occurred uploading profile image", "error");
-                        throw error; // Propagate the error
+                        throw error;
                     })
                 )
             )
@@ -175,7 +175,6 @@ export class UserDetailsComponent {
         }
         else
         {
-            // Handle form validation errors
             this.handleFormValidationErrors();
         }
     }
@@ -203,20 +202,17 @@ export class UserDetailsComponent {
         {
             next: (response) =>
             {
-                // Handle success if needed
                 console.log("User Details added: " + response)
                 this.sharedService.showNotification("Details added, Thank you for Joining :)", "success");
             },
             error: (error: any) =>
             {
                 console.error('Error submitting user details:', error);
-                // Handle error if needed
                 this.sharedService.showNotification("Error submitting user details", "error");
             },
             complete: () =>
             {
                 console.log('User details submission completed.');
-                // ADD TO BELOW AFTER SUCCESSFUL SUBMISSION
                 this.sharedService.setUserFormCompleted(true);
                 console.log("Submit button: " + this.sharedService.isUserFormCompleted())
                 this.sharedService.setAuthCalled(true);

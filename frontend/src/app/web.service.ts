@@ -551,4 +551,21 @@ export class WebService
         const query = `/search?query=${search}`;
         return this.http.get(`http://localhost:5000/api/v1.0/games/all_current_games${query}`);
     }
+
+    sendEmailToPlayers(data : any)
+    {
+        return this.http.post(`http://localhost:5000/api/v1.0/send_email_to_players`, data)
+    }
+
+    getEligiblePlayersFromGame(game_id : any)
+    {
+        this.game_id = game_id;
+        return this.http.get(`http://localhost:5000/api/v1.0/games/${this.game_id}/eligible_players`);
+    }
+
+    getEligiblePlayersFromCommunity(community_id : any)
+    {
+        this.community_id = community_id;
+        return this.http.get(`http://localhost:5000/api/v1.0/communities/${this.community_id}/eligible_players`);
+    }
 }

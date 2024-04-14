@@ -93,7 +93,6 @@ describe('AuthGuard', () =>
         authService.user$ = of({ sub: 'user_id' });
         (TestBed.inject(SharedService) as MockSharedService).isUserFormCompleted = () => false;
 
-        // Pass mock objects as arguments to canActivate
         guard.canActivate(mockActivatedRouteSnapshot, mockRouterStateSnapshot).subscribe((result) =>
         {
             expect(router.createUrlTree).toHaveBeenCalledWith(['/user-details']);

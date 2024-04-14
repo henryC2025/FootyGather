@@ -159,6 +159,7 @@ export class GamesAddDialogComponent {
             },
             complete : () =>
             {
+                this.sendEmailToPlayers();
                 this.sharedService.showNotification("Game added", "success");
                 this.sharedService.game_added.next();
                 this.onClose();
@@ -223,21 +224,54 @@ export class GamesAddDialogComponent {
             this.sharedService.showNotification("Please enter the game starting time.", "error");
         }
     }
-}
 
-// GAMES
-// - ObjectID 
-// - GameName f 
-// - Descriptionf 
-// - CommunityID
-// - OrganizerID
-// - PlayersList (UserID, UserName, Payed)
-// - DateTime f
-// - Length f
-// - PaymentType f
-// - GroupSize f
-// - Venue (take id of venue) f
-// - Price f
-// - GameType f
-// - CreatedAt
-// - Timestamp
+    sendEmailToPlayers()
+    {
+        this.webService.getEligiblePlayersFromCommunity(this.community_id).subscribe(
+        {
+            next: (players : any) =>
+            {
+                console.log(players)
+                this.prepareEmailToPlayers(players);
+            },
+            error: (error) =>
+            {
+                console.error('Failed to load players', error);
+            }
+        })
+    }
+
+    prepareEmailToPlayers(players: any[])
+    {
+        const emailData =
+        {
+            recipients: players.map(player => (
+            {
+                Email: player.email,
+                Name: player.name
+            })),
+            game_url: `http://localhost:4200/communities/games`,
+            game_date: this.game_form.get('game_date')?.value,
+            game_time: this.game_form.get('game_time')?.value,
+            subject: "Reminder: A new game has been created!",
+            message: "Come and Join!"
+        };
+
+        this.webService.sendEmailToPlayers(emailData).subscribe(
+        {
+            next: (response) =>
+            {
+                console.log(response);
+                console.log('Email sent successfully');
+            },
+            error: (error) =>
+            {
+                console.error('Error sending email', error);
+            },
+            complete: () =>
+            {
+                console.log('Email sending process completed');
+            }
+        });
+    }
+}

@@ -25,6 +25,9 @@ export class GameComponent
     is_joined : any = false;
     is_admin : any = false;
     is_creator : any = false;
+    game_date : any;
+    game_time : any;
+    game_email_url : any;
     constructor(public authService : AuthService,
                 public webService : WebService,
                 public sharedService : SharedService,
@@ -36,6 +39,7 @@ export class GameComponent
         this.route.paramMap.subscribe(params =>
         {
             this.game_id = params.get('id');
+            this.game_email_url = `http://localhost:4200/games/${this.game_id}`
         });
 
         this.initGame();
@@ -105,10 +109,11 @@ export class GameComponent
             next: (data: any) =>
             {
                 this.community_id = data[0].community.community_id;
-                console.log("CommunityID: " + this.community_id)
+                this.game_status = (data[0].status);
+                this.game_date = data[0].date;
+                this.game_time = data[0].time;
                 if(this.user)
                 {
-                    this.game_status = (data[0].status);
                     this.is_creator = (data[0].creator.oauth_id == this.user?.sub)
                 }
             },
@@ -376,7 +381,7 @@ export class GameComponent
             this.comments_list = this.webService.getSortedGameComments(this.game_id, "newest");
         }
     }
-
+    
     onRemovePlayer(user_id : any)
     {
         const prompt = window.confirm("Are you sure you want to remove this player?");
@@ -401,5 +406,58 @@ export class GameComponent
             })
         }
     }
-    // NOTIFICATIONS
+
+    onSendEmailToPlayers()
+    {
+        const prompt = window.confirm("Click OK to send an email to remind players of the game");
+        if (prompt)
+        {
+            this.webService.getEligiblePlayersFromGame(this.game_id).subscribe(
+            {
+                next: (players : any) =>
+                {
+                    console.log(players)
+                    this.prepareEmailToPlayers(players);
+                },
+                error: (error) =>
+                {
+                    console.error('Failed to load players', error);
+                }
+            })
+        }
+    }
+
+    prepareEmailToPlayers(players: any[])
+    {
+        const emailData =
+        {
+            recipients: players.map(player => (
+            {
+                Email: player.email,
+                Name: player.name
+            })),
+            game_url: this.game_email_url,
+            game_date: this.game_date,
+            game_time: this.game_time,
+            subject: "Reminder: Upcoming Game!",
+            message: "Don't forget about the upcoming game. Be ready!"
+        };
+
+        this.webService.sendEmailToPlayers(emailData).subscribe(
+        {
+            next: (response) =>
+            {
+                console.log(response)
+                console.log('Email sent successfully');
+            },
+            error: (error) =>
+            {
+                console.error('Error sending email', error);
+            },
+            complete: () =>
+            {
+                console.log('Email sending process completed');
+            }
+        });
+    }
 }

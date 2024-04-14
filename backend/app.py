@@ -5,6 +5,7 @@ import datetime
 from flask_cors import CORS
 import requests
 from datetime import datetime
+from mailjet_rest import Client
 
 app = Flask(__name__)
 CORS(app)
@@ -15,6 +16,10 @@ users = db['users']
 venues = db['venues']
 communities = db['communities']
 games = db['games']
+
+mailjet_api_key = '660c432b82fa76c322afa593f12309fa'
+mailjet_api_secret = '04d1599040f7540a1f71f6e18cafa1dd'
+mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
 
 @app.route('/')
 def hello_world():
@@ -1192,20 +1197,32 @@ def get_game_by_id(game_id):
 def delete_game_by_id(game_id):
     try:
         game_oid = ObjectId(game_id)
-        result = games.delete_one({"_id": game_oid})
+        
+        game = games.find_one({"_id": game_oid})
+        if game:
+            result = games.delete_one({"_id": game_oid})
 
-        if result.deleted_count > 0:
-            communities.update_many(
-                {},
-                {"$pull": {
-                    "current_games": {"game_id": game_oid},
-                    "previous_games": {"game_id": game_oid}
-                }}
-            )
-            return make_response(jsonify({'message': 'Game deleted successfully'}), 200)
+            if result.deleted_count > 0:
+                communities.update_many(
+                    {},
+                    {"$pull": {
+                        "current_games": {"game_id": game_oid},
+                        "previous_games": {"game_id": game_oid}
+                    }}
+                )
+
+                for player in game.get('player_list', []):
+                    users.update_one(
+                        {"_id": ObjectId(player['user_id'])},
+                        {"$inc": {"games_joined": -1}}
+                    )
+
+                return make_response(jsonify({'message': 'Game deleted successfully'}), 200)
+            else:
+                return make_response(jsonify({'message': 'Game not found'}), 404)
         else:
             return make_response(jsonify({'message': 'Game not found'}), 404)
-    
+
     except Exception as e:
         print(f"Error: {e}")
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
@@ -1932,21 +1949,135 @@ def search_players():
         print(f"Error searching users: {e}")
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
+# Send Email
+@app.route('/api/v1.0/send_email_to_players', methods=['POST'])
+def send_email_to_game_players():
+    data = request.get_json()
+    recipients = data['recipients']
+    game_time = data['game_time']
+    game_date = data['game_date']
+    game_url = data['game_url']
+    subject = data['subject']
+    message = data['message']
+
+    html_content = f"""
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: 'Arial', sans-serif;
+                background-color: #272727;
+                color: #ffffff;
+                margin: 0;
+                padding: 0;
+            }}
+            .email-container {{
+                padding: 20px;
+                background-color: #272727;
+            }}
+            .email-content {{
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 8px;
+                color: #272727;
+            }}
+            .email-header {{
+                color: #2c972c;
+            }}
+            .email-button {{
+                padding: 10px 20px;
+                color: #ffffff;
+                background-color: #2c972c;
+                text-decoration: none;
+                border-radius: 5px;
+                display: inline-block;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <div class="email-content">
+                <h1 class="email-header">{subject}</h1>
+                <p>{message}</p>
+                <p><strong>Date:</strong> {game_date}</p>
+                <p><strong>Time:</strong> {game_time}</p>
+                <a href="{game_url}" class="email-button">Go to Game Page</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    email_data = {
+        'Messages': [
+            {
+                "From": {
+                    "Email": "henry2025@msn.com",
+                    "Name": "Footy Gather"
+                },
+                "To": recipients,
+                "Subject": subject,
+                "TextPart": message,
+                "HTMLPart": html_content
+            }
+        ]
+    }
+
+    try:
+        result = mailjet.send.create(data=email_data)
+        return jsonify(result.json()), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
+
+# Get eligible players from game
+@app.route('/api/v1.0/games/<game_id>/eligible_players', methods=['GET'])
+def get_eligible_game_players(game_id):
+    try:
+        game = db.games.find_one({"_id": ObjectId(game_id)})
+        if not game:
+            return jsonify({'error': 'Game not found'}), 404
+
+        player_ids = [player['user_id'] for player in game.get('player_list', [])]
+
+        users = db.users.find({
+            '_id': {'$in': [ObjectId(id) for id in player_ids]},
+            'sub_notifications': True
+        }, {'email': 1, 'first_name': 1, 'last_name': 1})
+
+        player_details = [
+            {'email': user['email'], 'name': f"{user['first_name']} {user['last_name']}"}
+            for user in users
+        ]
+
+        return jsonify(player_details), 200
+    except Exception as e:
+        print("Error:", str(e))
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v1.0/communities/<community_id>/eligible_players', methods=['GET'])
+def get_eligible_community_players(community_id):
+    try:
+        community = db.communities.find_one({"_id": ObjectId(community_id)})
+        if not community:
+            return jsonify({'error': 'Community not found'}), 404
+        
+        player_ids = [player['user_id'] for player in community.get('players', [])]
+        
+        players = db.users.find({
+            '_id': {'$in': [ObjectId(id) for id in player_ids]},
+            'sub_notifications': True
+        })
+
+        player_list = [
+            {'email': player['email'], 'name': f"{player.get('first_name', '')} {player.get('last_name', '')}"}
+            for player in players
+        ]
+
+        return jsonify(player_list), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
-
-# <!-- GAMES
-# - ObjectID
-# - GameName
-# - Description
-# - CommunityID
-# - OrganizerID
-# - PlayersList (UserID, UserName, Payed)
-# - DateTime of game
-# - Length
-# - PaymentType
-# - GroupSize
-# - Venue (take id of venue)
-# - Price
-# - CreatedAt
-# - Timestamp -->

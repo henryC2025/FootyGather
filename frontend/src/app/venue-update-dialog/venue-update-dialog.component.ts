@@ -82,9 +82,9 @@ export class VenueUpdateDialogComponent
                     venueImage : venue_image,
                 });
             },
-            error : () =>
+            error : (error) =>
             {
-              
+                console.log(error);
             }
         })
     }
