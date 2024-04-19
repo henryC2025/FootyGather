@@ -1,23 +1,57 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AllGamesComponent } from './all-games.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AuthService } from '@auth0/auth0-angular';
+import { SharedService } from '../shared.service';
+import { WebService } from '../web.service';
+import { of } from 'rxjs';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 
-describe('AllGamesComponent', () => {
-  let component: AllGamesComponent;
-  let fixture: ComponentFixture<AllGamesComponent>;
+describe('AllGamesComponent', () =>
+{
+    let component: AllGamesComponent;
+    let fixture: ComponentFixture<AllGamesComponent>;
+    let authServiceMock: any;
+    let webServiceMock: any;
+    let sharedServiceMock: any;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [AllGamesComponent]
-    })
-    .compileComponents();
-    
-    fixture = TestBed.createComponent(AllGamesComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(async () =>
+    {
+        authServiceMock =
+        {
+            user$: of({ sub: 'auth0|123456', nickname: 'testuser', email: 'test@example.com' }),
+            isAuthenticated$: of(true)
+        };
+        webServiceMock =
+        {
+            getAllCurrentGames: jasmine.createSpy('getAllCurrentGames').and.returnValue(of([])),
+            getCountOfAllCurrentGames: jasmine.createSpy().and.returnValue(of({ count_of_current_games: 5 })),
+        };
+        sharedServiceMock =
+        {
+            showNotification: jasmine.createSpy('showNotification'),
+        };
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+        await TestBed.configureTestingModule(
+        {
+            declarations: [ AllGamesComponent ],
+            imports: [ HttpClientTestingModule, RouterTestingModule ],
+            providers: [
+                { provide: AuthService, useValue: authServiceMock },
+                { provide: WebService, useValue: webServiceMock },
+                { provide: SharedService, useValue: sharedServiceMock }
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(AllGamesComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('should create', () =>
+    {
+        expect(component).toBeTruthy();
+    });
 });

@@ -1,8 +1,8 @@
 <div class="notifier-messageType">
-    <span>{{ data.messageType.toUpperCase() }}</span>
+    <span>{{ data?.messageType?.toUpperCase() ?? 'DEFAULT TYPE' }}</span>
     <mat-icon class="close-icon" (click)="snackBarRef.dismiss()">close</mat-icon>
 </div>
 
 <div class="notifier-message">
-    {{ data.message }}
+    {{ data?.message ?? 'Default message' }}
 </div>

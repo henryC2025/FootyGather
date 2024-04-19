@@ -18,7 +18,6 @@ export class AuthGuard {
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree>
     {
-        // CHECK IF AUTHENTICATED
         return this.authService.isAuthenticated$.pipe(
             switchMap((isAuthenticated: boolean) =>
             {
@@ -32,7 +31,6 @@ export class AuthGuard {
         );
     }
 
-    // CALL THE HANDLE USER DETAILS FOR THE AUTH USER
     private handleAuthenticatedUser(): Observable<boolean | UrlTree>
     {
         return this.authService.user$.pipe(
@@ -41,18 +39,16 @@ export class AuthGuard {
         );
     }
 
-    // CALL WEBSERVICE API TO GET RESPONSE CODE
     private handleUserDetails(user: any): Observable<boolean | UrlTree>
     {
         const userData = { oauth_id: user?.sub };
 
         return this.webService.authUser(userData).pipe(
-            tap((response: any) => console.log(response.code)), // Use tap for side effects like logging
+            tap((response: any) => console.log(response.code)),
             map((response: any) => this.handleAuthUserResponse(response))
         );
     }
 
-    // HANDLE THE RESPONSE CODE FROM API
     private handleAuthUserResponse(response: any): boolean | UrlTree
     {
         if(response.code === "DETAILS_REQUIRED")

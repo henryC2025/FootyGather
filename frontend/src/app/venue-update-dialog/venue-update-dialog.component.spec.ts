@@ -12,11 +12,14 @@ import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { of } from 'rxjs';
 
-class MockLoader {
-    load() {
+class MockLoader
+{
+    load()
+    {
         return Promise.resolve();
     }
-    importLibrary() {
+    importLibrary()
+    {
         return Promise.resolve();
     }
 }

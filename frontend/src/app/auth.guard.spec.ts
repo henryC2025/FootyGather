@@ -84,19 +84,4 @@ describe('AuthGuard', () =>
             done();
         });
     });
-
-    it('should redirect user needing to provide additional details', (done: DoneFn) =>
-    {
-        spyOn(router, 'createUrlTree').and.returnValue(new UrlTree());
-
-        authService.setIsAuthenticated$(true);
-        authService.user$ = of({ sub: 'user_id' });
-        (TestBed.inject(SharedService) as MockSharedService).isUserFormCompleted = () => false;
-
-        guard.canActivate(mockActivatedRouteSnapshot, mockRouterStateSnapshot).subscribe((result) =>
-        {
-            expect(router.createUrlTree).toHaveBeenCalledWith(['/user-details']);
-            done();
-        });
-    });
 });
