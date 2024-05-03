@@ -7,12 +7,13 @@
                 <span>{{ game.community.community_name }}</span>
             </h1>
         </div>
-        <h2 class="heading-title">{{game?.name}}</h2>
-        <div *ngIf="is_admin || is_creator">
-            <button *ngIf="game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onSendEmailToPlayers()" class="mb-2">Remind Players of Game</button>
-        </div>
         <div class="game-status">
             <h1>GAME STATUS: <span [ngClass]="{'current': game_status === 'current', 'previous': game_status === 'previous'}">{{ game_status | uppercase }}</span></h1>
+        </div>
+        <h2 class="heading-title">{{game?.name}}</h2>
+        <h2 class="creator-title" style="cursor: pointer;" [routerLink]="['/profile', game.creator.user_id]">{{"Game Creator - " + game.creator.username}}</h2>
+        <div *ngIf="is_admin || is_creator">
+            <button *ngIf="game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onSendEmailToPlayers()" class="mb-2">Remind Players of Game</button>
         </div>
         
         <button *ngIf="is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onFinishGame()" class="mb-2">Finish Game</button>
@@ -26,7 +27,7 @@
 
         <div class="game-details">
             <div class="game-stats">
-                <p><span class="stat-label">Venue:</span> {{game?.venue_name}}</p>
+                <p style="cursor: pointer;" [routerLink]="['/venues', game?.venue_id]"><span class="stat-label">Venue:</span> {{game?.venue_name}}</p>
                 <p><span class="stat-label">Match Length:</span> {{game?.length}} minutes</p>
                 <p><span class="stat-label">Date:</span> {{game?.date}}</p>
                 <p><span class="stat-label">Time:</span> {{game?.time}}</p>

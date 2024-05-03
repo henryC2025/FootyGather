@@ -29,7 +29,7 @@ def parse_game_datetime(date_str, time_str):
     datetime_str = f"{date_str} {time_str}"
     return datetime.strptime(datetime_str, "%Y-%m-%d %H:%M")
 
-# Route to check if user is in the database
+# Check if user is in database
 @app.route('/api/v1.0/user', methods=['POST'])
 def auth_user():
     try:
@@ -38,24 +38,20 @@ def auth_user():
         user = users.find_one({'oauth_id': oauth_id})
 
         if user:
-            # User exists, send a code to carry on
             return make_response(jsonify({'message': 'User exists', 'code': 'USER_EXISTS'}), 200)
         else:
-            # User doesn't exist, send a code to ask for more details
             return make_response(jsonify({'message': 'User not found in the database', 'code': 'DETAILS_REQUIRED'}), 200)
     except Exception as e:
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
-# ADD USER DETAILS TO USER
-# Route to add user details
+# Add user details
 @app.route('/api/v1.0/user/information', methods=['POST'])
 def add_user_details():
     try:
         data = request.get_json()
 
         oauth_id = data.get('oauth_id')
-        # Check if a user with the given oauth_id already exists
         existing_user = users.find_one({"oauth_id": oauth_id})
         if existing_user:
             return jsonify({'error': 'User with the same oauth_id already exists'}), 400
@@ -101,7 +97,6 @@ def add_user_details():
         print(e)
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
-# Delete a user
 @app.route('/api/v1.0/user/delete/<string:id>', methods=['DELETE'])
 def delete_user(id):
     try:
@@ -114,9 +109,9 @@ def delete_user(id):
                 { "$pull": { "players": { "oauth_id": id } } }
             )
 
-            communities.update_many(
-                {},
-                {"$pull": {"current_games.$[].player_list": id}}
+            games.update_many(
+                {"status": "current"},
+                {"$pull": {"player_list": {"oauth_id": id}}}
             )
 
             return make_response(jsonify({'message': 'User deleted successfully'}), 200)
@@ -388,6 +383,7 @@ def delete_community(id):
     else:
         return make_response(jsonify({"error": "Community not found"}), 404)
 
+# Join community
 @app.route('/api/v1.0/communities/<community_id>/join', methods=['POST'])
 def join_community(community_id):
     try:
@@ -418,7 +414,7 @@ def join_community(community_id):
         return make_response(jsonify({'error': f'An error occurred: {str(e)}'}), 500)
 
 
-# Add a route to leave a community
+# Leave a community
 @app.route('/api/v1.0/communities/<community_id>/leave', methods=['POST'])
 def leave_community(community_id):
     try:
@@ -433,6 +429,10 @@ def leave_community(community_id):
                 communities.update_one(
                     {'_id': ObjectId(community_id)},
                     {'$pull': {'players': {'oauth_id': user_oauth_id}}}
+                )
+                games.update_many(
+                    {"status": "current"},
+                    {"$pull": {"player_list": {"oauth_id": user_oauth_id}}}
                 )
                 return make_response(jsonify({'message': 'User left the community successfully'}), 200)
             else:
@@ -1949,7 +1949,7 @@ def search_players():
         print(f"Error searching users: {e}")
         return make_response(jsonify({'error': 'Internal Server Error'}), 500)
 
-# Send Email
+# Send email
 @app.route('/api/v1.0/send_email_to_players', methods=['POST'])
 def send_email_to_game_players():
     data = request.get_json()
@@ -2025,10 +2025,86 @@ def send_email_to_game_players():
 
     try:
         result = mailjet.send.create(data=email_data)
-        return jsonify(result.json()), 200
+        return make_response(jsonify(result.json()), 200)
     except Exception as e:
         print(e)
-        return jsonify({'error': str(e)}), 500
+        return make_response(jsonify({'error': str(e)}), 500)
+
+#  Send contact message email
+@app.route('/api/v1.0/send_contact_message_email', methods=['POST'])
+def send_contact_message_email():
+    data = request.json
+    html_content = f"""
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: 'Arial', sans-serif;
+                background-color: #272727;
+                color: #ffffff;
+                margin: 0;
+                padding: 0;
+            }}
+            .email-container {{
+                padding: 20px;
+                background-color: #272727;
+            }}
+            .email-content {{
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 8px;
+                color: #272727;
+            }}
+            .email-header {{
+                color: #2c972c;
+            }}
+            .email-button {{
+                padding: 10px 20px;
+                color: #ffffff;
+                background-color: #2c972c;
+                text-decoration: none;
+                border-radius: 5px;
+                display: inline-block;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <div class="email-content">
+                <h1 class="email-header">New Message from Contact Form</h1>
+                <p><strong>From:</strong> {data['name']} ({data['email']})</p>
+                <p><strong>Message:</strong> {data['message']}</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    email_data = {
+        'Messages': [
+            {
+                "From": {
+                    "Email": "henry2025@msn.com",
+                    "Name": "Footy Gather"
+                },
+                "To": [
+                    {
+                        "Email": "henrychan997@gmail.com",
+                        "Name": "Admin"
+                    }
+                ],
+                "Subject": "New Message from Contact Form",
+                "TextPart": f"Message from {data['name']}: {data['message']}",
+                "HTMLPart": html_content
+            }
+        ]
+    }
+
+    result = mailjet.send.create(data=email_data)
+    if result.status_code == 200:
+        return make_response(jsonify({'message': 'Email sent successfully!'}), 200)
+    else:
+        return make_response(jsonify({'error': 'Failed to send email'}), 500)
 
 # Get eligible players from game
 @app.route('/api/v1.0/games/<game_id>/eligible_players', methods=['GET'])
@@ -2036,7 +2112,7 @@ def get_eligible_game_players(game_id):
     try:
         game = db.games.find_one({"_id": ObjectId(game_id)})
         if not game:
-            return jsonify({'error': 'Game not found'}), 404
+            return make_response(jsonify({'error': 'Game not found'}), 404)
 
         player_ids = [player['user_id'] for player in game.get('player_list', [])]
 
@@ -2053,14 +2129,14 @@ def get_eligible_game_players(game_id):
         return jsonify(player_details), 200
     except Exception as e:
         print("Error:", str(e))
-        return jsonify({'error': str(e)}), 500
+        return make_response(jsonify({'error': str(e)}), 500)
 
 @app.route('/api/v1.0/communities/<community_id>/eligible_players', methods=['GET'])
 def get_eligible_community_players(community_id):
     try:
         community = db.communities.find_one({"_id": ObjectId(community_id)})
         if not community:
-            return jsonify({'error': 'Community not found'}), 404
+            return make_response(jsonify({'error': 'Community not found'}), 404)
         
         player_ids = [player['user_id'] for player in community.get('players', [])]
         
@@ -2074,10 +2150,10 @@ def get_eligible_community_players(community_id):
             for player in players
         ]
 
-        return jsonify(player_list), 200
+        return make_response(jsonify(player_list), 200)
     except Exception as e:
         print(e)
-        return jsonify({'error': str(e)}), 500
+        return make_response(jsonify({'error': str(e)}), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

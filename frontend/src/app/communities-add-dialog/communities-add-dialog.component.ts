@@ -100,7 +100,7 @@ export class CommunitiesAddDialogComponent {
         }
     }
 
-    private uploadImage()
+    public uploadImage()
     {
         const formData =
         {
@@ -115,7 +115,7 @@ export class CommunitiesAddDialogComponent {
         );
     }
 
-    onSubmit()
+    public onSubmit()
     {
         const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net';
 

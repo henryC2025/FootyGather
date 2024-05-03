@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -28,10 +28,13 @@ describe('CommunitiesAddDialogComponent', () =>
 {
     let component: CommunitiesAddDialogComponent;
     let fixture: ComponentFixture<CommunitiesAddDialogComponent>;
+    let authServiceMock : any;
+    let webServiceMock : any;
+    let sharedServiceMock : any;
 
     beforeEach(async () =>
     {
-        const authServiceMock =
+        authServiceMock =
         {
             user$: of(
             {
@@ -42,13 +45,22 @@ describe('CommunitiesAddDialogComponent', () =>
             isAuthenticated$: of(true)
         };
 
-        const webServiceMock =
+        webServiceMock =
         {
             getUserDetails: jasmine.createSpy('getUserDetails').and.returnValue(of({})),
-			      getCountOfCurrentCommunityGames: jasmine.createSpy().and.returnValue(of({ count_of_current_games: 5 })),
+            addCommunityDetails: jasmine.createSpy('addCommunityDetails').and.returnValue(of({})),
+        	getCountOfCurrentCommunityGames: jasmine.createSpy().and.returnValue(of({ count_of_current_games: 5 })),
+            uploadCommunityImage: jasmine.createSpy('uploadCommunityImage').and.returnValue(of({ filePath: '/path/to/image', id: '123', locator: '/path' })),
         }
 
-        const sharedServiceMock =
+        webServiceMock.uploadCommunityImage = jasmine.createSpy().and.returnValue(of({
+            filePath: 'path/to/file',
+            id: '123',
+            fileName: 'filename.jpg'
+        }));
+
+
+        sharedServiceMock =
         {
             showNotification: jasmine.createSpy(),
         };
@@ -80,7 +92,16 @@ describe('CommunitiesAddDialogComponent', () =>
         fixture.detectChanges();
     });
 
-    it('should create', () => {
+    it('should create', () =>
+    {
         expect(component).toBeTruthy();
+    });
+
+    it('should handle file selection and update form value', () =>
+    {
+        const file = new File([''], 'test.jpg', { type: 'image/jpeg' });
+        const event = { target: { files: [file] } };
+        component.onFileSelected(event);
+        expect(component.community_form.value.community_image).toEqual(file);
     });
 });

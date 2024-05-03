@@ -504,12 +504,14 @@ export class WebService
     getSortedPlayerCurrentGames(user_id : any, sort_option: any, page_number : any)
     {
         const query = `?sort_option=${sort_option}&pn=${page_number}`
+        console.log(`http://localhost:5000/api/v1.0/players/${user_id}/current_games/sort${query}`)
         return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/current_games/sort${query}`)
     }
 
     getSortedPlayerPreviousGames(user_id : any, sort_option: any, page_number : any)
     {
-        const query = `?sort_option=${sort_option}&pn=${page_number}`
+        const query = `?sort_option=${sort_option}&pn=${page_number}`;
+        console.log(`http://localhost:5000/api/v1.0/players/${user_id}/previous_games/sort${query}`);
         return this.http.get(`http://localhost:5000/api/v1.0/players/${user_id}/previous_games/sort${query}`)
     }
 
@@ -555,6 +557,11 @@ export class WebService
     sendEmailToPlayers(data : any)
     {
         return this.http.post(`http://localhost:5000/api/v1.0/send_email_to_players`, data)
+    }
+
+    sendContactMessageEmail(data : any)
+    {
+        return this.http.post(`http://localhost:5000/api/v1.0/send_contact_message_email`, data)
     }
 
     getEligiblePlayersFromGame(game_id : any)

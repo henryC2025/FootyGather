@@ -7,7 +7,7 @@
 
             <button class="col-md-12 mb-2" style="text-transform: uppercase; font-weight: 900; font-size: xx-large;" id="fg-button" click="" [routerLink]="['games']">Go to Community Games</button>
 
-            <div class="image-container mb-2">
+            <div class="image-container mb-2" *ngIf="community.image?.length">
                 <img [src]="community.image[0]" class="img-thumbnail venue-image" alt="{{community.name}}">
             </div>
             <button class="col-md-12 mb-2" id="fg-button" style="width: 100%;" (click)="onJoinCommunity()" *ngIf="!is_player_joined">Join Community</button>

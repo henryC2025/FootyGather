@@ -154,7 +154,7 @@
         </li>
 
         <li class="page-item">
-            <button class="page-link" (click)="previousGamesPage('previous')" [disabled]="current_games_page === 1">{{"\<"}}</button>
+            <button class="page-link" (click)="previousGamesPage('previous')" [disabled]="previous_games_page === 1">{{"\<"}}</button>
         </li>
         
         <ng-container *ngFor="let pageNum of [previous_games_page - 2, previous_games_page - 1, previous_games_page, previous_games_page + 1, previous_games_page + 2]">

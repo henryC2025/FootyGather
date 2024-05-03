@@ -101,7 +101,7 @@ export class VenuesAddDialogComponent
         }
     }
 
-    private uploadImage()
+    public uploadImage()
     {
         const formData =
         {

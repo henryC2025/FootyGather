@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ProfileComponent } from './profile.component';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@auth0/auth0-angular';
 import { SharedService } from '../shared.service';
 import { WebService } from '../web.service';
 import { of } from 'rxjs';
+import { ProfileComponent } from './profile.component';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ProfileComponent', () =>
@@ -25,8 +25,12 @@ describe('ProfileComponent', () =>
         };
         webServiceMock =
         {
-            getUserDetails: jasmine.createSpy('getProfileUserDetails').and.returnValue(of({})),
-            getPlayerCommunities: jasmine.createSpy('getPlayerCommunities').and.returnValue(of({})),
+            getUserDetails: jasmine.createSpy('getUserDetails').and.returnValue(of(
+            {
+                _id: 'user123',
+                name: 'John Doe'
+            })),
+            getPlayerCommunities: jasmine.createSpy('getPlayerCommunities').and.returnValue(of([])),
         };
         sharedServiceMock =
         {
@@ -35,8 +39,8 @@ describe('ProfileComponent', () =>
 
         await TestBed.configureTestingModule(
         {
-            declarations: [ ProfileComponent ],
-            imports: [ HttpClientTestingModule, RouterTestingModule ],
+            declarations: [ProfileComponent],
+            imports: [HttpClientTestingModule, RouterTestingModule],
             providers: [
                 { provide: AuthService, useValue: authServiceMock },
                 { provide: WebService, useValue: webServiceMock },
@@ -47,11 +51,17 @@ describe('ProfileComponent', () =>
 
         fixture = TestBed.createComponent(ProfileComponent);
         component = fixture.componentInstance;
-        fixture.detectChanges();
     });
 
     it('should create', () =>
     {
         expect(component).toBeTruthy();
     });
+
+    it('should load user details on initialization', fakeAsync(() =>
+    {
+        fixture.detectChanges();
+        tick(); 
+        expect(webServiceMock.getUserDetails).toHaveBeenCalled();
+    }));
 });

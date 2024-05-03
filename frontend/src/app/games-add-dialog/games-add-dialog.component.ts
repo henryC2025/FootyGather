@@ -94,6 +94,7 @@ export class GamesAddDialogComponent {
                   if(response === false)
                   {
                       this.sharedService.showNotification("Please sign in to add a game.", "error");
+                      this.onClose();
                       this.router.navigate(['/']);
                   }
                   if(this.user)

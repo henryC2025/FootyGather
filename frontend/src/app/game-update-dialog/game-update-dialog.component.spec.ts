@@ -28,6 +28,7 @@ describe('GameUpdateDialogComponent', () =>
 {
     let component: GameUpdateDialogComponent;
     let fixture: ComponentFixture<GameUpdateDialogComponent>;
+    let dialogRefMock : any;
 
     beforeEach(async () =>
     {
@@ -40,6 +41,11 @@ describe('GameUpdateDialogComponent', () =>
                 email: 'test@example.com'
             }),
             isAuthenticated$: of(true)
+        };
+
+        dialogRefMock =
+        {
+            close: jasmine.createSpy('close')
         };
 
         const webServiceMock =
@@ -70,7 +76,7 @@ describe('GameUpdateDialogComponent', () =>
                 { provide: WebService, useValue: webServiceMock },
                 { provide: SharedService, useValue: sharedServiceMock },
                 { provide: Loader, useClass: MockLoader },
-                { provide: MatDialogRef, useValue: {} },
+                { provide: MatDialogRef, useValue: dialogRefMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} }
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
@@ -83,5 +89,11 @@ describe('GameUpdateDialogComponent', () =>
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should close the dialog on onClose', () =>
+    {
+        component.onClose();
+        expect(dialogRefMock.close).toHaveBeenCalled();
     });
 });

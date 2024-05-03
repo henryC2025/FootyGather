@@ -121,7 +121,6 @@ export class CommunityComponent
 
     onJoinCommunity()
     {
-        console.log("TESTING: " + this.is_authenticated)
         if(this.is_authenticated === true)
         {
             console.log(this.is_player_joined);
@@ -144,12 +143,13 @@ export class CommunityComponent
                         {
                             next : () =>
                             {
-                                console.log("User joined the community");
+                                this.sharedService.showNotification("User has joined the community", "success");
                                 this.initCommunity();
                             },
-                            error : () =>
+                            error : (error) =>
                             {
-                                console.log("Something went wrong!");
+                                console.log(error);
+                                this.sharedService.showNotification("An error occured when user attempted to join community", "error");
                             }
                         })
                     }

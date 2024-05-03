@@ -211,7 +211,7 @@ export class CommunitiesComponent
                             const duration_text = element.duration.text;
                             const duration_value = this.sharedService.metersToMiles(element.duration.value);
             
-                        return {
+                        return{
                             distance: {
                             text: distance_text,
                             value: distance_value

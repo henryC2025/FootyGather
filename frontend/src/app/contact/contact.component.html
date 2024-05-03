@@ -1,13 +1,35 @@
 <div class="container" id="content-container">
-    <h1 class="heading-title">Contact</h1>
+    <h1 class="heading-title">Contact Us</h1>
 
-        <p>If you have any questions, please do not hesitate to reach out to us.</p>
-    
-        <!-- Contact Information -->
-        <div class="contact-info">
-            <h2>Contact Information</h2>
-            <p><strong>Email:</strong> henrychan997gmail.com</p>
-            <p><strong>Phone:</strong> 07934839969</p>
-            <p><strong>Address:</strong> 123 Example Street, Ballymena, Northern Ireland</p>
+    <div class="contact-info">
+        <h2>Contact Information</h2>
+        <hr>
+        <p class="contact-description">If you have any questions, please do not hesitate to reach out to us. We are here to help!</p>
+        <div class="contact-details">
+            <p class="contact-detail"><strong>Email: </strong> <a href="mailto:henrychan997@gmail.com">{{'henrychan997@gmail.com'}}</a></p>
+            <p class="contact-detail"><strong>Phone: </strong> <a href="tel:+07934839969">07934839969</a></p>
+            <p class="contact-detail"><strong>Address: </strong> 123 Example Street, Ballymena, Northern Ireland</p>
         </div>
     </div>
+    
+    
+    <!-- Contact Form -->
+    <div class="contact-form">
+        <h2>Send Us a Message</h2>
+        <hr>
+        <form [formGroup]="contact_form" class="styled-form">
+
+            <div class="form-group">
+                <input type="text" id="contact-email" formControlName="contact_email" placeholder="Enter you email address"/>
+            </div>
+            <div class="form-group">
+                <input type="text" id="contact-name" formControlName="contact_name" placeholder="Enter you name"/>
+            </div>
+            <div class="form-group">
+              <textarea id="contact-message" formControlName="contact_message" placeholder="Enter a message"></textarea>
+            </div>
+            <button id="fg-button" (click)="onSubmit()">Send Message</button>
+          </form>
+    </div>
+
+</div>

@@ -32,6 +32,7 @@ export class ProfileComponent {
 
     ngOnInit()
     {
+
         this.authService.user$.pipe(switchMap(user =>
         {
             if (!user)
@@ -76,6 +77,7 @@ export class ProfileComponent {
         this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
             this.user_details._id, "closest_date", this.previous_games_page);
         this.getPaginationSize();
+        console.log("TESTING: " + this.user_details._id)
     }
 
     getPaginationSize()
@@ -137,6 +139,7 @@ export class ProfileComponent {
                     {
                         next : () =>
                         {
+                            this.sharedService.showNotification("User has been deleted", "success");
                             this.authService.logout();
                             this.router.navigate(['/']);
                         },
@@ -173,7 +176,7 @@ export class ProfileComponent {
                 this.previous_games_page = 1;
                 sessionStorage['user_previous_games_page'] = this.previous_games_page;
                 this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
-                    this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+                    this.user_details._id, this.selected_previous_sort_option, this.previous_games_page);
             }
         }
     }
@@ -197,7 +200,7 @@ export class ProfileComponent {
                 this.previous_games_page = this.previous_games_total_pages;
                 sessionStorage['user_previous_games_page'] = this.previous_games_page;
                 this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
-                    this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+                    this.user_details._id, this.selected_previous_sort_option, this.previous_games_page);
             }
         }
     }
@@ -221,7 +224,7 @@ export class ProfileComponent {
                 this.previous_games_page = this.previous_games_page - 1;
                 sessionStorage['user_previous_games_page'] = this.previous_games_page;
                 this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
-                    this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+                    this.user_details._id, this.selected_previous_sort_option, this.previous_games_page);
             }
         }
     }
@@ -240,7 +243,7 @@ export class ProfileComponent {
             this.previous_games_page = this.previous_games_page + 1;
             sessionStorage['user_previous_games_page'] = this.previous_games_page;
             this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
-                this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+                this.user_details._id, this.selected_previous_sort_option, this.previous_games_page);
         }
     }
 
@@ -258,7 +261,7 @@ export class ProfileComponent {
             this.previous_games_page = page_num;
             sessionStorage['user_previous_games_page'] = this.previous_games_page;
             this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
-                this.user_details._id, this.selected_previous_sort_option, this.current_games_page);
+                this.user_details._id, this.selected_previous_sort_option, this.previous_games_page);
         }
     }
 

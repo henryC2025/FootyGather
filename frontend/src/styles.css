@@ -44,7 +44,7 @@
     background-size: cover;
     background-position: center center;
     position: relative;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
+    overflow-x: hidden;
 }
 
 #content-container
@@ -56,6 +56,26 @@
     border-radius: 8px;
     padding: 15px 16px;
     width: auto;
+}
+
+.gs-button
+{
+    background-color: #272727;
+    color: #f5f5f5;
+    border: 1px solid #2c972c;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; 
+    width: 50%;
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-radius: 8px;
+}
+
+.gs-button:hover
+{
+    background-color: #5abd5a;
 }
 
 #fg-button
@@ -711,12 +731,13 @@ hr
 #welcome-heading
 {
     color: #2c972c;
+    font-size: xxx-large;
 }
 
 #welcome-description
 {
     color: #555;
-    font-size: 16px;
+    font-size: 20px;
     margin-bottom: 20px;
 }
 
@@ -958,6 +979,26 @@ hr
 
 /* GAME */
 
+.creator-title
+{
+    text-transform: uppercase;
+    font-weight: 600;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+    color: #2c972c;
+    font-weight: 900;
+    font-size: 20px;
+    margin-top: 10px;
+    border: 1px solid #164d16;
+    transition: background-color 0.3s ease, color 0.3s ease; 
+}
+
+.creator-title:hover
+{
+    background-color: #272727;
+}
+
 .game-player-count h3
 {
     margin-top: 5px;
@@ -968,6 +1009,16 @@ hr
     background: rgba(255, 255, 255, 0.418);
     color: #ffffff;
     font-weight: 900;
+}
+
+.game-status
+{
+    margin-bottom: 10px;
+    border-radius: 8px;
+    padding: 10px;
+    border: solid 1px #2c972c;
+    background: rgba(255, 255, 255, 0.418);
+    color: #ffffff;
 }
 
 .game-status h1
@@ -1069,7 +1120,7 @@ hr
 
 .game-description
 {
-    font-size: 16px;
+    font-size: large;
     color: #272727;
     background-color: #e9f5f5;
     padding: 10px;
@@ -1088,13 +1139,14 @@ hr
 .stat-label
 {
     font-weight: bold;
+    font-size: large;
     color: #272727;
 }
 
 .game-stats p
 {
     margin: 10px 0;
-    font-size: 14px;
+    font-size: large;
     color: #2c972c
 }
 
@@ -1157,13 +1209,19 @@ hr
 
 /* CONTACT PAGE */
 
-.contact-info, .contact-form, .additional-info
+.contact-info, .contact-form
 {
     margin-top: 20px;
     padding: 15px;
     background-color: #f9f9f9;
     border-radius: 8px;
     color: #272727;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.contact-info p, .contact-form p
+{
+    line-height: 1.5;
 }
 
 input[type="text"],
@@ -1171,9 +1229,40 @@ input[type="email"],
 textarea
 {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
+    margin-top: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.contact-info .contact-description
+{
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.contact-info .contact-detail
+{
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.contact-info .contact-detail a
+{
+    color: #2c972c;
+    text-decoration: none;
+}
+
+.contact-details
+{
+    text-align: left;
+    align-items: center;
+    margin-bottom: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
 }
 
 /* ALL GAMES */

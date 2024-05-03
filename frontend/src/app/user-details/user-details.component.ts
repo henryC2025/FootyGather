@@ -110,13 +110,13 @@ export class UserDetailsComponent {
         }
     }
 
-    private uploadImage()
+    public uploadImage()
     {
         const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net';
 
         return this.authService.user$.pipe(
             map(user =>
-                {
+            {
                 const oauthID = user?.sub;
                 const userName = user?.nickname;
                 const selected_file = this.selected_file;
