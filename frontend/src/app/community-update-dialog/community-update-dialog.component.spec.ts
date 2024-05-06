@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -28,10 +28,17 @@ describe('CommunityUpdateDialogComponent', () =>
 {
     let component: CommunityUpdateDialogComponent;
     let fixture: ComponentFixture<CommunityUpdateDialogComponent>;
+    let authServiceMock: any;
+    let sharedServiceMock: any;
+    let webServiceMock: any;
+    let dialogRefMock =
+    {
+        close: jasmine.createSpy('close')
+    };
 
     beforeEach(async () =>
     {
-        const authServiceMock =
+        authServiceMock =
         {
             user$: of(
             {
@@ -42,12 +49,22 @@ describe('CommunityUpdateDialogComponent', () =>
             isAuthenticated$: of(true)
         };
 
-        const webServiceMock =
+        webServiceMock =
         {
-            getCommunityByID: jasmine.createSpy('getCommunityByID').and.returnValue(of([])),
+            getCommunityByID: jasmine.createSpy('getCommunityByID').and.returnValue(of(
+            [{
+                community_name: "Test Community",
+                community_location: "Test Location",
+                community_description: "Test Description",
+                community_rules: "Test Rules",
+                community_image: "test-image.jpg"
+            }])),
+            updateCommunityDetails: jasmine.createSpy('updateCommunityDetails').and.returnValue(of({})),
+            uploadCommunityImage: jasmine.createSpy('uploadCommunityImage').and.returnValue(of({})),
+            deleteCommunityImage: jasmine.createSpy('deleteCommunityImage').and.returnValue(of({})),
         }
 
-        const sharedServiceMock =
+        sharedServiceMock =
         {
             showNotification: jasmine.createSpy(),
         };
@@ -68,8 +85,8 @@ describe('CommunityUpdateDialogComponent', () =>
                 { provide: WebService, useValue: webServiceMock },
                 { provide: SharedService, useValue: sharedServiceMock },
                 { provide: Loader, useClass: MockLoader },
-                { provide: MatDialogRef, useValue: {} },
-                { provide: MAT_DIALOG_DATA, useValue: {} }
+                { provide: MatDialogRef, useValue: dialogRefMock },
+                { provide: MAT_DIALOG_DATA, useValue: { } }
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
         }).compileComponents();
@@ -79,7 +96,37 @@ describe('CommunityUpdateDialogComponent', () =>
         fixture.detectChanges();
     });
 
-    it('should create', () => {
+    it('should create', () =>
+    {
         expect(component).toBeTruthy();
+    });
+
+    it('should load community details on initialization', () =>
+    {
+        expect(webServiceMock.getCommunityByID).toHaveBeenCalled();
+    });
+
+    it('should handle image file selection correctly', () =>
+    {
+        const file = new File([''], 'new-image.jpg', { type: 'image/jpeg' });
+        const event = { target: { files: [file] } };
+        component.onFileSelected(event);
+        expect(component.selected_file).toEqual(file);
+    });
+    
+    it('should submit updated venue details', () =>
+    {
+        component.community_form.setValue(
+        {
+            community_name: "Test Community",
+            community_location: "Test Location",
+            community_description: "Test Description",
+            community_rules: "Test Rules",
+            community_image: "test-image.jpg"
+        });
+        component.submitUpdateCommunityDetails();
+        expect(webServiceMock.updateCommunityDetails).toHaveBeenCalled();
+        expect(dialogRefMock.close).toHaveBeenCalled();
+        expect(sharedServiceMock.showNotification).toHaveBeenCalledWith("Community updated", "success");
     });
 });

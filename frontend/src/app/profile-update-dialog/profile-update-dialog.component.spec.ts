@@ -28,10 +28,17 @@ describe('ProfileUpdateDialogComponent', () =>
 {
     let component: ProfileUpdateDialogComponent;
     let fixture: ComponentFixture<ProfileUpdateDialogComponent>;
+    let webServiceMock : any;
+    let sharedServiceMock : any;
+    let authServiceMock : any;
+    let dialogRefMock =
+    {
+        close: jasmine.createSpy('close')
+    };
 
     beforeEach(async () =>
     {
-        const authServiceMock =
+        authServiceMock =
         {
             user$: of(
             {
@@ -42,12 +49,29 @@ describe('ProfileUpdateDialogComponent', () =>
             isAuthenticated$: of(true)
         };
 
-        const webServiceMock =
+        webServiceMock =
         {
-            getUserDetails: jasmine.createSpy('getUserDetails').and.returnValue(of({})),
+            getUserDetails: jasmine.createSpy('getUserDetails').and.returnValue(of(
+            {
+                first_name: 'Test',
+                last_name: 'Test',
+                description: 'Test user',
+                location: 'Test location',
+                experience: 'Experienced',
+                sub_notifications: true,
+                profile_image: 'path/to/image.jpg'
+            })),
+            updateUserDetails: jasmine.createSpy('updateUserDetails').and.returnValue(of({})),
+            uploadProfileImage: jasmine.createSpy('uploadProfileImage').and.returnValue(of(
+            {
+                filePath: '/new/path/to/image.jpg',
+                id: 'image123',
+                fileName: 'profile.jpg'
+            })),
+            deleteProfileImage: jasmine.createSpy('deleteProfileImage').and.returnValue(of({}))
         }
 
-        const sharedServiceMock =
+        sharedServiceMock =
         {
             showNotification: jasmine.createSpy(),
         };
@@ -68,7 +92,7 @@ describe('ProfileUpdateDialogComponent', () =>
                 { provide: WebService, useValue: webServiceMock },
                 { provide: SharedService, useValue: sharedServiceMock },
                 { provide: Loader, useClass: MockLoader },
-                { provide: MatDialogRef, useValue: {} },
+                { provide: MatDialogRef, useValue: dialogRefMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} }
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
@@ -79,7 +103,57 @@ describe('ProfileUpdateDialogComponent', () =>
         fixture.detectChanges();
     });
 
-    it('should create', () => {
+    it('should create', () =>
+    {
         expect(component).toBeTruthy();
+    });
+
+    it('should load user details and populate form on initialization', () =>
+    {
+        expect(webServiceMock.getUserDetails).toHaveBeenCalled();
+        expect(component.user_details_form.value).toEqual(
+        {
+            first_name: 'Test',
+            last_name: 'Test',
+            description: 'Test user',
+            location: 'Test location',
+            experience: 'Experienced',
+            sub_notifications: true,
+            profile_image: 'path/to/image.jpg'
+        });
+    });
+
+    it('should update user details and close dialog on submit', () =>
+    {
+        component.user_details_form.setValue(
+        {
+            first_name: 'Test',
+            last_name: 'Test',
+            description: 'Updated user',
+            location: 'Updated location',
+            experience: 'Beginner',
+            sub_notifications: false,
+            profile_image: 'path/to/newimage.jpg'
+        });
+        component.onSubmit();
+        expect(webServiceMock.updateUserDetails).toHaveBeenCalled();
+        expect(dialogRefMock.close).toHaveBeenCalled();
+        expect(sharedServiceMock.showNotification).toHaveBeenCalledWith("User details updated", "success");
+    });
+
+    it('should handle form validation errors', () =>
+    {
+        component.user_details_form.setValue(
+        {
+            first_name: '',
+            last_name: '',
+            description: '',
+            location: '',
+            experience: '',
+            sub_notifications: false,
+            profile_image: null
+        });
+        component.onSubmit();
+        expect(sharedServiceMock.showNotification).toHaveBeenCalledWith("Please enter your first name.", "error");
     });
 });

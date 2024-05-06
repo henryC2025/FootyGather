@@ -6,9 +6,11 @@ import { map, switchMap, take, tap } from 'rxjs/operators';
 import { SharedService } from './shared.service';
 import { WebService } from './web.service';
 
-@Injectable({
-  providedIn: 'root'
+@Injectable(
+{
+    providedIn: 'root'
 })
+
 export class AuthGuard {
 
     constructor(private authService: AuthService,

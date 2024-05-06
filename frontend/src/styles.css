@@ -456,12 +456,46 @@ textarea, input[type="text"], select, input[type="file"]
 
 /* VENUE */
 
+.venue-details
+{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    background: #f9f9f9;
+}
+  
+.venue-details-row
+{
+    text-align: left;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 10px 15px;
+}
+  
+.venue-label
+{
+    font-weight: bold;
+    margin-right: 10px;
+    color: #333;
+    width: 30%;
+}
+  
+.venue-content
+{
+    color: #555;
+}
+
 .venue-container
 {
     background-color: #272727;
+    border-radius: 8px;
 }
 
-#venue-name
+#venue-title-name
 {
     color: #ffffff;
     font-size: 35px;
@@ -480,22 +514,16 @@ textarea, input[type="text"], select, input[type="file"]
     width: 100% !important;
     height: 300px !important;
     object-fit: cover;
-    background-color: #272727 !important;
+    border-radius: 8px;
+    border: 1px solid #2c972c;
 }
 
-.venue-image-container
+.venue-like-dislike
 {
-    background-color: #272727;
-}
-
-.venue-image-header
-{
-    color: #272727;
-}
-
-#venue-card-body
-{
-    background-color: #272727;
+    background-color: #272727a0;
+    border-radius: 8px;
+    border: 1px solid #2c972c;
+    padding-top: 10px;
 }
 
 .like-button i, .dislike-button i
@@ -1270,7 +1298,7 @@ textarea
 {
     background-color: #272727;
     border-radius: 8px;
-    border: 1px solid white;
+    border: 1px solid #2c972c;
 }
 
 .all-games-card-header

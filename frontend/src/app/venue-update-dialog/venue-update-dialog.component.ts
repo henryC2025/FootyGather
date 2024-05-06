@@ -121,7 +121,6 @@ export class VenueUpdateDialogComponent
             }
             else
             {
-                console.error('Selected file is not an image.');
                 this.sharedService.showNotification("Please select an image.", "error");
                 this.clearImage();
             }
@@ -165,7 +164,6 @@ export class VenueUpdateDialogComponent
 
     onSubmit()
     {
-        // ADD SOMETHING TO DELETE THE EXISTING IMAGE
         const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net';
 
         if(this.venue_form.valid)
@@ -179,28 +177,22 @@ export class VenueUpdateDialogComponent
                         this.venue_image = [blobStorage + response.filePath, response.id, response.filePath];
                         this.submitUpdateVenueDetails();
 
-                        // CALL DELETE OLDER IMAGE HERE
                         this.webService.deleteVenueImage(this.existing_data.venue_image[1], this.existing_data.venue_image[2]).subscribe(
                         {
-                            next : (response) =>
-                            {
-            
-                            },
                             error : (error) =>
                             {
-            
+                                console.log("An error occured when adding venue details: ", error);
                             },
                             complete : () =>
                             {
-                                console.log("Venue deleted!")
                                 this.router.navigate(['/venues']);
-                                // ADD NOTIFIER HERE
                             }
                         })
                     },
                     error : (error) =>
                     {
                         this.sharedService.showNotification("Error uploading venue image", "error");
+                        console.log(error);
                     },
                     complete: () =>
                     {
@@ -210,7 +202,6 @@ export class VenueUpdateDialogComponent
             }
             else
             {
-                console.log("Old image kept");
                 this.venue_image = this.existing_data.venue_image;
                 this.submitUpdateVenueDetails();
             }
@@ -240,13 +231,14 @@ export class VenueUpdateDialogComponent
             {
                 console.log(response);
             },
-            error : () =>
+            error : (error) =>
             {
-                this.sharedService.showNotification("Something went wrong!", "error");
+                this.sharedService.showNotification("An error occured when attempting to update venue details!", "error");
+                console.log(error);
             },
             complete: () =>
             {
-                this.sharedService.showNotification("Venue updated", "success");
+                this.sharedService.showNotification("Venue details successfully updated", "success");
                 this.onClose();
                 this.router.navigate(['/venues']);
             }

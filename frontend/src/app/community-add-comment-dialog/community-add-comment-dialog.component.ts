@@ -11,8 +11,8 @@ import { FormBuilder, Validators } from '@angular/forms';
   templateUrl: './community-add-comment-dialog.component.html',
   styleUrl: './community-add-comment-dialog.component.css'
 })
-export class CommunityAddCommentDialogComponent {
-
+export class CommunityAddCommentDialogComponent
+{
     user : any;
     comment_form : any;
     community_id : any;
@@ -86,17 +86,14 @@ export class CommunityAddCommentDialogComponent {
 
                     this.webService.addCommunityComment(this.community_id, comment_data).subscribe(
                     {
-                        next : (response : any) =>
+                        error : (error) =>
                         {
-                            console.log(response);
-                        },
-                        error : () =>
-                        {
-                            this.sharedService.showNotification("Something went wrong!", "error");
+                            this.sharedService.showNotification("Something when attempting to add a comment!", "error");
+                            console.log(error);
                         },
                         complete: () =>
                         {
-                            this.sharedService.showNotification("Comment added", "success");
+                            this.sharedService.showNotification("Comment has been successfully added", "success");
                             this.onClose();
                             this.sharedService.community_comments_updated.next();
                         }

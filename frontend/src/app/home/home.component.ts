@@ -19,8 +19,6 @@ export class HomeComponent
 
     ngOnInit()
     {
-        //this.sharedService.authUser();
-        // // DIRECT TO A PAGE
-        // this.router.navigate(['/profile']);
+
     }
 }

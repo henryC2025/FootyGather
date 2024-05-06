@@ -41,7 +41,6 @@ export class CommunityComponent
 
         if(this.authService.user$)
         {
-            console.log(this.authService.user$)
             this.authService.user$.subscribe((user: any) =>
             {
                 this.oauth_id = user?.sub;
@@ -87,7 +86,6 @@ export class CommunityComponent
         {
             next: (data: any) =>
             {
-                console.log(data);
                 this.creator_id = data[0].creator_oauth_id;
                 this.total_players = data[0].players.length;
                 this.player_list = data[0].players;
@@ -98,7 +96,6 @@ export class CommunityComponent
                 {
                     this.is_creator = true;
                 }
-                console.log("is creator: " + this.is_creator)
                 if (user_oauth_id)
                 {
                     this.is_player_joined = this.player_list.some((player : any) => player.oauth_id === user_oauth_id);
@@ -108,13 +105,10 @@ export class CommunityComponent
                     this.is_player_joined = false;
                 }
             },
-            error: () =>
+            error: (error) =>
             {
-                console.log("Something went wrong retrieving community creator ID!");
-            },
-            complete: () =>
-            {
-                console.log(this.is_player_joined)
+                this.sharedService.showNotification("An error occured retrieving community details!", "error");
+                console.log(error);
             }
         });
     }
@@ -123,7 +117,6 @@ export class CommunityComponent
     {
         if(this.is_authenticated === true)
         {
-            console.log(this.is_player_joined);
             if(!this.is_player_joined)
             {
                 const prompt = window.confirm("Are you sure you want to join?");
@@ -173,19 +166,19 @@ export class CommunityComponent
                 {
                     user_oauth_id : this.user?.sub
                 }
-                console.log(data.user_oauth_id)
                 if(data)
                 {
                     this.webService.leaveCommunity(data, this.route.snapshot.params['id']).subscribe(
                     {
                         next : () =>
                         {
-                            console.log("User has left the community");
+                            this.sharedService.showNotification("User has left the community!", "success");
                             this.initCommunity();
                         },
-                        error : () =>
+                        error : (error) =>
                         {
-                            console.log("An error occured when trying to leave community!");
+                            this.sharedService.showNotification("An error has occured when attempting to leave the community!", "error");
+                            console.log(error);
                         }
                     })
                 }
@@ -209,19 +202,16 @@ export class CommunityComponent
                 {
                     next : () =>
                     {
-                        console.log("User has been removed from the community");
+                        this.sharedService.showNotification("User has been removed from the community!", "success");
                         this.initCommunity();
                     },
-                    error : () =>
+                    error : (error) =>
                     {
-                        console.log("An issue occured when removing player from community!");
+                        this.sharedService.showNotification("An error occured when attempting to remove a player!", "error");
+                        console.log(error);
                     }
                 })
             }
-        }
-        else
-        {
-            console.log("left")
         }
     }
 
@@ -250,11 +240,13 @@ export class CommunityComponent
             {
                 next : () =>
                 {
+                    this.sharedService.showNotification("Comment has been successfully removed", "success");
                     this.comments_list = this.webService.getCommunityComments(this.community_id);
                 },
-                error : () =>
+                error : (error) =>
                 {
-    
+                    this.sharedService.showNotification("An error occured when attempting to remove a comment!", "error");
+                    console.log(error);
                 }
             })
         }
@@ -320,7 +312,6 @@ export class CommunityComponent
                         },
                         complete : () =>
                         {
-                            console.log("Community deleted!")
                             this.router.navigate(['/communities']);
                             this.sharedService.showNotification("Community deleted", "success");
                         }
@@ -335,7 +326,6 @@ export class CommunityComponent
         }
         else
         {
-            console.log("Community deleted!")
             this.router.navigate(['/communities']);
             this.sharedService.showNotification("Community deleted", "success");
         }

@@ -82,9 +82,9 @@ export class GameUpdateDialogComponent
             {
                 this.current_player_size = data.player_count;
             },
-            error : () =>
+            error : (error) =>
             {
-                console.log("An error occured retrieving game player count!");
+                console.log("An error occured retrieving game player count: ", error);
             }
         })
     }
@@ -133,7 +133,7 @@ export class GameUpdateDialogComponent
             },
             error : (error) =>
             {
-                console.log(error);
+                console.log("An error occured getting game details: ", error);
             }
         })
     }
@@ -175,7 +175,6 @@ export class GameUpdateDialogComponent
             game_date : this.game_details_form.get('game_date')?.value,
             game_time : this.game_details_form.get('game_time')?.value,
         }
-        console.log(form_data)
         this.webService.updateGameDetails(form_data, this.game_id).subscribe(
         {
             complete : () =>

@@ -259,6 +259,14 @@ export class WebService
         return this.http.get<any>(url);
     }
 
+    getCoordinatesFromAddress(address: string)
+    {
+        const api_key = 'AIzaSyAYYaztrROgb-QD7ibhLJorPJILazXCNAo';
+        let geocodingApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
+        const url = `${geocodingApiUrl}?address=${encodeURIComponent(address)}&key=${api_key}`;
+        return this.http.get<any>(url);
+    }
+
     saveCommunityDistanceFromUser(data : any)
     {
         return this.http.post('http://localhost:5000/api/v1.0/communities/save_distance', data);

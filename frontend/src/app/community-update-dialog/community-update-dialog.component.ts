@@ -108,9 +108,10 @@ export class CommunityUpdateDialogComponent {
                     community_creator_oauth_id : community_creator_oauth_id
                 });
             },
-            error : () =>
+            error : (error) =>
             {
                 console.log("An error occured retrieving community details!");
+                console.log(error);
             }
         })
     }
@@ -207,25 +208,22 @@ export class CommunityUpdateDialogComponent {
     
                             this.webService.deleteCommunityImage(this.existing_data.community_image[1], this.existing_data.community_image[2]).subscribe(
                             {
-                                next : (response) =>
-                                {
-                
-                                },
                                 error : (error) =>
                                 {
-                
+                                    this.sharedService.showNotification("An error occured when processing delete image!", "error");
+                                    console.log(error);
                                 },
                                 complete : () =>
                                 {
                                     console.log("Community deleted!")
                                     this.router.navigate(['/communities']);
-                                    // ADD NOTIFIER HERE
                                 }
                             })
                         },
                         error : (error) =>
                         {
                             this.sharedService.showNotification("Error uploading community image", "error");
+                            console.log(error);
                         },
                         complete: () =>
                         {
@@ -235,7 +233,6 @@ export class CommunityUpdateDialogComponent {
                 }
                 else
                 {
-                    console.log("Old image kept");
                     this.community_image = this.existing_data.community_image;
                     this.submitUpdateCommunityDetails();
                 }
@@ -262,17 +259,12 @@ export class CommunityUpdateDialogComponent {
           community_image : this.community_image,
         }
 
-        console.log(this.community_image)
-
         this.webService.updateCommunityDetails(this.community_id, formData).subscribe(
         {
-            next : (response : any) =>
-            {
-                console.log(response);
-            },
-            error : () =>
+            error : (error) =>
             {
                 this.sharedService.showNotification("Something went wrong!", "error");
+                console.log(error);
             },
             complete: () =>
             {

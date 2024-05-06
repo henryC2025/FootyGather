@@ -66,7 +66,6 @@ export class GameComponent
         if(this.game_id)
         {
             this.game_details = this.webService.getGameById(this.game_id);
-            console.log(this.game_details)
         }
     }
 
@@ -78,9 +77,9 @@ export class GameComponent
             {
                 this.player_count = data.player_count;
             },
-            error : () =>
+            error : (error) =>
             {
-                console.log("An error occured retrieving game player count!");
+                console.log("An error occured retrieving game player count: ", error);
             }
         })
     }
@@ -119,7 +118,7 @@ export class GameComponent
             },
             error: (error) =>
             {
-                
+                console.log("An error occured checking game details: ", error);
             }
         });
     }
@@ -154,6 +153,10 @@ export class GameComponent
                             }
                         })
                     }
+                },
+                error : (error) =>
+                {
+                    console.log("An error occured getting ser details: ", error);
                 }
             });
         });
@@ -175,7 +178,6 @@ export class GameComponent
                     "user_name": this.user?.nickname,
                     "email": this.user?.email
                 }
-                console.log(data)
                 this.webService.joinGame(this.game_id, data).subscribe(
                 {
                     next : () =>
@@ -239,6 +241,7 @@ export class GameComponent
                         if(error.status === 500)
                         {
                             this.sharedService.showNotification("You are already part of this game.", "error");
+                            console.log(error);
                         }
                     },
                     complete : () =>
@@ -270,6 +273,7 @@ export class GameComponent
                     },
                     error : (error) =>
                     {
+                        this.sharedService.showNotification("An error occured when attempting to delete a game!", "error");
                         console.log(error);
                     }
                 })
@@ -302,7 +306,6 @@ export class GameComponent
         }
         else
         {
-            console.log(this.is_player_in_community)
             this.sharedService.showNotification("Please join the game to enter a comment", "error");
         }
     }

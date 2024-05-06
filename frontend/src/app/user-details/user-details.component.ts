@@ -12,7 +12,8 @@ import { catchError, map, switchMap } from 'rxjs';
   styleUrls: ['./user-details.component.css']
 })
 
-export class UserDetailsComponent {
+export class UserDetailsComponent
+{
     @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement> | undefined;
 
     details_form: FormGroup;
@@ -46,13 +47,10 @@ export class UserDetailsComponent {
         {
             this.user = user;
         });
-
-        console.log("AM I CALLED" + this.sharedService.getAuthCalled())
     }
 
     public handleAddressChange(place: google.maps.places.PlaceResult)
     {
-        console.log(place)
         if(place)
         {
             this.details_form.get('location')?.setValue(place.formatted_address);
@@ -83,7 +81,6 @@ export class UserDetailsComponent {
             }
             else
             {
-                console.error('Selected file is not an image.');
                 this.sharedService.showNotification("Please select an image.", "error");
                 this.clearImage();
             }
@@ -160,11 +157,7 @@ export class UserDetailsComponent {
                     error: (error: any) =>
                     {
                         this.sharedService.showNotification("Error uploading profile image", "error");
-                    },
-                    complete: () =>
-                    {
-                        console.log('Profile image upload completed.');
-                    },
+                    }
                 });
             }
             else
@@ -202,7 +195,6 @@ export class UserDetailsComponent {
         {
             next: (response) =>
             {
-                console.log("User Details added: " + response)
                 this.sharedService.showNotification("Details added, Thank you for Joining :)", "success");
             },
             error: (error: any) =>
@@ -212,9 +204,7 @@ export class UserDetailsComponent {
             },
             complete: () =>
             {
-                console.log('User details submission completed.');
                 this.sharedService.setUserFormCompleted(true);
-                console.log("Submit button: " + this.sharedService.isUserFormCompleted())
                 this.sharedService.setAuthCalled(true);
                 this.router.navigate(['/']);
             },

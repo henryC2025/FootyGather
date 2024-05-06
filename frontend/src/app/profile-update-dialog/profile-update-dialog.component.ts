@@ -55,7 +55,6 @@ export class ProfileUpdateDialogComponent
 
     ngOnInit()
     {
-        // this.venue_id = this.data.venue_id;
         this.authService.user$.subscribe(user =>
         {
             this.user = user;
@@ -69,8 +68,6 @@ export class ProfileUpdateDialogComponent
         {
             oauth_id : this.user?.sub
         }
-
-        console.log(data)
 
         this.webService.getUserDetails(data).subscribe(
         {
@@ -93,7 +90,6 @@ export class ProfileUpdateDialogComponent
                 this.existing_user_data.sub_notifications = sub_notifications;
                 this.existing_user_data.profile_image = profile_image;
 
-                console.log(this.existing_user_data);
                 this.user_details_form.patchValue(
                 {
                     first_name : first_name,
@@ -106,9 +102,10 @@ export class ProfileUpdateDialogComponent
 
                 })
             },
-            error : () =>
+            error : (error) =>
             {
-              
+                this.sharedService.showNotification("An error occured when attempting to populate form!", "error");
+                console.log(error);
             }
         })
     }
@@ -191,7 +188,6 @@ export class ProfileUpdateDialogComponent
 
     onSubmit()
     {
-        // ADD SOMETHING TO DELETE THE EXISTING IMAGE
         const blobStorage = 'https://blobstoragehenry2001.blob.core.windows.net';
 
         if(this.user_details_form.valid)
@@ -204,27 +200,19 @@ export class ProfileUpdateDialogComponent
                     {
                         this.user_image = [blobStorage + response.filePath, response.id, response.filePath];
                         this.submitUpdateProfileDetails();
-
-                        // CALL DELETE OLDER IMAGE HERE
-                        console.log(this.existing_user_data);
                         if(this.existing_user_data.profile_image[2] && this.existing_user_data.profile_image[2] != '0000')
                         {
                             console.log(this.existing_user_data.profile_image);
                             this.webService.deleteProfileImage(this.existing_user_data.profile_image[1], this.existing_user_data.profile_image[2]).subscribe(
                             {
-                                next : (response) =>
-                                {
-
-                                },
                                 error : (error) =>
                                 {
-
+                                    this.sharedService.showNotification("An error occured when attempting to submit data!", "error");
+                                    console.log(error);
                                 },
                                 complete : () =>
                                 {
-                                    console.log("Profile Image deleted!")
                                     this.router.navigate(['/profile']);
-                                    // ADD NOTIFIER HERE
                                 }
                             })
                         }
@@ -233,16 +221,12 @@ export class ProfileUpdateDialogComponent
                     error : (error) =>
                     {
                         this.sharedService.showNotification("Error uploading profile image", "error");
+                        console.log(error);
                     },
-                    complete: () =>
-                    {
-                        console.log('Profile image upload completed.');
-                    }
                 })
             }
             else
             {
-                console.log("Old image kept");
                 this.user_image = this.existing_user_data.profile_image;
                 this.submitUpdateProfileDetails();
             }
@@ -268,10 +252,6 @@ export class ProfileUpdateDialogComponent
         }
         this.webService.updateUserDetails(formData).subscribe(
         {
-            next : (response : any) =>
-            {
-                console.log(response);
-            },
             error : () =>
             {
                 this.sharedService.showNotification("Something went wrong!", "error");
@@ -280,7 +260,6 @@ export class ProfileUpdateDialogComponent
             {
                 this.sharedService.showNotification("User details updated", "success");
                 this.onClose();
-                // FIX THIS LATER ON
                 this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
                 {
                     this.router.navigate(['/profile']);

@@ -10,16 +10,16 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
   styleUrls: ['./profiles.component.css']
 })
 
-export class ProfilesComponent {
+export class ProfilesComponent
+{
+    user : any;
+    user_details : any = [];
 
     constructor(public authService : AuthService,
                 public webService : WebService,
                 public sharedService : SharedService,
                 public router : Router,
                 public route : ActivatedRoute) {}
-
-    user : any;
-    user_details : any = [];
 
     ngOnInit()
     {
@@ -43,9 +43,17 @@ export class ProfilesComponent {
                             next : (data : any) =>
                             {
                                 this.user_details = data;
+                            },
+                            error : (error) =>
+                            {
+                                console.log("An error occured getting user details: ", error);
                             }
                         })
                     }
+                },
+                error : (error) =>
+                {
+                    console.log("An error occured when authenticating user: ", error);
                 }
             });
         });
@@ -72,15 +80,17 @@ export class ProfilesComponent {
                             this.authService.logout();
                             this.router.navigate(['/']);
                         },
-                        error : () =>
+                        error : (error) =>
                         {
                             this.sharedService.showNotification("Something went wrong when deleting user!", "error");
+                            console.log(error);
                         }
                     })
                 },
-                error : () =>
+                error : (error) =>
                 {
                     this.sharedService.showNotification("Something went wrong when deleting user image!", "error");
+                    console.log(error);
                 }
             })
         }

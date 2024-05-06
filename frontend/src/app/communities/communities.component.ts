@@ -48,12 +48,10 @@ export class CommunitiesComponent
 
         if (navigator.geolocation)
         {
-            console.log("Geolocation is supported");
             navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus =>
             {
                 if (permissionStatus.state === 'granted')
                 {
-                    console.log('Geolocation permission granted');
                     navigator.geolocation.getCurrentPosition(position =>
                     {
                         this.lat = position.coords.latitude;
@@ -65,14 +63,12 @@ export class CommunitiesComponent
                 }
                 else
                 {
-                    console.log('Geolocation permission not granted');
                     this.webService.getAllCommunities().subscribe((communityList: any) =>
                     {
                         this.all_community_list = communityList;
                         this.resetDistanceForAllCommunities();
                     });
                     this.community_list = this.webService.getCommunities(this.page);
-                    console.log("Geolocation is not supported by this browser.");
                 }
             });
         }
@@ -141,10 +137,6 @@ export class CommunitiesComponent
                 }
             })
         }
-        else
-        {
-            console.log("Something went wrong!")
-        }
     }
 
     firstPage()
@@ -212,13 +204,15 @@ export class CommunitiesComponent
                             const duration_value = this.sharedService.metersToMiles(element.duration.value);
             
                         return{
-                            distance: {
-                            text: distance_text,
-                            value: distance_value
+                            distance:
+                            {
+                                text: distance_text,
+                                value: distance_value
                             },
-                            duration: {
-                            text: duration_text,
-                            value: duration_value
+                            duration:
+                            {
+                                text: duration_text,
+                                value: duration_value
                             }
                         };
                         }

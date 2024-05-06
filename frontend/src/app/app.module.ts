@@ -2,9 +2,10 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { Navigation, RouterModule, Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { GoogleMapsModule } from '@angular/google-maps';
 import { WebService } from './web.service';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthModule } from '@auth0/auth0-angular';
 import { SharedService } from './shared.service';
@@ -148,6 +149,7 @@ var routes : any = [
     MatIconModule,
     MatDialogModule,
     MatFormFieldModule,
+    GoogleMapsModule,
     AuthModule.forRoot({
       domain: 'dev-lj7ac84a7apx1w1e.us.auth0.com',
       clientId: 'KC86pIWNkm7RJOVZRsxnATVWRZRwd8lk',

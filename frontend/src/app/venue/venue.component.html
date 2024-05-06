@@ -2,83 +2,57 @@
 
     <div *ngFor = "let venue of venue_list | async">
 
-        <div class="venue-container">
+        <h1 class="heading-title">{{venue.name}}</h1>
 
-            <!-- Background colour and link to single venue -->
-            <div class="card text-white mb-3 rounded-0 ">
+            <div class="image-container mb-2">
+                <img [src]="venue.image[0]" class="venue-image" alt="{{venue.name}}">
+            </div>
 
-            <!-- Header for card -->
-            <div class="card-header">
-                <div id="venue-name">
-                {{venue.name}}
+            <div class="mb-2">
+                <div class="col-md-12 text-center">
+                    <div class="venue-like-dislike d-flex justify-content-center">
+                    <!-- Like and dislike buttons go here -->
+                    <ul *ngFor="let venue of venue_list | async">
+                        <li class="like-dislike-item">
+                            <button class="like-button" (click)="addLike(oauth_id)">
+                                <i class="fas fa-thumbs-up"></i>
+                            </button>
+                            <span class="like-dislike-count">{{ like_count }}</span>
+                                <button class="dislike-button" (click)="addDislike(oauth_id)">
+                                    <i class="fas fa-thumbs-down"></i>
+                                </button>
+                            <span class="like-dislike-count">{{ dislike_count }}</span>
+                        </li>
+                    </ul>
+                    </div>
                 </div>
             </div>
 
-            <!-- Body for card -->
-            <div class="card-body" id="venue-card-body">
-
-                <div class="row" id="venue-details">
-                
-                    <div class="col-md-12" id="venue-summary">
-                        <h4>Description</h4>
-                        <p>{{venue.description}}</p>
-                        <hr>
-                    </div>
-
-                    <div class="col-md-12" id="venue-summary">
-                        <h4>Website / Links</h4>
-                        <p>{{venue.contact_info}}</p>
-                        <hr>
-                    </div>
-
-                    <div class="col-md-12" id="venue-summary">
-                        <h4>Address</h4>
-                        <p>{{venue.address}}</p>
-                        <hr>
-                    </div>
-
-                    <div class="col-md-12">
-                        <div class="row">
-
-                            <div class="col-md-12 text-center">
-                                <div class="like-dislike-container venue-like-dislike d-flex justify-content-center align-items-center">
-                                  <!-- Like and dislike buttons go here -->
-                                  <ul *ngFor="let venue of venue_list | async">
-                                    <li class="like-dislike-item">
-                                      <button class="like-button" (click)="addLike(oauth_id)">
-                                        <i class="fas fa-thumbs-up"></i>
-                                      </button>
-                                      <span class="like-dislike-count">{{ like_count }}</span>
-
-                                      <button class="dislike-button" (click)="addDislike(oauth_id)">
-                                        <i class="fas fa-thumbs-down"></i>
-                                      </button>
-                                      <span class="like-dislike-count">{{ dislike_count }}</span>
-                                    </li>
-                                  </ul>
-                                </div>
-                            </div>
-
-                        </div>
-                        <hr>
-                    </div>
-
-                    <div *ngIf="is_admin" class="input-group mb-3 d-flex justify-content-center" id="admin-add-venue">
-                        <hr>
-                        <button style="width: 100%;" class="mb-2" id="fg-button-delete" (click)="onDeleteVenue(venue_id, venue.image[1], venue.image[2])">Delete Venue (Admin Only)</button>
-                        <br>
-                        <button style="width: 100%" id="fg-button" (click)="onUpdateVenue()">Update Venue (Admin Only)</button>
-                    </div>
-
-                    <!-- Large Image -->
-                    <div class="image-container">
-                        <img [src]="venue.image[0]" class="img-thumbnail rounded-0 venue-image" alt="{{venue.name}}">
-                        </div>
-                    </div>
-
-                </div>
-
+            <div class="venue-details">
+            <div class="venue-details-row col-md-12">
+                <div class="venue-label col-md-3">Description:</div>
+                <div class="venue-content col-md-9">{{venue.description}}</div>
             </div>
-        </div>
+            <div class="venue-details-row col-md-12">
+                <div class="venue-label col-md-3">Contact Information:</div>
+                <div class="venue-content col-md-9">{{venue.contact_info}}</div>
+            </div>
+            <div class="venue-details-row col-md-12">
+                <div class="venue-label col-md-3">Address:</div>
+                <div class="venue-content col-md-9">{{venue.address}}</div>
+            </div>
+
+            <div *ngIf="is_admin" class="input-group mb-3 d-flex justify-content-center" id="admin-add-venue">
+                <hr>
+                <button style="width: 100%;" class="mb-2" id="fg-button-delete" (click)="onDeleteVenue(venue_id, venue.image[1], venue.image[2])">Delete Venue (Admin Only)</button>
+                <br>
+                <button style="width: 100%" id="fg-button" (click)="onUpdateVenue()">Update Venue (Admin Only)</button>
+            </div>
+
+            <div class="google-map">
+                <google-map width="100%" height="500px" [center]="center">
+                    <map-marker [position]="center"></map-marker>
+                </google-map>
+            </div>
     </div>
 </div>

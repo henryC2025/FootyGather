@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@auth0/auth0-angular';
 import { SharedService } from '../shared.service';
 import { WebService } from '../web.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AllGamesComponent', () =>
@@ -27,6 +27,7 @@ describe('AllGamesComponent', () =>
         {
             getAllCurrentGames: jasmine.createSpy('getAllCurrentGames').and.returnValue(of([])),
             getCountOfAllCurrentGames: jasmine.createSpy().and.returnValue(of({ count_of_current_games: 5 })),
+            searchAllCurrentGames: jasmine.createSpy().and.returnValue(of([])),
         };
         sharedServiceMock =
         {
@@ -47,11 +48,34 @@ describe('AllGamesComponent', () =>
 
         fixture = TestBed.createComponent(AllGamesComponent);
         component = fixture.componentInstance;
+        sessionStorage.clear();
+        sessionStorage.setItem('page', '1');
         fixture.detectChanges();
     });
 
     it('should create', () =>
     {
         expect(component).toBeTruthy();
+    });
+
+    it('should fetch all current games and total count on initialization', () =>
+    {
+        expect(webServiceMock.getAllCurrentGames).toHaveBeenCalledWith('default', 1);
+        expect(webServiceMock.getCountOfAllCurrentGames).toHaveBeenCalled();
+    });
+
+    it('should perform search and update search results', () =>
+    {
+        component.search_query = "football";
+        component.search();
+        expect(webServiceMock.searchAllCurrentGames).toHaveBeenCalledWith("football");
+        expect(component.search_results).toEqual([]);
+    });
+
+    it('should fetch games with new sort option when onSortChange is called', () =>
+    {
+        component.selected_sort_option = 'closest';
+        component.onSortChange();
+        expect(webServiceMock.getAllCurrentGames).toHaveBeenCalledWith('closest', component.page);
     });
 });

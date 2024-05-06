@@ -22,13 +22,23 @@ export class VenueComponent
     is_admin = false;
     user : any;
     venue_id : any;
+    latitude : any;
+    longitude : any;
+    center: google.maps.LatLngLiteral;
     public is_authenticated: boolean = false;
 
     constructor(public authService : AuthService,
                 public webService : WebService,
                 public sharedService : SharedService,
                 public route : ActivatedRoute,
-                public router : Router) {}
+                public router : Router)
+                {
+                    this.center =
+                    {
+                        lat: this.latitude,
+                        lng: this.longitude
+                    };
+                }
 
     ngOnInit()
     {
@@ -39,6 +49,7 @@ export class VenueComponent
         this.route.paramMap.subscribe(params =>
         {
             this.venue_id = params.get('id');
+            this.getVenueLocation();
         });
 
         this.like_dislike_list = this.webService
@@ -64,11 +75,43 @@ export class VenueComponent
                     this.webService.getUserDetails(userDetails).subscribe((data: any) =>
                     {
                         this.is_admin = (data.is_admin == "true");
-                        console.log("Is admin: ", this.is_admin);
                     });
                 }
             });
         }
+
+    }
+
+    getVenueLocation()
+    {
+        this.webService.getVenueByID(this.venue_id).subscribe(
+        {
+            next : (data : any) =>
+            {
+                const address = data[0].address;
+                this.webService.getCoordinatesFromAddress(address).subscribe(
+                {
+                    next : (data : any) =>
+                    {
+                        this.latitude = (data.results[0].geometry.location.lat);
+                        this.longitude = (data.results[0].geometry.location.lng);
+                        this.center =
+                        {
+                            lat: this.latitude,
+                            lng: this.longitude
+                        };
+                    },
+                    error : (error) =>
+                    {
+                        console.log("An error occured getting co-ordinates from address: ", error);
+                    }
+                })
+            },
+            error : (error) =>
+            {
+                console.log("An error occured getting venue details: ", error);
+            }
+        })
     }
 
     onUpdateVenue()
@@ -91,33 +134,26 @@ export class VenueComponent
         const url = image_path;
         const parts = url.split('/');
         const image_path_code = parts[parts.length - 1];
-        console.log(image_path_code);
-        console.log(image_path);
         this.webService.deleteVenue(venue_id).subscribe(
         {
-            next : (response) =>
+            next : () =>
             {
                 this.webService.deleteVenueImage(image_id, image_path_code).subscribe(
                 {
-                    next : (response) =>
-                    {
-
-                    },
                     error : (error) =>
                     {
-
+                        console.log("An error occured when attempting to delete venue: ", error);
                     },
                     complete : () =>
                     {
                         console.log("Venue deleted!")
                         this.router.navigate(['/venues']);
-                        // ADD NOTIFIER HERE
                     }
                 })
             },
             error : (error) =>
             {
-
+                console.log("An error occured when attempting to delete venue: ", error);
             }
         })
     }
@@ -131,18 +167,14 @@ export class VenueComponent
             this.webService.addLike(venue_id, oauth_id).subscribe({
                 next: (response : any) =>
                 {
-                  console.log(response)
-                  this.getLikesDislikes(venue_id);
+                    console.log(response)
+                    this.getLikesDislikes(venue_id);
                 },
                 error: (error) =>
                 {
-                  console.error('Something went wrong adding like:', error);
+                    console.error('An error occurred when attempting to add a like:', error);
                 }}
             );
-        }
-        else
-        {
-            console.log("Looks like some IDs are missing!")
         }
     }
 
@@ -154,22 +186,15 @@ export class VenueComponent
         {
             this.webService.addDislike(venue_id, oauth_id).subscribe(
             {
-                next: (response : any) =>
+                next: () =>
                 {
-                    console.log(response)
                     this.getLikesDislikes(venue_id);
                 },
                 error: (error) =>
                 {
-                    console.error('Something went wrong adding dislike:', error);
+                    console.error('An error occurred when attempting to add a dislike:', error);
                 }}
             );
-        }
-        else
-        {
-            console.log("Looks like some IDs are missing!")
-            console.log("ERRORS" + this.oauth_id)
-            console.log(venue_id)
         }
     }
 
@@ -186,7 +211,7 @@ export class VenueComponent
             },
             error: (error) =>
             {
-                console.error('Something went wrong when getting likes and dislikes:', error);
+                console.error('An error occurred when attempting to retrieving likes and dislikes:', error);
             }}
         );
     }

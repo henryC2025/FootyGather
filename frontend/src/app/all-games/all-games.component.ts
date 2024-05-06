@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { WebService } from '../web.service';
 import { SharedService } from '../shared.service';
-import { catchError, map, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-all-games',
@@ -52,10 +51,6 @@ export class AllGamesComponent
                     console.error('Error:', error);
                 }
             })
-        }
-        else
-        {
-            console.log("Something went wrong!")
         }
     }
 

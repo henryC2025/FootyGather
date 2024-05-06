@@ -20,6 +20,8 @@ describe('AuthComponent', () =>
     {
         authServiceMock =
         {
+            loginWithRedirect: jasmine.createSpy('loginWithRedirect'),
+            logout: jasmine.createSpy('logout'),
             user$: of({ sub: 'auth0|123456', nickname: 'testuser', email: 'test@example.com' }),
             isAuthenticated$: of(true)
         };
@@ -30,6 +32,7 @@ describe('AuthComponent', () =>
         sharedServiceMock =
         {
             showNotification: jasmine.createSpy('showNotification'),
+            resetAuthCalled: jasmine.createSpy('resetAuthCalled')
         };
 
         await TestBed.configureTestingModule(
@@ -52,5 +55,30 @@ describe('AuthComponent', () =>
     it('should create', () =>
     {
         expect(component).toBeTruthy();
+    });
+
+    it('should call loginWithRedirect on login', () =>
+    {
+        component.loginWithRedirect();
+        expect(authServiceMock.loginWithRedirect).toHaveBeenCalled();
+    });
+
+    it('should call logout on logout', () =>
+    {
+        component.logout();
+        expect(authServiceMock.logout).toHaveBeenCalled();
+        expect(sharedServiceMock.resetAuthCalled).toHaveBeenCalled();
+    });
+
+    it('should navigate on login if already authenticated', () =>
+    {
+        component.ngOnInit();
+        expect(authServiceMock.isAuthenticated$).toBeTruthy();
+    });
+    
+    it('should not perform login if already authenticated', () =>
+    {
+        authServiceMock.isAuthenticated$ = of(true);
+        expect(authServiceMock.loginWithRedirect).not.toHaveBeenCalled();
     });
 });

@@ -31,11 +31,11 @@ describe('VenuesAddDialogComponent', () =>
     let sharedServiceMock : any
     let authServiceMock : any
     let webServiceMock : any
-
     let mockDialogRef =
     {
         close: jasmine.createSpy('close')
     };
+
     beforeEach(async () =>
     {
         authServiceMock = 

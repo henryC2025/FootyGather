@@ -1126,6 +1126,9 @@ def search_all_current_games():
                 game['venue_id'] = str(game['venue_id'])
             if 'community' in game and 'community_id' in game['community']:
                 game['community']['community_id'] = str(game['community']['community_id'])
+            if 'comments' in game:
+                for comment in game['comments']:
+                    comment['_id'] = str(comment['_id'])
             games_list.append(game)
 
         return make_response(jsonify(games_list), 200)

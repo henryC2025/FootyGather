@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';  // Needed for ngModel
 import { WebService } from '../web.service';
 import { AuthService } from '@auth0/auth0-angular';
 import { SharedService } from '../shared.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('PlayersComponent', () => 
 {
@@ -72,5 +72,30 @@ describe('PlayersComponent', () =>
         expect(component.page).toBe(1);
         expect(sessionStorage['page']).toBe('1');
         expect(webServiceMock.getAllPlayers).toHaveBeenCalledWith(1);
+    });
+
+    it('should initialize page number from sessionStorage', () =>
+    {
+        sessionStorage['page'] = '3';
+        fixture = TestBed.createComponent(PlayersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        expect(component.page).toBe(3);
+        expect(webServiceMock.getAllPlayers).toHaveBeenCalledWith(3);
+    });
+
+    it('should not perform search with an empty query', () =>
+    {
+        component.search_query = '';
+        component.search();
+        expect(webServiceMock.searchPlayers).not.toHaveBeenCalled();
+    });
+
+    it('should update total pages when player count is fetched', () =>
+    {
+        webServiceMock.getCountOfPlayers.and.returnValue(of({ count_of_players: 24 }));
+        component.ngOnInit();
+        fixture.detectChanges();
+        expect(component.total_pages).toBe(2);
     });
 });

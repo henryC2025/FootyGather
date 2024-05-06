@@ -49,9 +49,7 @@ export class VenuesComponent
             {
                 this.webService.getUserDetails(userDetails).subscribe((data: any) =>
                 {
-                    console.log(data)
                     this.is_admin = (data.is_admin == "true");
-                    console.log("Am I the admin - ", this.is_admin)
                 });
             }
         });
@@ -86,10 +84,6 @@ export class VenuesComponent
                   console.error('Error:', error);
                 }
             })
-        }
-        else
-        {
-            console.log("Something went wrong!")
         }
     }
 

@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AuthService } from "@auth0/auth0-angular";
 import { WebService } from "./web.service";
-import { ActivatedRoute, ActivationStart, Route, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { switchMap } from 'rxjs/operators';
 import { EMPTY, Subject } from 'rxjs';
 import { MatSnackBar } from "@angular/material/snack-bar";

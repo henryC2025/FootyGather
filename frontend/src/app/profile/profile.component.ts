@@ -56,7 +56,6 @@ export class ProfileComponent {
             next: (communities) =>
             {
                 this.player_communities = communities;
-                console.log(this.player_communities);
             },
             error: (error) => console.error(error)
         });
@@ -77,7 +76,6 @@ export class ProfileComponent {
         this.user_previous_games_list = this.webService.getSortedPlayerPreviousGames(
             this.user_details._id, "closest_date", this.previous_games_page);
         this.getPaginationSize();
-        console.log("TESTING: " + this.user_details._id)
     }
 
     getPaginationSize()
@@ -143,15 +141,17 @@ export class ProfileComponent {
                             this.authService.logout();
                             this.router.navigate(['/']);
                         },
-                        error : () =>
+                        error : (error) =>
                         {
                             this.sharedService.showNotification("Something went wrong when deleting user!", "error");
+                            console.log(error);
                         }
                     })
                 },
-                error : () =>
+                error : (error) =>
                 {
                     this.sharedService.showNotification("Something went wrong when deleting user image!", "error");
+                    console.log(error);
                 }
             })
         }

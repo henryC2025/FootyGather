@@ -74,7 +74,6 @@ export class VenuesAddDialogComponent
             }
             else
             {
-                console.error('Selected file is not an image.');
                 this.sharedService.showNotification("Please select an image.", "error");
                 this.clearImage();
             }
@@ -134,6 +133,7 @@ export class VenuesAddDialogComponent
                     error : (error : any) =>
                     {
                         this.sharedService.showNotification("Error uploading venue image", "error");
+                        console.log(error);
                     },
                     complete: () =>
                     {
@@ -165,13 +165,10 @@ export class VenuesAddDialogComponent
 
         this.webService.addVenueDetails(formData).subscribe(
         {
-            next : (response : any) =>
-            {
-                console.log(response);
-            },
-            error : () =>
+            error : (error) =>
             {
                 this.sharedService.showNotification("Something went wrong!", "error");
+                console.log(error);
             },
             complete: () =>
             {

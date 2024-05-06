@@ -53,6 +53,8 @@ describe('VenuesComponent', () =>
     {
         fixture = TestBed.createComponent(VenuesComponent);
         component = fixture.componentInstance;
+        sessionStorage.clear();
+        sessionStorage.setItem('page', '1');
         fixture.detectChanges();
     });
 

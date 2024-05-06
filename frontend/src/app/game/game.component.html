@@ -16,7 +16,7 @@
             <button *ngIf="game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onSendEmailToPlayers()" class="mb-2">Remind Players of Game</button>
         </div>
         
-        <button *ngIf="is_joined && game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onFinishGame()" class="mb-2">Finish Game</button>
+        <button *ngIf="game_status === 'current' && (is_admin || is_creator)" id="fg-button" style="width: 100%;" (click)="onFinishGame()" class="mb-2">Finish Game</button>
         <div *ngIf="is_admin || is_creator">
             <button *ngIf="game_status === 'current'" id="fg-button" style="width: 100%;" (click)="onUpdateGame()" class="mb-2">Update Game</button>
             <button id="fg-button-delete" style="width: 100%;" (click)="onDeleteGame()" class="mb-2">Delete Game</button>
