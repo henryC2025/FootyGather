@@ -1,11 +1,4 @@
-/* 
-    color: #2c972c;
-    color: #272727;
-    color: #f5f5f5;
-*/
-
 /* GENERAL */
-
 .header 
 {
     font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
@@ -34,12 +27,9 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    /* overflow: auto; */
     font-weight: 300;
     background-image: url('assets/footy_pitch.jpg');
     background-size: cover;
-    /* background-position: center center; */
-    /* position: relative; */
 
     background-size: cover;
     background-position: center center;
@@ -125,22 +115,6 @@
     max-height: 700px !important;
 }
 
-/* HOME */
-
-#home-heading
-{
-    font-family: 'Your Font', Arial, sans-serif;
-    /* font-size: 2em; */
-    font-weight: 800 !important;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    letter-spacing: 0.1em;
-    opacity: 0;
-    animation: fadeInUp 1.5s forwards;
-    color: #f5f5f5;
-    font-size: 90%;
-}
-
 @keyframes fadeInUp
 {
     from
@@ -173,7 +147,6 @@
 
 app-nav
 {
-    /* z-index: 1 !important; */
     background-color: #333;
     color: white;
 }
@@ -350,9 +323,19 @@ textarea, input[type="text"], select, input[type="file"]
     text-transform: uppercase;
 }
 
+.form-control, .form-select
+{
+    border: solid 1px green !important; 
+}
+
+.card
+{
+    border: solid 1px #2c972c !important;
+}
+
 .card-header
 {
-    background-color: #2c972c !important;
+    background-color: #272727 !important;
 }
 
 #venues-details, #venue-name, #communities-details
@@ -751,22 +734,31 @@ hr
 {
     text-align: center;
     padding: 50px;
-    background-color: #ffffff;
+    background-color: #272727a4;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #2c972c;
 }
 
-#welcome-heading
+#welcome-container h1
 {
     color: #2c972c;
-    font-size: xxx-large;
+    font-size: 70px;
+    margin-bottom: 20px;
+    font-weight: 800;
 }
 
-#welcome-description
+#welcome-container p
 {
-    color: #555;
-    font-size: 20px;
-    margin-bottom: 20px;
+    color: #ffffff;
+    font-size: 25px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+#logo
+{
+    max-width: 200px;
 }
 
 /* COMMUNITIES */
